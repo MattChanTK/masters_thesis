@@ -1,22 +1,30 @@
 \chapter{Introduction}
 
-Interactive arts are a type of art form that requires the involvement of the spectators to achieve its purpose. With recent advances in capabilities and miniaturization of computers, sensors and actuators, artists now have access to more tools to create highly complex interactive artworks. In the Hylozoic Series of kinetic sculptures built by Philip Beesley Architect Inc., the designers use a network of microcontrollers to control and sample a sizable number of actuators and sensors \cite{Beesley2010.book} \cite{Beesley2007.book}. Each node in the network can perform a simple set of interactive behaviours. While the behaviours have previously been either pre-scripted or random, complex group behaviours have been seen to emerge through the communication among nodes and interaction with the spectators \cite{Beesley2012.book}.  
+Interactive arts are a type of art form that requires the involvement of the spectators to achieve its purpose. With recent advances in capabilities and miniaturization of computers, sensors and actuators, artists now have access to more tools to create highly complex interactive artworks. In the Hylozoic Series of kinetic sculptures built by Philip Beesley Architect Inc.(PBAI)\footnote{\url{http://philipbeesleyarchitect.com}}, the designers use a network of microcontrollers to control and sample a sizable number of actuators and sensors \cite{Beesley2010.book} \cite{Beesley2007.book}. Each node in the network can perform a simple set of interactive behaviours. While the behaviours have previously been either pre-scripted or random, complex group behaviours have been seen to emerge through the communication among nodes and interaction with the spectators \cite{Beesley2012.book}. 
+
+In this work, we wanted to explore the physical manifestation of a learning algorithm in an abstract interactive art sculpture. Working with PBAI, a new series of interactive sculptures was designed and built to generate its own behaviours through learning and interaction with its physical environment. We observed how occupants of the space responds and perceive the behaviours of the sculpture. 
+ 
+Oudeyer et al. developed the Intelligent Adaptive Curiosity (IAC) \cite{Oudeyer2007}, a reinforcement learning algorithm with the objective of maximizing learning progress. In his experiments, he showed that an agent would tend to explore state-space that is neither too predictable nor too random, mimicking the intrinsic human drive of curiosity, which continually tries to explore areas that have the highest potential for learning new knowledge. The learning mechanism developed for this thesis built on Oudeyer’s IAC and applied it on an architectural-scale distributed interactive sculptural system. We called it Curiosity-Based Learning Algorithm (CBLA). 
+
+Compared to the previous generations of interactive art sculptures produced by PBAI, the CBLA requires the control and sensing of a much larger number of actuators and sensors at a relatively high frequency. Therefore, we also built a new series of electronic platform and control architecture that can communicate and synchronize with a distributed set of sculptural units. Additional abstraction layer was created to allow quick implementations of many different configurations. By studying the behaviours emerged and the response of the occupants, we began to understand the relationship between the intensity of activation and user's interest levels. 
 
 
 \section{Motivation}
 
-We introduce the Curiosity-Based Learning Algorithm (CBLA) to replace pre-scripted responses in the Hylozoic series installation.  The CBLA re-casts the interactive sculpture as a set of agents driven by an intrinsic desire to learn.  Presented with a set of input and output variables that it can observe and control, each agent tries to understand its own mechanisms, its surrounding environment, and the occupants, by learning models relating its inputs and outputs. We hypothesize that the occupants will find the behaviours which emerge during CBLA-based control to be interesting, more life-like, and less robotic. 
+We introduced the Curiosity-Based Learning Algorithm (CBLA) to replace pre-scripted responses in the Hylozoic series installation.  The CBLA re-casts the interactive sculpture as a set of agents driven by an intrinsic desire to learn.  Presented with a set of input and output variables that it can observe and control, each agent tries to understand its own mechanisms, its surrounding environment, and the occupants, by learning models relating its inputs and outputs. We hypothesize that the occupants will find the behaviours which emerge during CBLA-based control to be interesting, more life-like, and less robotic. 
 
 This approach reduces the reliance on humans to manually design interesting and “life-like” behaviours. In systems with large numbers of sensors and actuators, programming a complex set of carefully choreographed behaviours is complicated and requires lengthy implementation and testing processes. Furthermore, this approach allows the sculpture to adapt and change its behaviour over time. This is especially interesting for permanent installations in which the same users may interact with the sculpture over an extended period of time. 
 
-\section{Research Components}
-There are five main technical challenges in my thesis research. 
 
-\subsection{The control hardware and software}
+\section{Projects Components}
+
+This project can be broken down into five main components that need to be solved.
+
+\subsection{Control hardware and software}
 
 Compared to the previous generations of interactive art sculptures produced by PBAI, the CBLA requires the control and sensing of a much larger number of actuators and sensors at a relatively high frequency. To accommodate that, a new hardware platform was built. This hardware platform uses Teensy 3.1 device to interface with the sensors and actuators. A set of PCB was custom designed to enable control and sampling of over 24 actuators and 18 sensors. In addition, a communication protocol was developed to interface each Teensy device with a computer through USB. The computer is expected to control over 16 Teensy devices at the same time.
 
-\subsection{The interfacing software}
+\subsection{Interfacing software}
 
 A Python module was written to enable the communication with many Teensy devices simultaneously. A thread is created for each Teensy device and synchronize the copies of the hash tables on the Teensy device and the computer continuously. Applications on the computer side can control and sample the states of the Teensy devices by modifying the values in the hash tables.
 
@@ -24,15 +32,22 @@ A Python module was written to enable the communication with many Teensy devices
 
 An additional layer of abstraction was built to represent the sculpture as a network of node. Each node runs as its own thread and possesses a set of input and output variables. Behaviour of each node can be programmed individually. A pre-scripted version of the behaviours will be programmed to compare with the CBLA version in user studies.
 
-\subsection{Curiosity Driven Learning Algorithm}
+\subsection{Curiosity-Based Learning Algorithm}
 
 The CBLA is a type of reinforcement learning algorithm with the reduction of prediction error as the reward. During the learning process, it will explore regions of the state space that are neither too predictable nor too random; it focuses on areas that have the highest potential for new knowledge. To structure the learning process and identify interesting regions of the state-space, the CBLA automatically segments the state-space into regions; an expert in each region makes predictions about the effects of an action and adjusts its prediction model based on the actual resultant state. The value of each expert is determined by its record of error reduction. This value will then determine the execution likelihood of the action associated with this expert.
 
 \subsection{User Study}
 
-A user study will be conducted to test the efficacy of increasing users’ interest level in an interactive art sculpture, by using a curiosity-based learning algorithm (CBLA) to adjust the sculpture’s dynamic behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than pre-programmed behaviours designed by human experts. The test subjects will report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey will be given to assess the subjects’ overall experience. The results of this study will enable designers to design more engaging and interesting interactive art sculptures.
+A user study was conducted to test the efficacy of increasing users’ interest level in an interactive art sculpture, by using a curiosity-based learning algorithm (CBLA) to adjust the sculpture’s dynamic behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than pre-programmed behaviours designed by human experts. The test subjects will report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey will be given to assess the subjects’ overall experience. The results of this study will enable designers to design more engaging and interesting interactive art sculptures.
+
 
 \section{Contributions}
+
+First, this thesis presented an adaptation of learning algorithm which was previously used on developmental robotics in an interactive arts. In \cite{Oudeyer2007}, the state space of the robot was relatively small. However, in our case, there is an order of magnitude more input and output variables. In order to make learning such a large distributed system manageable, multiple learning agent may run simultaneously, each capturing a specific set of sensors and actuators. 
+
+Second, unlike many reinforcement learning problems, acquiring a model of the learning targets as quickly and accurately as possible isn't our main objective. Instead we want to study the learning process itself and study how curiosity affects the way that the system explores the state-space. The behaviour of the interactive art sculptures is the physical manifestation of the learning process. 
+
+Third, the user study conducted allows us to examine how human occupants interacts and perceive the action of the sculpture. From there, we can begin to understand what interests people and how different activation patterns might lead to different reactions. 
 
 
 \section{Organization}
