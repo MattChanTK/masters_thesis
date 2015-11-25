@@ -1,9 +1,71 @@
-\chapter{Interactive Control System}
+\chapter{Interactive Control System} \label{chap:ctrl_system}
 
-\section{Electronics}
+Compared to previous generations of control hardware and software \cite{Beesley2007.book},  the Hylozoic Series 3 Interactive Control System enables the control and sampling of a much larger number of actuators and sensors at relatively high frequencies.  While this evolution was primarily driven by interest in implementing the CBLA, the enhanced capability will benefit future development as well, allowing the implementation of other complex behaviours.
+
+
+\section{System Overview}
+
+Figure \ref{fig:system-architecture} shows the high-level system architecture of the Hylozoic Series 3 Interactive Control System. Each component runs asynchronously. At the bottom, there are the Teensy Devices. They represent the physical components in the sculptural system. Each Teensy Device consists of a Teensy Development Board \footnote{\url{www.pjrc.com/teensy/teensy31.html}} and it communicates with a computer which hosts the abstract components via USB. Each controls and samples from a number of actuators and sensors. More details about the physical hardware are presented in Section \ref{section:hardware}. 
+
+For each Teensy Device, a Teensy Interface thread is created with the corresponding communication protocol and system parameters. Each type of Teensy Device has its own unique set of parameters that dictate or reflect the behaviours of the system such as the brightness of an LED, and the readings from an accelerometer. The InteractiveCmd was created to provide an abstraction layer for all the physical components. Nodes can be created to control or sample any of the actuators and sensors through the InteractiveCmd. The InteractiveCmd handles the commands sent forth and forward them to the appropriate Teensy Interface in an efficient manner. A messenger was created to streamline the message delivery system. Its job is to periodically pushes all commands received from the abstract nodes in one package. This enables to the InteractiveCmd operate more efficiently. 
+
+The Input Nodes and Output Nodes are the lowest level of abstractions. Their sole purpose is to sample or update a particular sensor or actuator continuously. The second level of abstractions are the Device Nodes. Each Device Node is generally made up of one or more Input or Output Nodes, though Device Node can also be completely virtual. It provide additional functionality such as providing progressive dimming effect to the LED or calculating running average of a variable. The third the highest level of abstractions the CBLA Nodes. They are made up of components of Device Nodes. This is where the CBLA Engine and Prescripted Engine reside. The internal working of the Engines will be discussed in Chapter \ref{chap:cbla}.
+
+Data Logger is a special abstract component that periodically samplse the abstract variables of each abstract node, package the data in the memory, and save data in the hard disk in an efficient manner. 
+
+
+\begin{figure}
+\centering
+\includegraphics[height=0.85 \textheight]{"fig/interactive control system/high-level system architecture"}
+\caption[High-level system architecture]{The system is comprised of abstract and physical components. Each component run asynchronously in its own thread. Each arrow represents the data flow from one system to another.}
+\label{fig:system-architecture}
+\end{figure}
+
+
+
+\section{Hardware} \label{section:hardware}
+
+
+\subsection{Device Ports}
+Described how the architecture of the system and how the Device Port was designed
+
+\subsection{Actuators and Sensors}
+Describes generally what the different components do. what are the actuators and sensors involved
+
+
+
+The sculpture system is assembled from a number of clusters. Physically, each cluster comprises 3 Tentacle devices and 1 Protocell device. A Tentacle device is composed of two SMA wires and an LED as actuators, and two infrared (IR) proximity sensors and a three-axis accelerometer as sensors. When actuated, the two SMA wires pull a lever which mobilizes a frond-like arm. The accelerometer is mounted on the arm and serves as the proprioceptive sensor for the SMA wires. A Protocell device comprises a high-power LED as actuator, and an ambient light sensor for proprioception. Figure 1 shows how they are mounted spatially.
 
 
 \section{Control Software}
+
+Figure 2	 The low-level layer consists of the Teensy devices which interface with the physical hardware (not shown in the figure). On the high-level layer, a Teensy Interface thread is created for each Teensy, to provide communications with applications. The Teensy Manager may also be called to perform system-wide functions. The CBLA is one application that can control the sculptural system through the Teensy Interface. Other applications that require sensor inputs or actuator outputs may be run in parallel (e.g., an Occupancy Map generator, not discussed here).
+The cluster system is abstracted into two types of nodes: Tentacle Node and Protocell Node. Each node is characterized by a configuration and a set of input and output variables. Specifications of the nodes are presented in the experiment sections.
+
+4.2. Software Components
+The software is structured as a modular hierarchy, consisting of a low-level layer and a high-level layer. The two layers are connected physically through USB. A low-level layer of firmware written in C++ runs on the Teensy 3.1 USB-based development boards which interface with the peripherals that connect with the actuators and sensors.  High-level software written in Python is referred to as applications, and runs on a central computer. The use of the central computer as a development platform provides flexibility for development free from the limited processing power and specialized functions inherent to the Teensy microcontroller hardware. Moreover, Python is cross-platform and supports multi-threading, permitting operation within many operating systems and allowing multiple sets of software instructions to be executed in parallel. Code that is necessary for communicating with the low-level layer is packed into a Python Package named interactive-system. Developers can then develop applications that control and retrieve information from the sculptural system firmware using the software utilities provided by the Python Package. Each application can run on its own thread. While care should be exercised to avoid conflicts among threads, this should permit multiple applications to execute simultaneously, 	
+The CBLA is an example of an application that communicates with the low level using the interactive-system Python package. A further example of an application is an occupancy map that uses the sensors on the sculpture to interpret the locations of the occupants. Those two applications can run alongside each other independently, taking advantage of the multi-threading properties of the high-level platform.
+4.3. Communication Network
+Figure 9 illustrates the relationship between the software components. The high-level and the low-level layers share a set of output parameters that govern the behaviours and input parameters that represent the states of the sculptural system. The values of those parameters are synchronized across the two layers. Figure 10 illustrates how an application communicates with the Teensy devices. At the high-level layer, the Teensy Interface module in the interactive-system package is used to create a thread for each Teensy device. The thread looks for changes in those parameters and performs synchronization. Each Teensy device on the low-level layer is represented by a Teensy Interface thread on the high-level layer. An InteractiveCmd thread or other applications derived from it can modify a Teensy’s output parameters and retrieve its input parameters through its Teensy Interface.
+
+Figure 9: Communication between the high-level and low-level software layers
+
+
+
+Figure 10: Teensy interface
+4.4. Control Software
+In previous installations, the interactive behaviours of the sculptures have been pre-scripted. Each node responds to the occupants and influences the behaviours of its neighbouring nodes in deterministic ways.  As described above, the software and hardware platforms were updated in the current series in order to allow the more demanding CBLA to be implemented.  However, the new systems also support the design and implementation of pre-scripted behaviours.  These can be implemented either directly at the low-level, distributed throughout the sculpture directly on the Teensy hardware, or at the high-level controlled by a computer which passes messages to each of the Teensy low-level controllers.  Figure 11 shows a sample graphical definition of several such pre-programmed responses for devices from the current configuration of the sculpture.
+Even though the previous versions’ behaviours in each node are pre-scripted, because of the physical complexity and proximal coupling, non-deterministic patterns can emerge through the interactions between pre-programmed nodes.  One motivation for introducing the Curiosity-Based Learning Algorithm (CBLA) is to take the 
+
+
+
+
+Figure 11: Pre-programmed response envelopes for different actuator behaviours
+
+
+emergence of new behaviours to the next level. In the CBLA framework, there are no longer any pre-scripted behaviours. Instead, the algorithm is presented with a list of input and output channels that it can observe and control. Driven by an intrinsic desire to learn, it will try to understand itself, its surrounding environment, and the occupants, through active mobilization and interaction. It is hypothesized that occupants will find the behaviours produced by the CBLA more interesting, more life-like, and less robotic. 
+The CBLA is a type of reinforcement learning algorithm, where the reduction of prediction error is the reward. During the learning process, it will explore regions of the state-space that are neither too predictable nor too random; it wants to focus on areas that have the highest potential for new knowledge. To structure the learning process and identify interesting regions of the state-space, the CBLA automatically segments the state-space into regions; an expert in each region makes predictions about the effects of an action and adjusts its prediction model based on the actual resultant state. The value of each expert is determined by its record of error reduction. This value will then determine the execution likelihood of the action associated with this expert. 
+All of these software components make it possible to fully connect the numerous local controllers and realize a coherent entity that responds to occupants and adapts to changes in the surrounding environment.
 
 \section{Node Abstraction}
 
