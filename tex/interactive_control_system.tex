@@ -5,13 +5,17 @@ Compared to previous generations of control hardware and software \cite{Beesley2
 
 \section{System Overview}
 
+In this implementation we opted for an architecture which a centralized computer controls a number of smaller localized microcontrollers that interface with the sensors and actuators. By running the high-level logics on a central computer, complex algorithm can quickly be implemented without the constraints of a embedded platform. In addition, it provide an abstraction layer that enable the designer to build virtual sub-systems using any of the sensors and actuators. These two features allow us to quickly test out different configurations. 
+On the other hand, by distributing the low-level logics on localized microcontrollers, the system can be more modular and the number of wires can be reduced. In addition, the real=time nature of the microcontrollers allows protection of sensitive actuators in case the central computer fails. 
+
+
 Figure \ref{fig:system-architecture} shows the high-level system architecture of the Hylozoic Series 3 Interactive Control System. Each component runs asynchronously. At the bottom, there are the Teensy Devices. They represent the physical components in the sculptural system. Each Teensy Device consists of a Teensy Development Board \footnote{\url{www.pjrc.com/teensy/teensy31.html}} and it communicates with a computer which hosts the abstract components via USB. Each controls and samples from a number of actuators and sensors. More details about the physical hardware are presented in Section \ref{section:hardware}. 
 
 For each Teensy Device, a Teensy Interface thread is created with the corresponding communication protocol and system parameters. Each type of Teensy Device has its own unique set of parameters that dictate or reflect the behaviours of the system such as the brightness of an LED, and the readings from an accelerometer. The InteractiveCmd was created to provide an abstraction layer for all the physical components. Nodes can be created to control or sample any of the actuators and sensors through the InteractiveCmd. The InteractiveCmd handles the commands sent forth and forward them to the appropriate Teensy Interface in an efficient manner. A messenger was created to streamline the message delivery system. Its job is to periodically pushes all commands received from the abstract nodes in one package. This enables to the InteractiveCmd operate more efficiently. 
 
 The Input Nodes and Output Nodes are the lowest level of abstractions. Their sole purpose is to sample or update a particular sensor or actuator continuously. The second level of abstractions are the Device Nodes. Each Device Node is generally made up of one or more Input or Output Nodes, though Device Node can also be completely virtual. It provide additional functionality such as providing progressive dimming effect to the LED or calculating running average of a variable. The third the highest level of abstractions the CBLA Nodes. They are made up of components of Device Nodes. This is where the CBLA Engine and Prescripted Engine reside. The internal working of the Engines will be discussed in Chapter \ref{chap:cbla}.
 
-Data Logger is a special abstract component that periodically samplse the abstract variables of each abstract node, package the data in the memory, and save data in the hard disk in an efficient manner. 
+Data Logger is a special abstract component that periodically samples the abstract variables of each abstract node, package the data in the memory, and save data in the hard disk in an efficient manner. 
 
 
 \begin{figure}
@@ -25,6 +29,7 @@ Data Logger is a special abstract component that periodically samplse the abstra
 
 \section{Hardware} \label{section:hardware}
 
+The hardware were custom designed in collaboration with PBAI. 
 
 \subsection{Device Ports}
 Described how the architecture of the system and how the Device Port was designed

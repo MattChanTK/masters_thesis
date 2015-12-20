@@ -1,9 +1,117 @@
-\chapter{Curiosity-Based Learning Algorithm} \label{chap:cbla}
- The CBLA functions by exploiting the system’s inherent curiosity to learn about itself, much like an infant might learn by exercising groups of muscles and observing the response.  In its simplest form, the algorithm chooses an action from its action repertoire to perform, and measures the response.  At the same time, it generates a prediction of what it thinks should happen.  If the prediction matches the measured response, it has learned that part of its sensorimotor space and that space becomes less interesting for future actions.  If the prediction fails to match the measured response, it remains curious about that part of its “self,” as it obviously still has more to learn.  It will create a new prediction and try again.  This learning architecture allows the system to learn both about itself, and also about interactions with occupants, whose movements and actions create new and “surprising” responses, activating the system’s curiosity.
+\chapter[Curiosity-Based Learning Algorithm]{Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} \label{chap:cbla}
+ 
+In this section, we first briefly describe the Intrinsic Adaptive Curiosity (IAC) algorithm proposed by Oudeyer [20]. Then, our approach for adapting and generalizing the algorithm for implementation on a distributed kinetic sculpture is presented. This includes additional parameters, the introduction of an idle mode, and the integration of multiple independent learning agents in a distributed network. 
 
-\section{Adaptation from Oudeyer’s Intrinsic Adaptive Curiosity}
+\section{Intrinsic Adaptive Curiosity}
+
+In \cite{Oudeyer2007}, Oudeyer's goal was to develop a robot that is capable of life-long learning. The robot makes sense of the mapping between its actuators and sensors through continuous self-experimentation, without explicit instruction from human experts. Fundamentally, the IAC is a reinforcement learning algorithm with an objective to maximize learning progress. Learning progress is defined as the reduction in prediction error. In other words, the agent seeks to explore the region of the sensorimotor space that leads to the highest improvement in predication error. As a result, the algorithm avoids learning in the parts of sensorimotor space that are either too random or too predictable. This formulation leads to continual change in behaviour over time, as regions of the state space that are initially interesting become less interesting as the system becomes more knowledgeable about them. 
+ 
+The system consists of two learning mechanisms, the Classic Machine learner (classM) and the Meta Machine learner (metaM).  Based on the context (the sensors' inputs) and the action (the actuators' outputs), classM computes a prediction of the consequence, i.e., the resultant sensors' inputs at the next time step. Then, it compares the actual consequence with the prediction and modifies its model in order to reduce the error in the subsequent prediction. The Meta Machine learner (metaM) predicts the error of classM. In other words, it estimates how accurately classM is able predict the consequence. The actual prediction error is then fed back to the metaM, and metaM modifies its estimate of prediction error of the newly modified classM. This change in the prediction error is recorded at each time step in the knowledge gain assessor (KGA). The KGA then computes the expected learning progress by calculating the change in error estimation.  This expected learning progress is used as the reward. 
+
+In Oudeyer's paper \cite{Oudeyer2007}, one important feature is the idea of regional experts. Each region collects exemplars of similar sensorimotor context, and has an expert that is trained on the exemplars in the region. Exemplars are the training data for the prediction model and they are collected as the system selects actions and observes the consequences. The “features” are the sensory inputs S(t), and selected actions M(t) at time t; and the “labels” are the resultant sensory inputs S(t+1) at time t+1. The regional experts constrain the estimate of learning progress within their respective sensorimotor contexts. This is important because it allows each expert to use a simpler model, as it covers only a small region of the state space.  
+
+The following are the steps for the learning algorithm:
+
+\fbox{
+	\parbox{\textwidth}{
+		Read sensory inputs S(t)
+		
+		Select action M(t) with the highest predicted learning progress R(SM(t)) based on ε-greedy selection policy
+		
+		Consult expert specialized in the relevant sensorimotor context SM(t) to predict the expected sensory inputs S(t+1)’
+		
+		Perform action M(t)
+		
+		Observe actual sensory inputs S(t+1) and add to the expert’s training set
+		
+		Compute prediction error e(t+1) = S(t+1) – S(t+1)’
+		
+		Compute the change in prediction error R(SM(t)) = -[e(t+1) - e(t)]
+		
+		Update the learning progress for the sensorimotor context R(SM(t))
+		
+		Repeat 1 to 8 indefinitely
+	}
+}
 
 \section{CBLA Engine}
 
+Oudeyer \cite{Oudeyer2005} observed during IAC experiments that the resulting robot behaviour had similarities to children's learning and playing behaviours.  We hypothesize that this type of learning mechanism is well suited to interactive architecture systems, as the learning process itself will generate interesting behaviours and be an interesting feature of the installation to the visitors. We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system described in Chapter \ref{chap:ctrl_system}.  Each system node runs its own version of the algorithm, called the CBLA engine.  A CBLA engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure 3. 
+
+%TODO Figure needed
+Figure 3.	(1) At the start of each time step, the Node outputs the current possible actions M(t)’s given S(t). (2) Then, the Expert provides the Action Values associated with those possible M(t) to the Action Selector. (3) After that, the Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state S(t+1) to the Expert. The Expert can then improve its internal prediction model and update the Action Value associated with SM(t). 
+Node
+
+A node represents a subset of the sculptural system. Each node is specified by set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It communicates with the lower-level layer to set the actuator outputs and sample the relevant sensory inputs.  The type and number of sensory inputs and actions are configurable, example configurations will be described in more detail in Chapter \ref{chap:validations}.
+
+\subsection{Action Selector}
+
+The action selector selects an action based on a list of possible actions, M(t), and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In the experiments presented in this paper, a version of the adaptive \(\epsilon\)-greedy \cite{Tokic2010} action selection method was used. \(\epsilon\) specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of ε changes based on the magnitude of the action value. When the action value is low, the probability of selecting a random action is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards.
+
+\subsection{Expert}
+
+An Expert consists of a prediction model, a set of exemplars, a Knowledge Gain Assessor (KGA), a region splitter, and potentially two child experts. 
+The prediction model models the relationship between the node's input and output variables. In all the experiments presented in this paper, linear regression was used. At every time step, the model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as [SM(t),S(t+1)] pairs. SM(t) represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time t. S(t+1) represents the observed sensory state at time t+1. The KGA calculates the reward given the predicted and actual sensory inputs. 
+
+Figure 4 illustrates the internal workings of the KGA. The metaM in this case simply returns the average error over a window of time \(\tau\) time steps ago, <e(t+1)-\(\tau\)>. The reward is calculated by subtracting the current mean error, <e(t+1)>. This reward is then used by the action selector for computing the action values. 
+
+%TODO Figure needed
+Figure 4.	S(t+1) and S'(t+1) are the actual and predicted sensor input variables. (1) The KGA computes the error by taking their root-mean-square error difference. (2) After that, it computes the mean error over a window of previously calculated errors. Note that the mean error is only calculated based on errors associated with this particular region. (3) The metaM predicts the error by taking the mean error over time. (4) Finally, the KGA outputs the Reward by taking the difference between the actual mean error and predicted mean error.
+An expert represents a region in the sensorimotor space defined by its exemplars. Each prediction is generated by the expert in the region with the most similar sensorimotor context. Figure 5 shows the internal mechanism of an Expert.
+
+%TODO Figure needed
+Figure 5.	(1) The prediction model of the Expert first makes a prediction of the resultant sensor input S(t+1)' based on the current sensorimotor context, SM(t). (2) This prediction and the actual sensor input S(t+1) is then fed into the KGA. S(t+1) is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with SM(t) in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.
+The system initially has only one region. All new exemplars are added to the same region. As more exemplars are added to memory, once split criteria 1 and 2 are met, a region will split into two parts.
+Criterion 1: 	\[ N>\tau_1 \]
+N is the number of exemplars; and \[\tau_1\] is the threshold that is inherited from the expert's parent. Criterion 1 specifies that a region can only split into two when it contains a sufficient number of exemplars, to ensure that there will be enough training data in the sub-regions. 
+Criterion 2:	\[ e>\tau_2 \]	
+e is the mean error of the region and \[ \tau_2 \] is a threshold parameter. Criterion 2 specifies that a region will only split if prediction error is high. This prevents learned models with high accuracy from being split indefinitely. 
+If the split criteria are met, the Region Splitter finds a cut value and a cut dimension that minimizes the average variance in each sub-region. In the current implementation, 100 random cut values are generated for each dimension and the corresponding variances of the resultant sensor inputs are computed. The cut value and dimension pair with the lowest variance is selected, and the exemplars of the parent region are split between the two regions based on the cut dimensions and values. The high-level mechanism of the region splitting process is illustrated in Figure 6.
+%TODO Figure needed
+Figure 6.	When the function “split()” is called, it first checks if the split criteria are met by calling "is\_splitting()". If the split criteria are met, it forwards the exemplars to the Region Splitter. The Region Splitter then splits the exemplars into two and assigns them to the Left and Right Expert. Other properties such as the previous errors and rewards are passed on as well. 
+The overall process is described in the pseudocode for the CBLA and is shown in Figure 7.
+%TODO Pseucode needed
+Figure 7.	Pseudocode for the CBLA
+
+
+\subsection{Differences between the CBLA Engine and the IAC algorithm}
+
+In developing the CBLA Engine described above, several adaptations have been made to the IAC algorithm to enable application to the kinetic sculpture installation. 
+
+First, several improvements are made to the logic of the Region Splitter. As we run the algorithm over an extended period of time, the expert might have already learnt the model of the system as well as possible given the available sensory information. Since Oudeyer's method simply splits a region when the number of exemplars exceeds a certain threshold, it will continue to split regions even when the expert associated with that region has already acquired a good model with low prediction error. This is undesirable as it leads to over-fitting and makes the system harder to adapt when the system itself or the environment changes. In our implementation, an additional prediction error threshold is added to prevent regions from splitting when the prediction error is low. Moreover, if the split does not improve the prediction accuracy, there is no reason to split the region. After the split, the split quality measured by the magnitude of the average within-group variance must also be above a threshold. If it is not, the split will be retracted. During the early stages of the learning process, learning opportunities are plenty. Setting the split number threshold too high can hamper the speed of learning. However, over time, easy learning opportunities diminish and complex regions require a larger number of exemplars. Thus, the split number threshold grows at a constant rate every time a split happens. This way, regions that are less explored can maintain low thresholds which promote learning, while mature regions have higher thresholds which promote gathering of more exemplars and reduce over-fitting.
+ 
+
+Second, visually, it is difficult to distinguish between the periods when the CBLA is learning from the periods when the CBLA is simply executing random actions after all regions are learnt. In order to better demonstrate the learning process, we introduce some constrains that produce different action during different level of activation. 
+
+
+We considered two different types of implementation. First is introducing idle Mode. The idle mode action is chosen as the action that requires the least power. This gives the visitors the sense that the sculpture is resting. During idle mode, the system selects the idle action a majority of the time. Otherwise, it will select an action based on its regular action selection policy. The CBLA engine enters idle mode when there is large knowledge gain potential. Conversely, it exits idle mode when the knowledge gain potential, or the change of it is higher than a threshold. Once it exits idle mode, it must stay in non-idle for at least a certain period of time before being allowed to enter idle mode again. 
+Alternatively, instead of having a hard threshold that go from totally quiet to totally active, we used a sigmoid function to define the region of low activation to high activation. In this method, we capped the max output levels based on the relative action value. This way there will be visually lower level of activation while the knowledge gain potential is low. In a n exhibition perspective, it is better to always have some kind of activation to entice people than have a long dead period which user be gone before it gets activated.
+
+In terms of how we compute the knowledge gain potential, we can either use average action value or relative action value. Average action value requires calibration and is not adaptive to fundamental changes in the system like when one sensors is covered or disconnected. 
+
+Relative action value was used to reduce the difficulty of tuning for different actuators as different actuators have different inherent level of action values range. This is the result of the unpredictability nature that is unique to the actuators and sensors. It is calculated by taking the action value of this time step relative to the previous x time steps. This relative action value is relative to the previous windows. This means that even if there's fundamental change to the system, it can still adapt over time and it's not tied to a particular type of code and require less calibrating. The only calibration require is the size of the windows. 
+
+%TODO calculation to be added
+One consequence of this is the the denominator will become too small over time and triggering activation. This can be a desirable feature as it represent a system that periodically wakes up in hope to attract visitors when there iss nothing to be learnt for long time.
+
 \section{Multi-Node CBLA System}
+
+One option for controlling a larger system of sensors and actuators is to control them centrally through a single CBLA engine.  However, if all output and input variables are grouped into one node, the sensorimotor state will become very large and it might take a very long time for the system to converge and react to changes. Therefore, subsets of related variables are grouped into nodes. Each node runs on its own CBLA engine in parallel.  While our implementation uses a centralized high-level processor to compute these parallel CBLA engines, this architecture also allows for distribution of the software agents to local processors.
+
+There are several options for grouping sensors and actuators into nodes.  One approach is to group actuators and their associated proprioceptive sensors by function, because these relationships are the easiest to model. In addition, if multiple actuators work together to perform one function that directly affects one sensor, they should be grouped as a node because their relationship must be considered in order produce a prediction model for the sensor input. However, grouping simply by function cannot capture environmental changes and occupants' interaction effectively.
+
+Another approach is to group sensor input and actuator output variables by spatial proximity. Since environmental changes and occupant interaction are likely to affect components that are close together physically, this will allow the system to capture those dynamics more effectively. 
+
+However, all sensor input and actuator output variables associated with a particular node are updated once per loop. This means that the loop speed is limited by the slowest actuator or sensor within the node. For instance, an SMA-actuated Tentacle node has heating and cooling time of about 12 seconds, while an LED can be turned on and off many degrees of magnitude faster. This is very inefficient and limiting for the fast components. Therefore, components running at different speeds should be grouped into different nodes. This allows each node to run at its own speed, independently from the other nodes. 
+
+In our implementation, each node is constructed of components that are related functionally and proximally. For instance, LED output and ambient light sensor are in one node; Tentacle motion and accelerometer are in one node. 
+Different nodes run at different frequencies and capture the dynamics of the system at different time scales. 
+In our system, we constrained the number of output per node to one. This is easy to model and it keeps dimensionality low. This also allows us to optimize the update rate cycle as they are mainly constrained by the physics of the actuators. also no two nodes can control one real actuator since that will result in conflicts. 
+
+Nevertheless, if the nodes perform learning independently, the CBLA does not actually capture the dynamics of the entire system. To integrate the nodes into one coherent entity, we have used shared sensors and virtual inputs.
+
+By sharing input variables that share the same sensor, system changes effected by one node can be detected by another node indirectly. For instance, two adjacent nodes might share a single IR Proximity sensor. This way, change in the environment can be seen by both nodes
+
+In addition, output signal from a node can be used as input to other nodes. This way environmental changes happening to another node can be detected by other nodes indirectly in the time step after that. The idea is that external disturbance like a user standing in front of the sensor of a node, it might be represent by the output originated from  that node in another node. This gives the other node information about the fact that there's someone nearby despite being somewhat delayed. 
+%TODO add some figures to illustrate that
 
