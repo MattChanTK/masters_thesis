@@ -1,7 +1,6 @@
 \chapter[Curiosity-Based Learning Algorithm]
-{Curiosity-Based Learning Algorithm \footnote{An early version of this chapter has been submitted to IROS 2015
-		\cite{Chan2015} }} 
-		\label{chap:cbla}
+{Curiosity-Based Learning Algorithm \footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} 
+\label{chap:cbla}
  
 In this section, we first briefly describe the Intrinsic Adaptive Curiosity (IAC) algorithm proposed by Oudeyer [20]. Then, our approach for adapting and generalizing the algorithm for implementation on a distributed kinetic sculpture is presented. This includes additional parameters, the introduction of an idle mode, and the integration of multiple independent learning agents in a distributed network. 
 
@@ -41,10 +40,13 @@ The following are the steps for the learning algorithm:
 
 Oudeyer \cite{Oudeyer2005} observed during IAC experiments that the resulting robot behaviour had similarities to children's learning and playing behaviours.  We hypothesize that this type of learning mechanism is well suited to interactive architecture systems, as the learning process itself will generate interesting behaviours and be an interesting feature of the installation to the visitors. We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system described in Chapter \ref{chap:ctrl_system}.  Each system node runs its own version of the algorithm, called the CBLA engine.  A CBLA engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure 3. 
 
+We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system.  Each system node runs its own version of the algorithm, called the CBLA engine.  A CBLA engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure 3. 
+
 %TODO Figure needed
 Figure 3.	(1) At the start of each time step, the Node outputs the current possible actions M(t)’s given S(t). (2) Then, the Expert provides the Action Values associated with those possible M(t) to the Action Selector. (3) After that, the Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state S(t+1) to the Expert. The Expert can then improve its internal prediction model and update the Action Value associated with SM(t). 
 Node
 
+\subsection{Node}
 A node represents a subset of the sculptural system. Each node is specified by set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It communicates with the lower-level layer to set the actuator outputs and sample the relevant sensory inputs.  The type and number of sensory inputs and actions are configurable, example configurations will be described in more detail in Chapter \ref{chap:validations}.
 
 \subsection{Action Selector}
@@ -117,4 +119,11 @@ By sharing input variables that share the same sensor, system changes effected b
 
 In addition, output signal from a node can be used as input to other nodes. This way environmental changes happening to another node can be detected by other nodes indirectly in the time step after that. The idea is that external disturbance like a user standing in front of the sensor of a node, it might be represent by the output originated from  that node in another node. This gives the other node information about the fact that there's someone nearby despite being somewhat delayed. 
 %TODO add some figures to illustrate that
+
+\section{CBLA Node Implementation}
+
+Each node consists of a CBLA Engine which consists of a Robot and a Learner, and a Prescripted Engine. 
+A Robot represent a part of the physical system that the node act on and sample. It is specified by one output variable and a list of input variables. A sample speed, and the normalization factors are also specified. It  act, wait, and read the resultant value. Learner represent the prediction model and made up of experts and parameters such as exploring rate that affect the learning behaviours. 
+
+Each Node runs independently and at different rate. The connections among nodes are specified at instantiation.  
 
