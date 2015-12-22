@@ -1,20 +1,229 @@
 \chapter{Validations} \label{chap:validations}
-\section{Single Sensor Mode}
-\section{Single Cluster Mode}
 
-\section{Test Bed Set-up}
-\section{Learning Behaviour Study}
+
+\section[Single Sensor Experiment]
+{Single Sensor Experiment
+	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} \label{sec:single-sensor}
+
+Although the CBLA was designed for a distributed system with multiple nodes, it might not be easy to visualize the modeling process due to the high-dimensionality of the data and the models. To demonstrate the action selection pattern and the learning process, the CBLA was first tested on a simple toy example which is easily visualizable in 3-dimensional space.  In this experiment, idle mode was disabled as the main objective was to observe and verify the exploration pattern of the CBLA. 
+%TODO Do we want to call that "Idle Mode" or something else?
+
+\subsection{Set-up}
+The system in this experiment consists of a Light node, which is a single-input, single-output system. For the single-input system, S is a scalar value that represents the measurement from an ambient light sensor. It was recorded directly as a 12-bit value. M corresponds to the voltage duty cycle supplied to the LED, ranging from 0 to 100, with 0 being completely off (0V) and 100 being the maximum allowable voltage (~4.7V).  The loop period is the time between each actuation and was set to 0.05s.
+
+\subsection{Expected Results}
+In this experiment, the system ran for 2500 time steps without any external interference. 
+Based on the reward structure, which favors learning first the most predictable regions of the state-space, the CBLA should first explore the regions of the sensorimotor space that have low variance. Once the model in that region is learned, it should move onto areas with higher variance.
+
+\subsection{Actual Results}
+
+Figure \ref{fig:LED_ALS Model Evolution} shows the evolution of the prediction model and actual exemplars over time. As expected, the CBLA first selects actions associated with lower LED output levels, as this leads to measurements in the low variance regions. Over time, once the model in the low variance region is acquired, it moves toward higher brightness regions. Figure \ref{fig:LED_ALS Action Selection} shows that the best action and the actual selected action were completely random at first. The system then focused on the easy-to-learn areas in the lower brightness level. After that, it moved toward the higher brightness and harder-to-learn regions when it hadn't seen much improvement in the low brightness regions. After some exploration of the bright regions, prediction error is reduced in those regions, and the system returns again to explore the low-brightness region.  The resulting pattern of activation is interesting visually, as it results in non-random activations that have the potential to convey a notion of intent to the viewer. 
+
+
+ 
+\begin{figure} 
+	\centering
+	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Model Evolution"}
+	\caption{Evolution of the prediction models. Each point represents an exemplar. Points with the same colour are in the same region and the black lines are the cross-section of the linear models at S(t) = 0. The regions are numbered in the order that they were created. }
+	\label{fig:LED_ALS Model Evolution}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Action Selection"}
+	\caption{Action vs Time Graph; the y-axis is the output of the LED M(t) and the x-axis is the time step. Orange dots represent the actual action taken and blue dots represent the best action given the sensorimotor context. The best action is defined as the action with the highest action value given the current state. Non-best actions are selected occasionally in order to explore the state space.}
+	\label{fig:LED_ALS Action Selection}
+\end{figure}
+
+
+Figure \ref{fig:LED_ALS Mean Error vs Time} shows the mean error vs. time graph. Here we see that the prediction error quickly drops to a relatively low level. To improve its prediction further, the state-space was split into regions with low and high error. This allows the Region 1 (low variance region) to further reduce its prediction error.
+
+\begin{figure} 
+	\centering
+	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Mean Error vs Time"}
+	\caption{Mean error vs time graph. Each colour represents a region and the colour code corresponds to final prediction model graph in Figure \ref{fig:LED_ALS Model Evolution} }
+	\label{fig:LED_ALS Mean Error vs Time}
+\end{figure}
+
+
+In Figure \ref{fig:LED_ALS Action Value vs Time}, one can that see the action value of a region does not stay constant. This shows that as the prediction improves, the value of actions in that region decreases over time as the region becomes “learned” and further learning potential decreases. 
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Action Value vs Time"}
+	\caption{Action value vs time graph}
+	\label{fig:LED_ALS Action Value vs Time}
+\end{figure}
+
+
+\section[Single Cluster Experiment]
+{Single Cluster Experiment
+	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} \label{sec:single-cluster}
+
+
+In this Section, we describe a demonstration of an integrated system consisting of both light and SMA wire actuation mechanisms. In this experiment, there is one Light node and three Fin nodes. 
+
+\subsection{Set-up} %TODO perhaps show pictures
+The Light node was the same as in Section \ref{sec:single-sensor}, with the addition of an IR proximity sensor. For the Fin node, the input variables are the average accelerometer readings of the three axes, and the IR proximity sensor reading over the 12.5s loop period; the output variable is the action of the Fin. There are four discrete actions: rest, lower to the right, lower to the left, and lower to the centre. Note that in this set up, the two types of nodes run with different loop periods, but coupling between them is accomplished through the shared IR sensor, which measures proximity as a 12-bit value.
+
+\subsection{Procedures}
+The system runs undisturbed until, after some initial learning, all of the nodes enter idle mode.  During this time, the IR proximity sensor pointed toward an empty area. Afterwards, a participant enters into the sculpture space in an area detectable by the IR proximity sensor. The system should then exit idle mode and begin learning the changed model introduced by the change in the environment.  Since the IR sensor is shared by all nodes, they are all expected to recognize the change and exit idle mode at approximately the same time. 
+
+\subsection{Results}
+
+Figure \ref{fig:Single_Cluster Action Value Vs Time} shows how the action values change over time for each of the nodes. The coloured lines represent the action values and each colour represents a region. The blue dots underneath the plot indicate when the node was in idle mode.
+
+All the nodes first started learning their own models and entered idle mode. At around 390s, a human participant walked in front of the IR proximity sensor. This triggered a large reduction in action value at first, due to an increase in prediction error. However, as more data was collected, the action values for all four nodes quickly jumped up. This prompted the nodes to exit idle mode and begin generating actions to learn the model. After a period of readjustment, all four nodes re-entered idle mode after the new environment is learnt. Videos of this experiment can be viewed in the accompanying video submission.
+
+From the video and Figure \ref{fig:Single_Cluster Action Value Vs Time}, one can see that the Light node and the three Fin nodes reacted to the environmental change nearly simultaneously. They exited the idle state and shifted to more exploratory actuation patterns. This showed that the shared sensor input variable was able link the CBLA engines together, even though they run independently at different frequencies. This experiment demonstrates that the reaction of the system to the changed environmental conditions creates an interaction with the visitor without any explicitly pre-programmed behaviours. The system appears to respond to the participant and their action, as its internal model of the environment cannot predict the behaviour of the participant. The system's intrinsic curiosity drives itself to perform actions and elicit responses from this new environment with the participant's presence, and update its prediction model. We anticipate that the visitors will find such behaviours engaging as the visitors can recognize that the sculpture is responding to their presence and action but they would not be able to easily predict how it might respond. This quality provides the CBLA System the potential to be more life-like than a pre-scripted or a random system. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{"fig/validations/Single_Cluster Action Value Vs Time"}
+	\caption{Action-value vs Time graph for the Light node (a) and the three Fin nodes (b), (c), (d).}
+	\label{fig:Single_Cluster Action Value Vs Time}
+\end{figure}
+
+
+\section{Multi-Cluster Experiment}
+
+The goal of this experiment is to investigate the learning behaviour of the System as a whole given different configuration. Here we primarily looked at how the system behaves differently when the different nodes are connected to each other in different ways. 
+
+One trigger will be given to observe how each configuration respond. We hypothesize that people will enjoy have the activation closer to them. So the configuration with higher proximal activation will be chosen for the user study. 
+
+\subsection{Set-up} \label{sec:multi-cluster-setup}
+
+It has four cluster. Each cluster has 3 lights and 3 fins. 
+They are arranged as such [figure]
+
+The action for the Fins are lowered to specific point based on an open loop controller that was calibrated. In other words, input represents bending of the fin. For the light an addition driver was added to ramp up an down in 1s. that's the same for reflex. This give Reflex a update period of 0.5s, Light at 1.0s and Fin at 5.0s. 
+
+The other parameters are as shown. and this is what each parameter mean.
+
+A picture of how the test bed looks like. 
 
 \subsection{Configurations}
 
-Spatial Mode
-Random Mode
+Here we investigate two types of modes. We mainly want to see if Spatial mode is matters by comparing it with Random Mode. 
+
+\subsubsection{Spatial Mode}
+For this mode, we link nodes that are closer to each other spatially. We expect information to travel in a manner that spread away from the source of triggers. 
+
+\subsubsection{Random Mode}
+For this mode, each node might have the output feeding into another node. It works by first allocating nodes to different nodes to ensure the distribution is even. The number of connections match what we have in Spatial Mode.
+
+\subsection{Procedures}
+In this experiment for each configuration, we run it 3 times. 
+
+For all experiments, I let it run from blank state for 5 minutes. Then I use my hand to block the IR sensor 0 at Cluster 3, Fin 2 for 30 seconds. Then I leave and continue recording data for 2 more minutes
+
+
+\subsection{Expected Results}
+Since random connection connect random, activation will be spread out and proximial activation is low. On the other hand, spatial connection will results in large activation. 
+
+\subsection{Results}
+For Spatial mode (Experiment 1, 2, 3), it's pretty clear that Cluster 3 (red) always activate first before other clusters. I can see that Cluster 1 usually seems to have high activation value similar to Cluster 3. Perhaps that can be attributed to the fact that there is a one-direction connection that connect C3.F0.SMA-L to C1.F1.SMA-R. This extra connection might have help Cluster 1 to activate earlier and more than the other clusters who are also nearby and connected to Cluster 3.
+
+
+For Random mode (experiment 4, 5, 6), it seems to just activate spontaneously periodically. Except for in Experiment 6, blocking of the IR sensors didn't cause much activation (the actuators associated with that IR sensors did turn on though). That's probably due to the fact the randomness arrangement make triggering less surprising 
+
+Results show that although activation is higher for random mode; proximal activation is higher. One can see that activation can spread to the side. 
+
+these spontaneous activation are caused by the way "relative action value" was calculated by taking "\[action_val^2/avg_action_val\]". This means that when the action value hovers close to 0 for a long time, relative action value will become very large. This number correspond directly with the maximum output range. 
+
+In fact over a period of uninterrupted activation, a self activation pattern becomes evident. This pattern can be seen at around 150s each. We speculate that kind of behaviour can perhaps be interesting as it ive the sculpture some self actuated action on top of reflexive.  
+
 
 
 \section{User Study}
-Objectives of the user study
-Experiment Design
-Prescripted Behaviour
-User study procedures
-User study results
-Analysis
+
+A curiosity-based learning algorithm (CBLA) is used on interactive art sculptures to automatically generate interactive behaviours. This study aims to determine whether the behaviours generated through this method can make the experience of interacting with the sculptures more interesting, compared with pre-scripted behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than pre-scripted behaviours designed by human experts. The test subjects will report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey will be given to assess the subjects' overall experience. The results of this study will enable designers to design more engaging and interesting interactive art sculptures. 
+
+\subsection{Objectives}
+This study will test the efficacy of increasing users' interest level in an interactive art sculpture, by using a curiosity-based learning algorithm (CBLA) to adjust the sculpture's dynamic behaviours. 
+
+\subsubsection{Research Questions}
+\begin{enumerate}
+	\item Does the use of the CBLA increase user's interest level over pre-scripted behaviours?
+	\item Do people perceive CBLA as non-random?
+	\item Are certain behaviours  more interesting than others?
+\end{enumerate}
+
+
+\subsubsection{Hypotheses}
+\begin{enumerate}
+	\item The CBLA works by continuously generating new behaviours in order to improve its internal mathematical model of the sculpture and its sensed environment. The behaviours are adaptive and analogous to how animals and human beings learn. It is hypothesized that the user will find this kind of behaviour more interesting than pre-programmed behaviours.
+	\item Although the CBLA continuously generates new behaviours, it is not random. We hypothesize that the users will not perceive the CBLA-generated behaviours as random. 
+	\item We hypothesize that users will categorize some types of behaviours as being more interesting than others. 
+\end{enumerate}
+
+\subsection{Set-up}
+
+The TestBed is same as what described in the Multi-Cluster Experiment in Section \ref{sec:multi-cluster-setup}. The floor will be lined with a grid numbered from 1 to 12 and 
+
+\subsection{Procedures}
+
+\subsubsection{At the beginning of the study}
+
+Test participants will be invited to interact with an interactive art sculpture that will be
+installed in the Toronto studio of Philip Beesley Architect Inc. (PBAI). Participants of this study will be informed about the procedures of the study and be asked to sign the consent forms before they are allowed to participate in the study. (Though they may visit and interact with the sculpture whether they choose to participate in the study or not).
+
+After that, each participant will be given an envelope and a stack of 8 identical business-
+card-sized questionnaires. 
+
+%TODO include picture of the card
+
+\subsubsection{During the study}
+
+Test participants will be free to roam around the space and interact with the art sculpture. A tone will go off periodically at a 2.5 minute interval. When the tones goes off, each participant will take out an empty questionnaire card from the envelope, and answer the questions on the card. The experiment will go on for 20 minutes which is equivalent to 8 cards. 
+
+There are two versions of the interactive behaviours: a pre-scripted version and a CBLA
+version. The participants will not be informed about which version of the behaviours they
+were interacting with nor the fact that there are two different version of the interactive
+behaviours. 
+
+On the card, the participant will write down the location of that they are standing, how interesting they think the sculpture is, and what number they were at. This help us to correlate their level of interest to the state of of sculpture.
+
+Participants will not include any identifying information on the questionnaire cards, and will not be required to complete all the cards. They may choose to cease their participation at any time, and may decide themselves whether to submit any completed cards to the researchers.
+
+\subsubsection{At the end of the study}
+
+If returning questionnaire cards, participants will place their cards in the envelope and return it to the researcher. Participants will then be asked if they would fill out an exit questionnaire before they leave the venue. Each participant will have the right to leave the study and withdraw all data collected from him or her at any time before he or she has submitted the questionnaires and signed the consent forms. 
+
+Whether or not participants agree to the exit questionnaire, they will be provided with
+information about the learning algorithm in form of a debriefing letter, and the version of
+interactive behaviours that they were interacting with will be revealed verbally after all
+questionnaires and surveys have been collected.
+
+\subsection{Prescripted Behaviour}
+
+The Prescripted Behaviour is as such:
+For Reflex node, when the IR sensor detects something, it will pulse on nd off until the object is removed.
+For Light Node, the Light will pulse on and off when the corresponding Fin IR sensors.
+For Fin IR, the Half Fin will move down when the scout detects something and its reflex IR detects something as well.  
+The number of output determines the probability of random activation for Light and Fin IR. The number of output mapped to a gaussian function. 
+
+
+\subsection{Results Analysis}
+
+\subsubsection{Overall Interest Level}
+The survey data show thatt there's no significant between CBLA and Prescripte.
+However the only significant is when Prescripted is on after Prescripted seems to be more interesting
+ 
+\subsubsection{Responsiveness}
+
+\subsubsection{Correlation: Activation level vs Interest LEvel}
+
+\subsubsection{Correlation: Activation Type vs Interest Level}
+\subsubsection{Correlation:Proximal activation vs interest level}
+
+
+
+\subsection{Discussion}
+
+different people interact with sculpture different and have different expectation
+need different kinds of way to measure interest level. 
+
+
+
