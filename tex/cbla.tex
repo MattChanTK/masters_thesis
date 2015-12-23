@@ -2,7 +2,7 @@
 {Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} 
 \label{chap:cbla}
  
-In this section, we first briefly describe the Intrinsic Adaptive Curiosity (IAC) algorithm proposed by Oudeyer [20]. Then, our approach for adapting and generalizing the algorithm for implementation on a distributed kinetic sculpture is presented. This includes additional parameters, the introduction of an idle mode, and the integration of multiple independent learning agents in a distributed network. 
+In this section, we first briefly describe the Intrinsic Adaptive Curiosity (IAC) algorithm proposed by Oudeyer \cite{Oudeyer2007}. Then, our approach for adapting and generalizing the algorithm for implementation on a distributed kinetic sculpture is presented. This includes additional parameters, the introduction of an idle mode, and the integration of multiple independent learning agents in a distributed network. 
 
 \section{Intrinsic Adaptive Curiosity}
 
@@ -10,73 +10,157 @@ In \cite{Oudeyer2007}, Oudeyer's goal was to develop a robot that is capable of 
  
 The system consists of two learning mechanisms, the Classic Machine learner (classM) and the Meta Machine learner (metaM).  Based on the context (the sensors' inputs) and the action (the actuators' outputs), classM computes a prediction of the consequence, i.e., the resultant sensors' inputs at the next time step. Then, it compares the actual consequence with the prediction and modifies its model in order to reduce the error in the subsequent prediction. The Meta Machine learner (metaM) predicts the error of classM. In other words, it estimates how accurately classM is able predict the consequence. The actual prediction error is then fed back to the metaM, and metaM modifies its estimate of prediction error of the newly modified classM. This change in the prediction error is recorded at each time step in the knowledge gain assessor (KGA). The KGA then computes the expected learning progress by calculating the change in error estimation.  This expected learning progress is used as the reward. 
 
-In Oudeyer's paper \cite{Oudeyer2007}, one important feature is the idea of regional experts. Each region collects exemplars of similar sensorimotor context, and has an expert that is trained on the exemplars in the region. Exemplars are the training data for the prediction model and they are collected as the system selects actions and observes the consequences. The “features” are the sensory inputs S(t), and selected actions M(t) at time t; and the “labels” are the resultant sensory inputs S(t+1) at time t+1. The regional experts constrain the estimate of learning progress within their respective sensorimotor contexts. This is important because it allows each expert to use a simpler model, as it covers only a small region of the state space.  
+In Oudeyer's paper \cite{Oudeyer2007}, one important feature is the idea of regional experts. Each region collects exemplars of similar sensorimotor context, and has an expert that is trained on the exemplars in the region. Exemplars are the training data for the prediction model and they are collected as the system selects actions and observes the consequences. The "features" are the sensory inputs $S(t)$, and selected actions $M(t)$ at time $t$; and the "labels" are the resultant sensory inputs $S(t+1)$ at time $t+1$. The regional experts constrain the estimate of learning progress within their respective sensorimotor contexts. This is important because it allows each expert to use a simpler model, as it covers only a small region of the state space.  
 
 The following are the steps for the learning algorithm:
 
-\fbox{
-	\parbox{\textwidth}{
-		Read sensory inputs S(t)
-		
-		Select action M(t) with the highest predicted learning progress R(SM(t)) based on ε-greedy selection policy
-		
-		Consult expert specialized in the relevant sensorimotor context SM(t) to predict the expected sensory inputs S(t+1)’
-		
-		Perform action M(t)
-		
-		Observe actual sensory inputs S(t+1) and add to the expert’s training set
-		
-		Compute prediction error e(t+1) = S(t+1) – S(t+1)’
-		
-		Compute the change in prediction error R(SM(t)) = -[e(t+1) - e(t)]
-		
-		Update the learning progress for the sensorimotor context R(SM(t))
-		
-		Repeat 1 to 8 indefinitely
-	}
-}
+\begin{enumerate}
+	\item \label{learning_start} Read sensory inputs $S(t)$
+	\item Select action $M(t)$ with the highest predicted learning progress $R(SM(t))$ based on $\epsilon$-greedy selection policy
+	\item Consult expert specialized in the relevant sensorimotor context SM(t) to predict the expected sensory inputs $S(t+1)'$
+	\item Perform action $M(t)$
+	\item Observe actual sensory inputs $S(t+1)$ and add to the expert’s training set
+	\item Compute prediction error $e(t+1) = S(t+1) – S(t+1)'$
+	\item Compute the change in prediction error $R(SM(t)) = -[e(t+1) - e(t)]$
+	\item Update the learning progress for the sensorimotor context $R(SM(t))$
+	\item \label{learning_loop} Repeat \ref{learning_start} to \ref{learning_loop} indefinitely
+\end{enumerate}
+	
 
 \section{CBLA Engine}
 
-Oudeyer \cite{Oudeyer2005} observed during IAC experiments that the resulting robot behaviour had similarities to children's learning and playing behaviours.  We hypothesize that this type of learning mechanism is well suited to interactive architecture systems, as the learning process itself will generate interesting behaviours and be an interesting feature of the installation to the visitors. We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system described in Chapter \ref{chap:ctrl_system}.  Each system node runs its own version of the algorithm, called the CBLA engine.  A CBLA engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure 3. 
+Oudeyer \cite{Oudeyer2005} observed during IAC experiments that the resulting robot behaviour had similarities to children's learning and playing behaviours. We hypothesize that this type of learning mechanism is well suited to interactive architecture systems, as the learning process itself will generate interesting behaviours and be an interesting feature of the installation to the visitors. We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system described in Chapter \ref{chap:ctrl_system}. Each system node runs its own version of the algorithm, called the CBLA Engine.  A CBLA Engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure 3. 
 
-We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system.  Each system node runs its own version of the algorithm, called the CBLA engine.  A CBLA engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure 3. 
+We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system.  Each system node runs its own version of the algorithm, called the CBLA engine.  A CBLA engine is a thread that is iteratively executing the steps of the learning algorithm. It is comprised of a node, an action selector, and an expert, as illustrated in Figure \ref{fig:Block Diagram CBLA}. 
 
-%TODO Figure needed
-Figure 3.	(1) At the start of each time step, the Node outputs the current possible actions M(t)’s given S(t). (2) Then, the Expert provides the Action Values associated with those possible M(t) to the Action Selector. (3) After that, the Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state S(t+1) to the Expert. The Expert can then improve its internal prediction model and update the Action Value associated with SM(t). 
-Node
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram CBLA"}
+	\caption{(1) At the start of each time step, the Node outputs the current possible actions $M(t)$'s given $S(t)$. (2) Then, the Expert provides the Action Values associated with those possible $M(t)$ to the Action Selector. (3) After that, the Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the Action Value associated with $SM(t)$. }
+	\label{fig:Block Diagram CBLA}
+\end{figure}
+
+
 
 \subsection{Node}
-A node represents a subset of the sculptural system. Each node is specified by set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It communicates with the lower-level layer to set the actuator outputs and sample the relevant sensory inputs.  The type and number of sensory inputs and actions are configurable, example configurations will be described in more detail in Chapter \ref{chap:validations}.
+A node represents a subset of the sculptural system. Each node is specified by set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It communicates with the lower-level layer to set the actuator outputs and sample the relevant sensory inputs.  The type and number of sensory inputs and actions are configurable, specific configurations used in our experiments will be described in more detail in Chapter \ref{chap:validations}.
 
 \subsection{Action Selector}
 
-The action selector selects an action based on a list of possible actions, M(t), and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In the experiments presented in this paper, a version of the adaptive \(\epsilon\)-greedy \cite{Tokic2010} action selection method was used. \(\epsilon\) specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of ε changes based on the magnitude of the action value. When the action value is low, the probability of selecting a random action is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards.
+The action selector selects an action based on a list of possible actions, $M(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In the experiments presented in this paper, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $epsilon$ changes based on the magnitude of the action value. When the action value is low, the probability of selecting a random action is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards.
 
 \subsection{Expert}
 
 An Expert consists of a prediction model, a set of exemplars, a Knowledge Gain Assessor (KGA), a region splitter, and potentially two child experts. 
-The prediction model models the relationship between the node's input and output variables. In all the experiments presented in this paper, linear regression was used. At every time step, the model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as [SM(t),S(t+1)] pairs. SM(t) represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time t. S(t+1) represents the observed sensory state at time t+1. The KGA calculates the reward given the predicted and actual sensory inputs. 
 
-Figure 4 illustrates the internal workings of the KGA. The metaM in this case simply returns the average error over a window of time \(\tau\) time steps ago, <e(t+1)-\(\tau\)>. The reward is calculated by subtracting the current mean error, <e(t+1)>. This reward is then used by the action selector for computing the action values. 
+The prediction model models the relationship between the node's input and output variables. In all the experiments presented in this paper, linear regression or Lasso was used. At every time step, the model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as $[SM(t),S(t+1)]$ pairs. $SM(t)$ represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time $t$. $S(t+1)$ represents the observed sensory state at time $t+1$. 
 
-%TODO Figure needed
-Figure 4.	S(t+1) and S'(t+1) are the actual and predicted sensor input variables. (1) The KGA computes the error by taking their root-mean-square error difference. (2) After that, it computes the mean error over a window of previously calculated errors. Note that the mean error is only calculated based on errors associated with this particular region. (3) The metaM predicts the error by taking the mean error over time. (4) Finally, the KGA outputs the Reward by taking the difference between the actual mean error and predicted mean error.
-An expert represents a region in the sensorimotor space defined by its exemplars. Each prediction is generated by the expert in the region with the most similar sensorimotor context. Figure 5 shows the internal mechanism of an Expert.
+The KGA calculates the reward given the predicted and actual sensory inputs. Figure \ref{fig:Block Diagram KGA} illustrates the internal workings of the KGA. The metaM in this case simply returns the average error over a window of time $\tau$ time steps ago, $<e(t+1)-\tau>$. The reward is calculated by subtracting the current mean error, $<e(t+1)>$. This reward is then used by the action selector for computing the action values. 
 
-%TODO Figure needed
-Figure 5.	(1) The prediction model of the Expert first makes a prediction of the resultant sensor input S(t+1)' based on the current sensorimotor context, SM(t). (2) This prediction and the actual sensor input S(t+1) is then fed into the KGA. S(t+1) is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with SM(t) in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram KGA"}
+	\caption{$S(t+1)$ and $S'(t+1)$ are the actual and predicted sensor input variables. (1) The KGA computes the error by taking their root-mean-square error difference. (2) After that, it computes the mean error over a window of previously calculated errors. Note that the mean error is only calculated based on errors associated with this particular region. (3) The metaM predicts the error by taking the mean error over time. (4) Finally, the KGA outputs the Reward by taking the difference between the actual mean error and predicted mean error. }
+	\label{fig:Block Diagram KGA}
+\end{figure}
+
+An expert represents a region in the sensorimotor space defined by its exemplars. Each prediction is generated by the expert in the region with the most similar sensorimotor context. Figure \ref{fig:Block Diagram Expert} shows the internal mechanism of an Expert.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram Expert"}
+	\caption{(1) The prediction model of the Expert first makes a prediction of the resultant sensor input $S(t+1)'$ based on the current sensorimotor context, $SM(t)$. (2) This prediction and the actual sensor input $S(t+1)$ is then fed into the KGA. $S(t+1)$ is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with $SM(t)$ in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.}
+	\label{fig:Block Diagram Expert}
+\end{figure}
+
 The system initially has only one region. All new exemplars are added to the same region. As more exemplars are added to memory, once split criteria 1 and 2 are met, a region will split into two parts.
-Criterion 1: 	\[ N>\tau_1 \]
-N is the number of exemplars; and \[\tau_1\] is the threshold that is inherited from the expert's parent. Criterion 1 specifies that a region can only split into two when it contains a sufficient number of exemplars, to ensure that there will be enough training data in the sub-regions. 
-Criterion 2:	\[ e>\tau_2 \]	
-e is the mean error of the region and \[ \tau_2 \] is a threshold parameter. Criterion 2 specifies that a region will only split if prediction error is high. This prevents learned models with high accuracy from being split indefinitely. 
-If the split criteria are met, the Region Splitter finds a cut value and a cut dimension that minimizes the average variance in each sub-region. In the current implementation, 100 random cut values are generated for each dimension and the corresponding variances of the resultant sensor inputs are computed. The cut value and dimension pair with the lowest variance is selected, and the exemplars of the parent region are split between the two regions based on the cut dimensions and values. The high-level mechanism of the region splitting process is illustrated in Figure 6.
-%TODO Figure needed
-Figure 6.	When the function “split()” is called, it first checks if the split criteria are met by calling "is\_splitting()". If the split criteria are met, it forwards the exemplars to the Region Splitter. The Region Splitter then splits the exemplars into two and assigns them to the Left and Right Expert. Other properties such as the previous errors and rewards are passed on as well. 
-The overall process is described in the pseudocode for the CBLA and is shown in Figure 7.
-%TODO Pseucode needed
-Figure 7.	Pseudocode for the CBLA
+
+Criterion 1: 
+\begin{equation}\label{eqn:split-criterion1}
+	N>\tau_1
+\end{equation}
+N is the number of exemplars; and $\tau_1$ is the threshold that is inherited from the expert's parent. 
+
+Criterion 2:	
+\begin{equation}\label{eqn:split-criterion1}
+	 e>\tau_2
+\end{equation}	
+$e$ is the mean error of the region and $\tau_2$ is a threshold parameter. 
+
+Criterion 1 specifies that a region can only split into two when it contains a sufficient number of exemplars, to ensure that there will be enough training data in the sub-regions. Criterion 2 specifies that a region will only split if prediction error is high. This prevents learnt models with high accuracy from being split indefinitely. 
+If the split criteria are met, the Region Splitter finds a cut value and a cut dimension that minimizes the average variance in each sub-region. 
+
+In \cite{Oudeyer2007}, the cut value and cut dimension is determined by generating a set of random cut values for each dimension and compute the corresponding variances of the resultant sensor inputs. The cut value and dimension pair with the lowest total variance is selected. Total variance is sum of the variances of $S(t+1)$ in each dimension. However, this method has several problems. 
+
+First, this method does not take into account the interdependency among dimensions. Instead of directly using the $S(t+1)$ value directly when computing variances, its principal components are used. Note that we are not taking the principal component of the $SM(t)$ which is where we specify the cut value and cut dimension. Instead, it only applies to $S(t+1)$ which we want to minimize its variance. 
+
+Second, if one dimension tends to have a lower variance than another, such dimension will be much more likely to get picked, even if the cut does not lower its variance. Since region splitting aims to separate groups into low variance regions, this is unproductive as it does not decrease the variance. Instead of using the variance, relative variance is used . It is computed by taking mean of the variance of the region divided by the total variance of the overall region before splitting. This gives a better indicator on whether or not the split results in more concentrated regions. A relative variance of 1 implies that the split does not improve and should not be cut in this way. On the other hand, a low relative variance implies that the split decreases the regional variances. This method can reduce the amount of unproductive splits the fragments the state space.
+
+\begin{equation}
+	S_{relative} = \frac{S_1+S_2}{S_{1,2}}
+\end{equation}
+$S_1$ and $S_2$ are the total variances of the two regions split using the candidate cut value and cut dimension; $S_{1,2}$ is the total variance of the two combined regions.
+
+Furthermore, this method is susceptible to leaving a small number of sample points near a desirable cut value since the random selection might not pick up the exemplar that is right at the edge. On the other hand, although one can simply iterate through every exemplar in the region and find the cut value with the lowest variance, this is impractical. This implies that a significant number of iterations is required as the number of dimensions and exemplars increase. To improve the likelihood of finding the best cut value while keeping the number of iterations low, a new divide-and-zoom-in method is implemented. The toy example in  \Cref{fig:divide-and-zoom-in_1,fig:divide-and-zoom-in_2,fig:divide-and-zoom-in_3,fig:divide-and-zoom-in_4} illustrates how this method works. This method will more likely find the local minimum which split the region into two while keeping the number of relative variance computation low. 
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_1"}
+	\caption{An toy example of how relative variance changes with different cut values. At this point, the relative variances have not been calculated yet. The red dots represent the actual relative variances before they are calculated by the algorithm.}
+	\label{fig:divide-and-zoom-in_1}
+\end{figure}	
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[height=0.3 \textheight]{"fig/cbla/divide-and-zoom-in_2"}
+	\caption{This is the first iteration of the toy example. First, compute the relative variances of N/k of the cut values (blue); then, select the point with the lowest relative variance (yellow ring); after that, identify the two adjacent points and zoom in to the range between those two points in the next iteration (light blue)}
+	\label{fig:divide-and-zoom-in_2}
+\end{figure}	
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_3"}
+	\caption{This is the second iteration of the toy example. The computation is repeated in a smaller, zoomed in range.}
+	\label{fig:divide-and-zoom-in_3}
+\end{figure}	
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_4"}
+	\caption{Zooming in until the variance for every point within the range is computed.}
+	\label{fig:divide-and-zoom-in_4}
+\end{figure}
+
+
+\FloatBarrier
+After the best cut value and cut dimension is identified, the exemplars of the parent region are split between the two regions based on the cut dimensions and values. The high-level mechanism of the region splitting process is illustrated in Figure \ref{fig:Block Diagram RegionSplitter}.
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram RegionSplitter"}
+	\caption{When the function “split()” is called, it first checks if the split criteria are met by calling "is\_splitting()". If the split criteria are met, it forwards the exemplars to the Region Splitter. The Region Splitter then splits the exemplars into two and assigns them to the Left and Right Expert. Other properties such as the previous errors and rewards are passed on as well. }
+	\label{fig:Block Diagram RegionSplitter}
+\end{figure}
+
+	
+The overall process is described in the pseudocode for the CBLA and is shown as Algorithm \ref{alg:pseudocode-cbla}.
+
+\begin{algorithm}[H]
+	\caption{Pseudocode for the CBLA} 
+	\label{alg:pseudocode-cbla}
+	\begin{algorithmic} [1]
+		\State $t\gets 0$
+		\State $S(t)\gets S(0)$
+		\Loop
+			\State $[Possible\_M(t)] \gets Node.get\_possible\_action(S(t)) $
+			\State $[Action\_Value(M(t))] \gets Expert.evaluate\_action(Possible\_M(t))$
+			\State $M(t) \gets Action\_Selector.select\_action([Possible\_M(t), Action\_Value]) $
+			\State $Node.actuate(M(t)) $
+			\State $S(t+1) \gets Node.report()$
+			\State $S'(t+1) \gets Expert.predict(S(t), M(t))$
+			\State $Expert.append(S(t), M(t), S(t+1), S'(t+1))$
+			\State $Expert.split()$
+			\State $t \gets t + 1 $
+		\EndLoop
+	\end{algorithmic}
+\end{algorithm}
 
 
 \subsection{Differences between the CBLA Engine and the IAC algorithm}
