@@ -3,97 +3,140 @@
 	\footnote{This chapter is adapted from papers submitted to IROS 2015 \cite{Chan2015} and Next Generation Building \cite{Gorbet2015}}} 
 \label{chap:ctrl_system}
 
-The CBLA requires a large increase in sensing and control capability which the previous versions of the Hylozoic Series embedded electronics \cite{Beesley2007.book} are unable to provide. A new Hylozoic series was developed with re-designed hardware, to enable the control and sampling of a larger number of actuators and sensors at a higher frequency. 
+The CBLA requires a large increase in sensing and control capability which the previous versions of the Hylozoic Series embedded electronics \cite{Beesley2007.book} are unable to provide. A new Hylozoic Series 3 interactive control system was developed with re-designed hardware, to enable the control and sampling of a larger number of actuators and sensors at a higher frequency. 
 
 To enable the sculpture to understand its own mechanisms, in addition to its surrounding environment and the occupants, there must be at least one proprioceptive sensor associated with each actuator. Note that while the nominal purpose of such a sensor is to directly sense the results of activation, they can also be used to detect changes in the environment.
 
 This chapter discuss the design of the hardware mechanism that enable the learning algorithm behaviours, and some of the specific actuator and sensors that we use. 
 
 
-\section{System Overview}
+\section{System Architecture}
 
-In this implementation we opted for an architecture which a centralized computer controls a number of smaller localized microcontrollers that interface with the sensors and actuators. By running the high-level logics on a central computer, complex algorithm can quickly be implemented without the constraints of a embedded platform. In addition, it provide an abstraction layer that enable the designer to build virtual sub-systems using any of the sensors and actuators. These two features allow us to quickly test out different configurations. 
-On the other hand, by distributing the low-level logics on localized microcontrollers, the system can be more modular and the number of wires can be reduced. In addition, the real-time nature of the microcontrollers allows protection of sensitive actuators in case the central computer fails. 
+In this implementation we opted for an architecture which a centralized computer controls a number of smaller localized microcontrollers that interface with the sensors and actuators. By running the high-level logics on a central computer, complex algorithm can quickly be developed without the constraints of a embedded platform. In addition, it provide an abstraction layer that enables the designer to build virtual sub-systems using any of the sensors and actuators. These two features allow us to quickly test out different configurations. On the other hand, by distributing the low-level logics on localized microcontrollers, the system can be more modular and the number of wires can be reduced. In addition, the real-time nature of the microcontrollers allows protection of sensitive actuators in case of central computer failure. 
 
+\Cref{fig:system-architecture} shows the high-level system architecture of the Hylozoic Series 3 Interactive Control System. Each component runs asynchronously. At the bottom, there are the Teensy Devices. They represent the physical components in the sculptural system. Each Teensy Device consists of a Teensy Development Board \footnote{Teensy Development Board: \url{www.pjrc.com/teensy/teensy31.html}} and it communicates with a computer which hosts the abstract components via Universal Serial Bus (USB). Each controls and samples from a number of actuators and sensors. More details about the physical hardware are presented in \Cref{sec:hardware}. 
 
-Figure \ref{fig:system-architecture} shows the high-level system architecture of the Hylozoic Series 3 Interactive Control System. Each component runs asynchronously. At the bottom, there are the Teensy Devices. They represent the physical components in the sculptural system. Each Teensy Device consists of a Teensy Development Board \footnote{\url{www.pjrc.com/teensy/teensy31.html}} and it communicates with a computer which hosts the abstract components via USB. Each controls and samples from a number of actuators and sensors. More details about the physical hardware are presented in Section~\ref{sec:hardware}. 
-
-For each Teensy Device, a Teensy Interface thread is created with the corresponding communication protocol and system parameters. Each type of Teensy Device has its own unique set of parameters that dictate or reflect the behaviours of the system such as the brightness of an LED, and the readings from an accelerometer. The InteractiveCmd was created to provide an abstraction layer for all the physical components. Nodes can be created to control or sample any of the actuators and sensors through the InteractiveCmd. The InteractiveCmd handles the commands sent forth and forward them to the appropriate Teensy Interface in an efficient manner. A messenger was created to streamline the message delivery system. Its job is to periodically pushes all commands received from the abstract nodes in one package. This enables to the InteractiveCmd operate more efficiently. 
-
-The Input Nodes and Output Nodes are the lowest level of abstractions. Their sole purpose is to sample or update a particular sensor or actuator continuously. The second level of abstractions are the Device Nodes. Each Device Node is generally made up of one or more Input or Output Nodes, though Device Node can also be completely virtual. It provide additional functionality such as providing progressive dimming effect to the LED or calculating running average of a variable. The third the highest level of abstractions the CBLA Nodes. They are made up of components of Device Nodes. This is where the CBLA Engine and Prescripted Engine reside. The internal working of the Engines will be discussed in Chapter \ref{chap:cbla}.
-
-Data Logger is a special abstract component that periodically samples the abstract variables of each abstract node, package the data in the memory, and save data in the hard disk in an efficient manner. 
-
-
-\begin{figure}
-\centering
-\includegraphics[height=0.85 \textheight]{"fig/interactive control system/high-level system architecture"}
-\caption[High-level system architecture]{The system is comprised of abstract and physical components. Each component run asynchronously in its own thread. Each arrow represents the data flow from one system to another.}
-\label{fig:system-architecture}
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[height=0.90 \textheight]{"fig/interactive control system/high-level system architecture"}
+	\caption[High-level system architecture]{The system is comprised of abstract and physical components. Each component run asynchronously in its own thread. Each arrow represents the data flow from one system to another.}
+	\label{fig:system-architecture}
 \end{figure}
 
+For each Teensy Device, a Teensy Interface thread is created with the corresponding communication protocol and system parameters. Each type of Teensy Device has its own unique set of parameters that dictate or reflect the behaviours of its actuators or sensors respectively. Examples of some of the parameters are the brightness of an LED, and the readings from an accelerometer. The InteractiveCmd was created to provide an communication layer for all the physical components. Nodes can be created to control or sample any of the actuators and sensors through the InteractiveCmd. The InteractiveCmd handles the commands sent forth and forward them to the appropriate Teensy Interface in an efficient manner. A messenger was created to streamline the message delivery system. Its job is to periodically pushes all commands received from the abstract nodes in one package. This enables to the system to operate more efficiently by reducing the number of commands being sent to and received from InteractiveCmd. 
+
+The Input Nodes and Output Nodes are the abstractions for sensors and actuators. Their sole purpose is to sample or update a particular sensor or actuator continuously. The second level of abstractions are the Device Nodes. Each Device Node is generally made up of one or more Input or Output Nodes, though Device Node can also be completely virtual. It provides additional functionality such as providing progressive dimming effect to the LED or calculating running average of a variable. The third the highest level of abstractions the CBLA Nodes. They are made up of components of Device Nodes. This is where the CBLA Engine and Prescripted Engine reside. The internal working of the CBLA Engine is discussed in \Cref{chap:cbla}. A Prescripted Engine is an alternate set of behaviours that follow a specially designed script, which does not involve any learning algorithm. A CBLA Node can be switched to either Engine while it is running. 
+
+Data Logger is a special kind of abstract component that periodically samples the abstract variables of each abstract node, package the data in the memory, and save data in the hard disk in an efficient manner. The data collected are stored in a persistent key-value database for further analysis. In addition, the entire state of the CBLA Learners is also saved. This allows the the CBLA Nodes to recover from a previous state at a later time.
 
 
 \section{Hardware} \label{sec:hardware}
 
-The hardware were custom designed in collaboration with Mohammedreza Memarian. The goal of this system is to be modular, flexible and expandable. We also want to develop hardware that can support sensors and actuators that are traditionally used by PBAI. In addition, it must support high speed two-way communication with a computer. Sensor reading should be delivered to computer at the rate of 100Hz. This is because we expect the main learning algorithm will be running on the computer. 
+The hardware are custom designed in collaboration with Mohammadreza Memarian. The goal is to develop a system that is modular, flexible and expandable. Analogue sensors and actuators that are traditionally used in previous Hylozoic Series as well as off-the-shelf sensors that interface via I2C, SPI, or UART are supported. Most importantly, it enables high-speed two-way communication with a computer using USB. Sensor reading and control signal can be delivered to and from a computer at around 100Hz. This capability allows us to run algorithms that are more computationally intensive, simplify the implementation of multi-threaded and multi-process software, and collect and display a large amount of data at run-time on a standard computer. 
 
 \subsection{Actuators and Sensors}
 
+The sensors and actuators used in the experiments described in \Cref{chap:validations} and their interface types are tabulated in \Cref{table:sensors-list} and \Cref{table:actuators-list} respectively.
 
-The required sensors are IR proximity Sensor that is analogue; accelerometer that runs on I2C; and ambient light sensors that is also analogue. The required actuators are shape memory alloy (SMA) wires, LEDs, and small vibration motors. 
-
-These actuators and sensors are used to form some distinct unit and the units we considered for this design are: 1) Fin Unit, which is composed of two SMA wires, and one infrared (IR) proximity sensor and a three-axis accelerometer as sensor; 2) Reflex Unit, which has an LED, and a vibration motor as actuators, and one infrared (IR) proximity sensors as sensor; and 3) Light unit, which comprises a high-power LED as actuator, and an ambient light sensor for proprioception.
-
-Fin Units drive a Fin like mechanism that move left and right and down. Reflex unit has a sensor in the middle of some Frond that supposes to vibrate and light up. The Light unit simply contain a very bright LED and hang high above.
-See figure for a visual of how every thing looks like.
-
-The aforementioned actuators and sensors interface with the control through special drivers. We call these driver Device and they plug into the Device Port on the Controller (discussed in Section \ref{subsec:controller}). The drive provide the power and voltage regulation needed to drive the actuators and sensors. 
-
-\subsection{Controllers}\label{subsec:controller}
-
-The Controller runs on a Teensy 3 USB-based development board. It interfaces with the 
-
-We designed it so that different devices can be attached to the device port on the controllers. Each device port should have a set of useful actuators. We are using RJ45 port which is limited to 8P. It is good because it is easy to make and inline with what PBAI traditionally have been using.
-
-Each port has 4 PWM outputs, 2 Analog inputs, and 2 line of I2C. Each port is its own I2C bus. We accomplished that by multiplexing one of the I2C bus built onto Teensy 3. This allow many devices of with the same address to be control by the Teensy. However, I2C might not be fast enough if that was the bus but I2C gives us the capability to expand to support more devices. 
-PWM and Analog is convenient for controlling existing actuators and sensors.
-
-The Teensy plugs directly into a computer via USB as a Human-Interface Device (HID). This allow it to communicate at USB 2.0 speed and able to send packets of 64-bit at time. 
-
-Devices such as drivers the the actuators and sensors are controlled by the Teensy throgh the Device port. The Teensy on the other hand receive commands from computer through the USB. 
-Although currently, the drive only has MOSFET and voltage regulator, these devices are can be more complex systems as long as they can interface with Device Port. 
+\begin{table}[!htbp]
+	\caption[List of sensors and their interface types]{List of sensors that are used in the experiments and their interface types}
+	\begin{center}
+		\begin{tabular}{ | c | c |} 
+			\hline
+			\textbf{Sensor} & \textbf{Interface Type} \\ 
+			\hline
+			IR proximity sensor\tablefootnote{Sharp GP2Y0A21YK Infrared Proximity Sensor:  \url{www.sharpsma.com/webfm_send/1208}} & Analogue  \\ 
+			\hline
+			Accelerometer\tablefootnote{ADXL345 3-Axis Digital Accelerometer: \url{	www.analog.com/media/en/technical-documentation/data-sheets/ADXL345.PDF}} & I2C \\
+			\hline
+			Ambient light sensor\tablefootnote{SparkFun Ambient Light Sensor Breakout (TEMT6000):  \url{www.sparkfun.com/products/8688}} & Analogue \\ 
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{table:sensors-list}
+\end{table}
 
 
+\begin{table}[!htbp]
+	\caption[List of actuator and their interface types]{List of actuators that are used in the experiments and their interface types}
+	\begin{center}
+		\begin{tabular}{ | c | c |} 
+			\hline
+			\textbf{Actuator} & \textbf{Interface Type} \\ 
+			\hline
+			Shape memory alloy (SMA) wire\tablefootnote{Dynalloy Flexinol Actuator Wire:  \url{www.dynalloy.com/tech_data_wire.php}} & PWM  \\ 
+			\hline
+			Vibration motor & PWM \\ 
+			\hline			
+			LED & PWM \\ 
+			\hline		
+			High-power LED\tablefootnote{Indus Star High-Power LED Light Module:  \url{www.luxdrive.com/content/A007_A008_Data_Sheet_V1.2.pdf}} & PWM \\ 
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{table:actuators-list}
+\end{table}
+
+The aforementioned actuators and sensors interface with the Control Module through some special drivers. We call these drivers Device Modules. Different actuators or sensors require different Device Modules due to their different power requirements. They are plugged into the Device Ports on the Control Modules (discussed in \Cref{subsec:controller}). These Device Modules provide the power siwtching and voltage regulation needed to drive the actuators and sensors. 
+
+Combinations of the actuators and sensors listed in \Cref{table:sensors-list,table:actuators-list} are used to form three functional units: 1) Fin Unit, which is composed of two SMA wires, and one infrared (IR) proximity sensor and a three-axis accelerometer; 2) Reflex Unit, which has a pair of LEDs (wired in together), and a vibration motor, and one infrared (IR) proximity sensors; and 3) Light unit, which comprises a high-power LED, and an ambient light sensor. Their spatial configurations are shown in \Cref{fig:Physical hardware}
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[height=0.85 \textheight]{"fig/interactive control system/Physical hardware"}
+	\caption[Typical spatial configuration of the physical functional units]{This is a typical spatial configuration of the function units (figure adapted from an image provided by Philip Beesley Architect Inc.). Bright green denotes actuators and bright red denotes sensors. Light Unit is shaded yellow; Fin Unit is shaded green; and Reflex Unit is shaded blue.}
+	\label{fig:Physical hardware}
+\end{figure}
+
+A Fin Unit moves its 2-DOF Fin-like mechanism that is made of flexible plastic rods by controlling its two SMA wires. A Reflex Unit actuates its a vibration motors and mobilize the Frond-like mechanism attached to it. The pair of LEDs shine on to the Frond for additional effect. A Light Unit contains a very bright LED and it is hung high above on the sculpture. The IR proximity sensors detect the position of the occupants or objects within their ranges. The accelerometers detect contacts with the occupants and the deformations of the Fins. The ambient light sensors detect the light intensities of the ambient environment and their associated LEDs. 
+
+
+\subsection{Control Modules}\label{subsec:controller}
+
+At the heart of a Control Module, shown in \Cref{fig:Control_Module}, there is a Teensy 3 USB-based development board. It controls each device through the Device Port and communicate with the computer through USB as a human interface device (HID). Each Device Port has four output pins capable of pulse-width modulation (PWM), two input pins connecting to the Teensy's on-board analogue-to-digital converter (ADC), and two lines for digital serial communication over Inter-Integrated Circuit bus (I2C). It is designed to provide convenient and fast interface to commonly used analogue actuators and sensors, and a digital bus for added flexibility. 
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=0.68 \textwidth]{"fig/interactive control system/Control_Module"}
+	\caption[Block diagram of the Control Module]{A Control Module is consisted of a Teensy 3, 6 Device Ports, a SPI port, and a UART port. Each Device port has 8 wires and they carry the signals that are commonly used in our system.}
+	\label{fig:Control_Module}
+\end{figure}
+
+In order to increase the number of PWM pins beyond what provided natively on the Teensy, a I2C bus controlled PWM controller\footnote{PCA9685 16-channel, 12-bit PWM Fm$+$ I$^2$C-bus LED controller: \url{www.nxp.com/documents/data_sheet/PCA9685.pdf}} was used. This does not affect the I2C buses on the Device Ports since it is using one of Teensy's two I2C buses. The I2C bus for the Device Ports is further multiplexed into six. This makes each Device Port more independent, and devices may have the same addresses as long as they are on different buses. By have virtually six independent I2C buses, it simplifies the configuration of Device Modules as they can all be configured the same way.
+
+\FloatBarrier
 \section{Control Software}
 
-The control software of the sculpture consists of a low-level layer and high-level layer. The two layers are connected physically through USB. The low-level layer consists of the firmware that interfaces with the peripherals that connect with the actuators and sensors. The high-level layer consists of the tools that facilitate communication between the two layers and the application that dictates the system behaviour. The abstraction provided by the high-level layer allows flexibility in defining the nodes and their relationship to each other. 
+The control software of the sculpture consists of a low-level layer and high-level layer. The two layers are connected via USB. The low-level layer consists of the firmware that interfaces with the peripherals that connect with the actuators and sensors. The high-level layer consists of the tools that facilitate communication between the two layers and the application that dictates the system behaviour. The abstraction provided by the high-level layer allows flexibility in defining the nodes and their relationship to each other. 
 
 \subsection{Communication and Interface}
 
-The software is structured as a modular hierarchy, consisting of a low-level layer and a high-level layer. The two layers are connected physically through USB. A low-level layer of firmware written in C++ runs on the Teensy 3 USB-based development boards which interface with the peripherals that connect with the actuators and sensors.  High-level software written in Python is referred to as applications, and runs on a central computer. The use of the central computer as a development platform provides flexibility for development free from the limited processing power and specialized functions inherent to the Teensy microcontroller hardware. Moreover, Python is cross-platform and supports multi-threading, permitting operation within many operating systems and allowing multiple sets of software instructions to be executed in parallel. Code that is necessary for communicating with the low-level layer is packed into a Python Package named interactive-system. Developers can then develop applications that control and retrieve information from the sculptural system firmware using the software utilities provided by the Python Package. Each application can run on its own thread. While care should be exercised to avoid conflicts among threads, this should permit multiple applications to execute simultaneously, 	
-The CBLA is an example of an application that communicates with the low level using the interactive-system Python package. A further example of an application is an occupancy map that uses the sensors on the sculpture to interpret the locations of the occupants. Those two applications can run alongside each other independently, taking advantage of the multi-threading properties of the high-level platform.
+A low-level layer of firmware written in C++ runs on the Teensy 3 USB-based development boards which interface with the peripherals that connect with the actuators and sensors.  High-level software written in Python is referred to as applications, and runs on a central computer. The use of the central computer as a development platform provides flexibility for development free from the limited processing power and specialized functions inherent to the Teensy microcontroller hardware. Moreover, Python is cross-platform and supports multi-threading, permitting operation within many operating systems and allowing multiple sets of software instructions to be executed in parallel. Code that is necessary for communicating with the low-level layer is packed into a Python Package named interactive-system. Developers can then develop applications that control and retrieve information from the sculptural system firmware using the software utilities provided by the Python Package. Each application can run on its own thread. While care should be exercised to avoid conflicts among threads, this should permit multiple applications to execute simultaneously.	
 
-Figure 9 illustrates the relationship between the software components. The high-level and the low-level layers share a set of output parameters that govern the behaviours and input parameters that represent the states of the sculptural system. The values of those parameters are synchronized across the two layers. Figure 10 illustrates how an application communicates with the Teensy devices. At the high-level layer, the Teensy Interface module in the interactive-system package is used to create a thread for each Teensy device. The thread looks for changes in those parameters and performs synchronization. Each Teensy device on the low-level layer is represented by a Teensy Interface thread on the high-level layer. An InteractiveCmd thread or other applications derived from it can modify a Teensy’s output parameters and retrieve its input parameters through its Teensy Interface.
+The CBLA executes as an application that communicates with the low level using the interactive-system Python package. Other applications such as an occupancy map that uses the sensors on the sculpture to interpret the locations of the occupants can run simultaneously, taking advantage of the multi-threading properties of the high-level platform.
 
-Figure 9: Communication between the high-level and low-level software layers
+\Cref{fig:Teensy Interface Thread} illustrates how an application communicates with the Teensy devices. At the high-level layer, the Teensy Interface module in the interactive-system package is used to create a thread for each Teensy device. The thread looks for changes in those parameters and performs synchronization. Each Teensy device on the low-level layer is represented by a Teensy Interface thread on the high-level layer. An InteractiveCmd thread can modify a Teensy’s output parameters and retrieve its input parameters through its Teensy Interface.
 
-In previous installations, the interactive behaviours of the sculptures have been pre-scripted. Each node responds to the occupants and influences the behaviours of its neighbouring nodes in deterministic ways.  As described above, the software and hardware platforms were updated in the current series in order to allow the more demanding CBLA to be implemented.  However, the new systems also support the design and implementation of pre-scripted behaviours.  These can be implemented either directly at the low-level, distributed throughout the sculpture directly on the Teensy hardware, or at the high-level controlled by a computer which passes messages to each of the Teensy low-level controllers.  Figure 11 shows a sample graphical definition of several such pre-programmed responses for devices from the current configuration of the sculpture.
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=1.0 \textwidth]{"fig/interactive control system/Teensy Interface Thread"}
+	\caption[Illustration of the working of the Teensy Interface]{Teensy Interface is the connection between the InteractiveCmd and its associated Teensy device. InteractiveCmd modifies output parameters on its corresponding Teensy Interface's output hash table. This triggers an event that pushes the changes to the Teensy device. The Teensy device would then respond by triggering an event that updates the input hash table with newly sampled input values and notifies the InteractiveCmd.}
+	\label{fig:Teensy Interface Thread}
+\end{figure}
 
-This allow rolling our of prescripted section of the sculpture while the CBLA behaviours is under developed. 
-However, in our implementation the Prescripted Engine is embedded into the CBLA node as an alternative behaviour while pausing the learning behaviour.
-
-
+\FloatBarrier
 \subsection{Node Abstraction}
 
 To make constructing node more flexible, nodes can be constructed in any combinations of actuators, sensors, or other virtual devices. Each device, physical or virtual is represented as a variable in the memory. Figure shows an example of this node abstraction system would work.
+
+%TODO Needs a figure
 
 The addition of  "Messanger" node streamline the communication. That is because each packet can contain 64 bytes. If each nodes which might all be on one single Teensy, it might try to send information that are only requiring one bytes. By combining message destined to one Teensy together, it can be faster. True that this means that data won't be delivered at fastest possible time and it must wait for the next delivery cycle. Therefore, the rate of each CBLA node was set to be at least 3 times the messenger's update period to ensure that no command is missed. 
 If a node is running too fast, it will have to wait. 
 
 For instance, a device might be a LED but one can only set the desired brightness and it will ramp up to the desired brightness rather than going to that level immediately. This abstracted system makes developing CBLA node much simply and enable complex control software to be hidden from the CBLA code which greatly simplify the code. 
 
-
+\FloatBarrier
 \section{Data Collections}
 
 The system a large set of asynchronous threads that changes at their own speeds. We need to collect the timing and the output and inputs of every variable and also internal variable within the CBLA engine. In addition, we also need to store the state of the CBLA Learner in order to cover that at a later time. 
