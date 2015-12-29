@@ -1,89 +1,98 @@
 \chapter{Validations} \label{chap:validations}
 
+In this chapter, we demonstrate the behaviours emerged from running Curiosity-Based Learning Algorithm (CBLA) on an interactive art sculpture. We first investigated the behaviour of the simplest form of a CBLA system, one with a single node with one sensor and one actuator. This allows us to visualize the exploration pattern of the CBLA engine in two- or three-dimensional space. Then, we applied the algorithm on a small multi-node system with shared input variables. We observed its self-learning behaviours as well as the way it responds to external disturbances. After that, we constructed a small scale interactive sculptural system in the form of four-clusters test bed. In additional to shared inputs, virtual inputs were introduced to connect the different nodes. We investigated on the different emergent behaviours as results of different connection schemes. Finally, we conducted a formal user study using the test bed. Participants were invited to interact with the sculpture and report on their interest levels. The observations collected in this user study enabled us to understand the relationship between the participants' behaviours and engagement level under different conditions as well as different configurations of the CBLA system.
 
-\section[Single Sensor Experiment]
-{Single Sensor Experiment
-	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} \label{sec:single-sensor}
+\section[Single Node Experiment]
+{Single Node Experiment
+	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }}\label{sec:single-node}
 
-Although the CBLA was designed for a distributed system with multiple nodes, it might not be easy to visualize the modeling process due to the high-dimensionality of the data and the models. To demonstrate the action selection pattern and the learning process, the CBLA was first tested on a simple toy example which is easily visualizable in 3-dimensional space.  In this experiment, idle mode was disabled as the main objective was to observe and verify the exploration pattern of the CBLA. 
-%TODO Do we want to call that "Idle Mode" or something else?
+Although the CBLA was designed for a distributed system with multiple nodes, it might not be easy to visualize the modelling process due to the high-dimensionality of the data and the models. To demonstrate the action selection pattern and the learning process, the CBLA was first tested on a simple toy example which is easily visualizable in 3-dimensional space. In this experiment, idle mode was disabled as the main objective was to observe and verify the exploration pattern of the CBLA. 
 
 \subsection{Set-up}
-The system in this experiment consists of a Light node, which is a single-input, single-output system. For the single-input system, S is a scalar value that represents the measurement from an ambient light sensor. It was recorded directly as a 12-bit value. M corresponds to the voltage duty cycle supplied to the LED, ranging from 0 to 100, with 0 being completely off (0V) and 100 being the maximum allowable voltage (~4.7V).  The loop period is the time between each actuation and was set to 0.05s.
+The system in this experiment consists of a Light node, which is a single-input, single-output system. For the single-input system, S is a scalar value that represents the measurement from an ambient light sensor. It was recorded directly as a 12-bit value. M corresponds to the voltage duty cycle supplied to the LED, ranging from 0 to 100, with 0 being completely off (0V) and 100 being the maximum allowable voltage (~4.7V). The loop period is the time between each actuation and was set to 0.05s.
 
-\subsection{Expected Results}
+\subsection{Procedures and Expected Results}
 In this experiment, the system ran for 2500 time steps without any external interference. 
-Based on the reward structure, which favors learning first the most predictable regions of the state-space, the CBLA should first explore the regions of the sensorimotor space that have low variance. Once the model in that region is learned, it should move onto areas with higher variance.
+Based on the reward structure, which favours learning first the most predictable regions of the state-space, the CBLA is expected to first explore the regions of the sensorimotor space that have low variance. Once the model in that region is learnt, it should move onto areas with higher variance.
 
 \subsection{Actual Results}
 
-Figure \ref{fig:LED_ALS Model Evolution} shows the evolution of the prediction model and actual exemplars over time. As expected, the CBLA first selects actions associated with lower LED output levels, as this leads to measurements in the low variance regions. Over time, once the model in the low variance region is acquired, it moves toward higher brightness regions. Figure \ref{fig:LED_ALS Action Selection} shows that the best action and the actual selected action were completely random at first. The system then focused on the easy-to-learn areas in the lower brightness level. After that, it moved toward the higher brightness and harder-to-learn regions when it hadn't seen much improvement in the low brightness regions. After some exploration of the bright regions, prediction error is reduced in those regions, and the system returns again to explore the low-brightness region.  The resulting pattern of activation is interesting visually, as it results in non-random activations that have the potential to convey a notion of intent to the viewer. 
-
-
+\Cref{fig:LED_ALS Model Evolution} shows the evolution of the prediction model and actual exemplars over time. As expected, the CBLA first selects actions associated with lower LED output levels, as this leads to measurements in the low variance regions. Over time, once the model in the low variance region is acquired, it moves toward higher brightness regions. \Cref{fig:LED_ALS Action Selection} shows that the best action and the actual selected action were completely random at first. The system then focused on the easy-to-learn areas in the lower brightness level. After that, it moved toward the higher brightness and harder-to-learn regions when it hadn't seen much improvement in the low brightness regions. After some exploration of the bright regions, prediction error is reduced in those regions, and the system returns again to explore the low-brightness region.  The resulting pattern of activation is interesting visually, as it results in non-random activations that have the potential to convey a notion of intent to the viewer. 
  
-\begin{figure} 
+\begin{figure} [!htbp]
 	\centering
-	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Model Evolution"}
-	\caption[Evolution of the prediction models]{Evolution of the prediction models. Each point represents an exemplar. Points with the same colour are in the same region and the black lines are the cross-section of the linear models at S(t) = 0. The regions are numbered in the order that they were created. }
+	\includegraphics[width=1.0\textwidth]{"fig/validations/LED_ALS Model Evolution"}
+	\caption[Evolution of the prediction models for the single node experiment]{Evolution of the prediction models for the single node experiment. Each point represents an exemplar. Points with the same colour are in the same region and the black lines are the cross-section of the linear models at S(t) = 0. The regions are numbered in the order that they were created. }
 	\label{fig:LED_ALS Model Evolution}
 \end{figure}
 
-\begin{figure}
+\begin{figure} [!htbp]
 	\centering
-	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Action Selection"}
-	\caption[Action vs Time Graph]{Action vs Time Graph; the y-axis is the output of the LED M(t) and the x-axis is the time step. Orange dots represent the actual action taken and blue dots represent the best action given the sensorimotor context. The best action is defined as the action with the highest action value given the current state. Non-best actions are selected occasionally in order to explore the state space.}
+	\includegraphics[width=1.0\textwidth]{"fig/validations/LED_ALS Action Selection"}
+	\caption[Action vs Time Graph for the single node experiment]{Action vs Time Graph for the single node experiment; the y-axis is the output of the LED M(t) and the x-axis is the time step. Orange dots represent the actual action taken and blue dots represent the best action given the sensorimotor context. The best action is defined as the action with the highest action value given the current state. Non-best actions are selected occasionally in order to explore the state space.}
 	\label{fig:LED_ALS Action Selection}
 \end{figure}
 
+\Cref{fig:LED_ALS Mean Error vs Time} shows the mean error vs. time graph. Here we see that the prediction error quickly drops to a relatively low level. To improve its prediction further, the state-space was split into regions with low and high error. This allows the Region 1 (low variance region) to further reduce its prediction error.
 
-Figure \ref{fig:LED_ALS Mean Error vs Time} shows the mean error vs. time graph. Here we see that the prediction error quickly drops to a relatively low level. To improve its prediction further, the state-space was split into regions with low and high error. This allows the Region 1 (low variance region) to further reduce its prediction error.
-
-\begin{figure} 
+\begin{figure}  [!htbp]
 	\centering
-	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Mean Error vs Time"}
-	\caption[Mean error vs time graph]{Mean error vs time graph. Each colour represents a region and the colour code corresponds to final prediction model graph in Figure \ref{fig:LED_ALS Model Evolution} }
+	\includegraphics[width=1.0\textwidth]{"fig/validations/LED_ALS Mean Error vs Time"}
+	\caption[Mean error vs time graph for the single node experiment]{Mean error vs time graph for the single node experiment. Each colour represents a region and the colour code corresponds to final prediction model graph in Figure \ref{fig:LED_ALS Model Evolution} }
 	\label{fig:LED_ALS Mean Error vs Time}
 \end{figure}
 
 
-In Figure \ref{fig:LED_ALS Action Value vs Time}, one can that see the action value of a region does not stay constant. This shows that as the prediction improves, the value of actions in that region decreases over time as the region becomes “learned” and further learning potential decreases. 
+In \Cref{fig:LED_ALS Action Value vs Time}, one can that see the action value of a region does not stay constant. This shows that as the prediction improves, the value of actions in that region decreases over time as the region becomes “learnt” and further learning potential decreases. 
 
-
-\begin{figure}
+\begin{figure} [!htbp]
 	\centering
-	\includegraphics[width=0.6\textwidth]{"fig/validations/LED_ALS Action Value vs Time"}
-	\caption{Action value vs time graph for the Single Node Experiment}
+	\includegraphics[width=1.0\textwidth]{"fig/validations/LED_ALS Action Value vs Time"}
+	\caption[Action value vs time graph for the single node experiment]{Action value vs time graph for the single node experiment. Each colour represents a region and the colour code corresponds to final prediction model graph in Figure \ref{fig:LED_ALS Model Evolution} }
 	\label{fig:LED_ALS Action Value vs Time}
 \end{figure}
 
+\FloatBarrier
 
-\section[Single Cluster Experiment]
-{Single Cluster Experiment
-	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} \label{sec:single-cluster}
+\section[Multi-Node Experiment]
+{Multi-Node Experiment
+	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} 
 
 
-In this Section, we describe a demonstration of an integrated system consisting of both light and SMA wire actuation mechanisms. In this experiment, there is one Light node and three Fin nodes. 
+In this Section, we describe a demonstration of an integrated system consisting of multiple CBLA Nodes. In addition, in this experiment, threshold-based Idle Mode was introduced. When the knowledge gain potential is low, a Node would enter Idle Mode and turn off its actuators. The behaviours of the system during self learning period and its response to external interference was examined.
 
-\subsection{Set-up} %TODO perhaps show pictures
-The Light node was the same as in Section \ref{sec:single-sensor}, with the addition of an IR proximity sensor. For the Fin node, the input variables are the average accelerometer readings of the three axes, and the IR proximity sensor reading over the 12.5s loop period; the output variable is the action of the Fin. There are four discrete actions: rest, lower to the right, lower to the left, and lower to the centre. Note that in this set up, the two types of nodes run with different loop periods, but coupling between them is accomplished through the shared IR sensor, which measures proximity as a 12-bit value.
+\subsection{Set-up}
+The Light node was the same as in \Cref{sec:single-node}, with the addition of the shared IR proximity sensor. For the Fin node, the input variables are the average accelerometer readings of the three axes, and the shared IR proximity sensor reading over the 12.5s loop period; the output variable is the action of the Fin. There are four discrete actions: rest (0), lower to the right (1), lower to the left (2), and lower to the centre (3). Note that in this set up, the two types of nodes run with different loop periods, but coupling between them is accomplished through the shared IR sensor, which measures proximity as a 12-bit value. Note that in this experiment all four nodes share one single IR sensor. The set-up of the experiment is shown in \Cref{fig:Single_Cluster Set-up}.
 
-\subsection{Procedures}
-The system runs undisturbed until, after some initial learning, all of the nodes enter idle mode.  During this time, the IR proximity sensor pointed toward an empty area. Afterwards, a participant enters into the sculpture space in an area detectable by the IR proximity sensor. The system should then exit idle mode and begin learning the changed model introduced by the change in the environment.  Since the IR sensor is shared by all nodes, they are all expected to recognize the change and exit idle mode at approximately the same time. 
-
-\subsection{Results}
-
-Figure \ref{fig:Single_Cluster Action Value Vs Time} shows how the action values change over time for each of the nodes. The coloured lines represent the action values and each colour represents a region. The blue dots underneath the plot indicate when the node was in idle mode.
-
-All the nodes first started learning their own models and entered idle mode. At around 390s, a human participant walked in front of the IR proximity sensor. This triggered a large reduction in action value at first, due to an increase in prediction error. However, as more data was collected, the action values for all four nodes quickly jumped up. This prompted the nodes to exit idle mode and begin generating actions to learn the model. After a period of readjustment, all four nodes re-entered idle mode after the new environment is learnt. Videos of this experiment can be viewed in the accompanying video submission.
-
-From the video and Figure \ref{fig:Single_Cluster Action Value Vs Time}, one can see that the Light node and the three Fin nodes reacted to the environmental change nearly simultaneously. They exited the idle state and shifted to more exploratory actuation patterns. This showed that the shared sensor input variable was able link the CBLA engines together, even though they run independently at different frequencies. This experiment demonstrates that the reaction of the system to the changed environmental conditions creates an interaction with the visitor without any explicitly pre-programmed behaviours. The system appears to respond to the participant and their action, as its internal model of the environment cannot predict the behaviour of the participant. The system's intrinsic curiosity drives itself to perform actions and elicit responses from this new environment with the participant's presence, and update its prediction model. We anticipate that the visitors will find such behaviours engaging as the visitors can recognize that the sculpture is responding to their presence and action but they would not be able to easily predict how it might respond. This quality provides the CBLA System the potential to be more life-like than a pre-scripted or a random system. 
-
-\begin{figure}
+\begin{figure} [!htbp]
 	\centering
-	\includegraphics[width=0.6\textwidth]{"fig/validations/Single_Cluster Action Value Vs Time"}
+	\includegraphics[height=0.8\textheight]{"fig/validations/Single_Cluster Set-up"}
+	\caption[Photograph of the Multi-Node Experiment set-up]{The set-up of the Multi-Node Experiment. The Light Node is shaded light blue, and the three Fin Nodes are shaded red, blue, and yellow. All four nodes share an IR proximity sensor in the purple circle.}
+	\label{fig:Single_Cluster Set-up}
+\end{figure}
+
+\subsection{Procedures and Expected Results}
+The system runs undisturbed until, after some initial learning, all of the nodes enter Idle Mode.  During this time, the IR proximity sensor pointed toward an empty area. Afterwards, a participant enters into the sculpture space in an area detectable by the IR proximity sensor. The system should then exit idle mode and begin learning the changed model introduced by the change in the environment.  Since the IR sensor is shared by all nodes, they are all expected to recognize the change and exit idle mode at approximately the same time. 
+
+\subsection{Actual Results}
+
+\Cref{fig:Single_Cluster Action Value Vs Time} shows how the action values change over time for each of the nodes. The coloured lines represent the action values and each colour represents a region. The blue dots underneath the plot indicate when the node was in idle mode.
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/Single_Cluster Action Value Vs Time"}
 	\caption[Action value vs time graph for the Single Cluster Experiment]{Action-value vs Time graph for the Light node (a) and the three Fin nodes (b), (c), (d).}
 	\label{fig:Single_Cluster Action Value Vs Time}
 \end{figure}
+
+All the nodes first started learning their own models and entered idle mode. At around 390s, a human participant walked in front of the IR proximity sensor. This triggered a large reduction in action value at first, due to an increase in prediction error. However, as more data was collected, the action values for all four nodes quickly jumped up. This prompted the nodes to exit idle mode and begin generating actions to learn the model. After a period of readjustment, all four nodes re-entered idle mode after the new environment is learnt. 
+
+\subsection{Discussion}
+
+From \Cref{fig:Single_Cluster Action Value Vs Time}, one can see that the Light Node and the three Fin Nodes reacted to the environmental change nearly simultaneously. They exited the idle state and shifted to more exploratory actuation patterns. This showed that the shared sensor input variable was able link the CBLA engines together, even though they run independently at different frequencies. This experiment demonstrates that the reaction of the system to the changed environmental conditions creates an interaction with the visitor without any explicitly pre-programmed behaviours. The system appears to respond to the participant and their action, as its internal model of the environment cannot predict the behaviour of the participant. 
+
+The system's intrinsic curiosity drives itself to perform actions and elicit responses from this new environment with the participant's presence, and update its prediction model. We anticipate that the visitors will find such behaviours engaging as the visitors can recognize that the sculpture is responding to their presence and action but they would not be able to easily predict how it might respond. This quality provides the CBLA System the potential to be more life-like than a prescripted or a random system. 
+
 
 
 \section{Multi-Cluster Experiment}
