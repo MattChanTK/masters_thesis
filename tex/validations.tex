@@ -21,7 +21,7 @@ Based on the reward structure, which favours learning first the most predictable
  
 \begin{figure} [!htbp]
 	\centering
-	\includegraphics[width=1.0\textwidth]{"fig/validations/LED_ALS Model Evolution"}
+	\includegraphics[width=0.95\textwidth]{"fig/validations/LED_ALS Model Evolution"}
 	\caption[Evolution of the prediction models for the single node experiment]{Evolution of the prediction models for the single node experiment. Each point represents an exemplar. Points with the same colour are in the same region and the black lines are the cross-section of the linear models at S(t) = 0. The regions are numbered in the order that they were created. }
 	\label{fig:LED_ALS Model Evolution}
 \end{figure}
@@ -56,7 +56,7 @@ In \Cref{fig:LED_ALS Action Value vs Time}, one can that see the action value of
 
 \section[Multi-Node Experiment]
 {Multi-Node Experiment
-	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} 
+	\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }}\label{sec:multi-node}
 
 
 In this Section, we describe a demonstration of an integrated system consisting of multiple CBLA Nodes. In addition, in this experiment, threshold-based Idle Mode was introduced. When the knowledge gain potential is low, a Node would enter Idle Mode and turn off its actuators. The behaviours of the system during self learning period and its response to external interference was examined.
@@ -94,16 +94,149 @@ From \Cref{fig:Single_Cluster Action Value Vs Time}, one can see that the Light 
 The system's intrinsic curiosity drives itself to perform actions and elicit responses from this new environment with the participant's presence, and update its prediction model. We anticipate that the visitors will find such behaviours engaging as the visitors can recognize that the sculpture is responding to their presence and action but they would not be able to easily predict how it might respond. This quality provides the CBLA System the potential to be more life-like than a prescripted or a random system. 
 
 
+\section{Multi-Cluster Test Bed}\label{sec:multi-cluster-test-bed}
 
-\section{Multi-Cluster Experiment}
+An experimental test bed was built to investigate how user interact with the a CBLA system. This test bed resembles a typical interactive sculpture produced by the Philip Beesley Achitect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}.
 
-The goal of this experiment is to investigate the learning behaviour of the System as a whole given different configuration. Here we primarily looked at how the system behaves differently when the different nodes are connected to each other in different ways. 
+\subsection{Electronic Components}
 
-One trigger will be given to observe how each configuration respond. We hypothesize that people will enjoy have the activation closer to them. So the configuration with higher proximal activation will be chosen for the user study. 
+A Light Unit is made up of one high-power LED and one ambient light sensor. The high-power LED is mounted on top of a flask containing coloured liquid. The ambient light sensor is mount on the side of the flask under the LED. This allows the ambient light sensor the measure the intensity of the light emitted by the LED. 
 
-\subsection{Set-up} \label{sec:multi-cluster-setup}
+A Fin Unit is made up of two SMA wires, a pair of LED, a vibration motor, a 3-axis accelerometer, and two IR proximity sensors. The two SMA wires pull on two levers that moves a Fin, which is a mechanism made of soft plastic that curls up. On the Fin, an IR proximity and an accelerometer was mounted at around midway between the tip to the root of the Fin. at the bottom of the Fin, a vibration motor, a pair of LEDs, and an IR proximity sensor is mounted the middle of two frond-like objects. 
 
-It has four cluster. Each cluster has 3 lights and 3 fins. 
+\subsection{Device Nodes}
+
+Device Nodes further abstract the Output and Input Nodes to enable higher level functionality. This frees the CBLA Nodes from managing the constraints imposed by the physical attributes of the actuators and sensors. 
+
+\subsubsection{SMA Controller Node}
+
+In the experiment described in \Cref{sec:multi-node}, the SMA wires were only operated in fully off or fully on mode. This means that a Fin with two SMA wires can only have four possibles states. In addition, each actuation must be a cycle since the SMA wires cannot be fully actuated at 5V for more than 2s. Empirically, we determined that the cooling period takes around 10s. This means that the loop period for a CBLA Node cannot be lower than 12s since it does not have the freedom to actuate the SMA wires again during the cooling period. These restrictions are problematics during interaction with the users since the learning period and response latency would likely take longer than what a normal visitor would spend in front of a section of a sculpture. In addition, only a very coarse model can be made with only four possible that the Fin can choose from. This means that the Fin Node will likely be very unresponsive since the variance for each kind of action is likely to be very high.
+
+Thus, for this experiment, a position controller is needed to enable the SMA wire to hold its length while keeping the SMA wire at a safe temperature. The length of an SMA wire is related to the temperature. This system passes current through the SMA wire to generate the heat. Therefore to maintain a position, the controller needs to adjust the output voltage to a level that can maintain the desired temperature. This can reduce the loop period as the SMA wires no longer need to cool down after selecting each action. In addition, the number of actions is no longer limited to four as the Node can now select any value between fully off and fully on.However, it is difficult to attach a temperature sensor on the SMA wire. Instead of using a feedback controller, only an open-loop controller with a model that estimates the temperature of the SMA wire is used.
+
+This controller essentially produces a control signal that allows the SMA wire to quickly reaches its desired temperature by setting the output voltage very high. It then gradually lower the voltage as the SMA wire reaches its desired position according to an internal model. This model starts with the intuition that the temperature of the wire increases when the rate of heating is larger than the rate of cooling. The rate of heating is related to the voltage across the wire. On the other hand, the rate of cooling is related to the temperature of the wire as it is mainly driven the wire's own natural convection. 
+
+We first calculate the heat transfer rate as a result of the current passing through the SMA wire. According to Joule's Law of Heating \cite{JouleHeating},
+\begin{equation}
+	H = \frac{1}{J}i^2 \cdot r \cdot t
+\end{equation}
+where $H$ is heat generated in Joule; $J$ is a constant known as the Joule's mechanical equivalent of heat; $i$ is the current in ampere; $r$ is the resistance of the wire in Ohm; and $t$ is time is second.
+
+We can simplify the equation by lumping $\frac{1}{J}\cdot r$ together and treating it as one constant $k_{heating}$
+In our case, although $r$ is not actually constant since the resistance of the SMA wire decreases as it shortens \cite{FlexinolTechSpecs}, the effect is sufficiently small that we can ignore. Therefore, we get,
+
+\begin{equation}\label{eqn:simple-joule-heating}
+H = k_{heating} \cdot i^2 \cdot t
+\end{equation}
+
+Taking the derivative of Equation \eqref{eqn:simple-joule-heating}, we can get the heat transfer rate $q$ in Watt due to the electrical current at $i$ amperes. 
+
+\begin{equation}\label{eqn:heating-rate-i}
+	q_1 = \frac{dH}{dt} = k_{heating} \cdot i^2
+\end{equation}
+where $q_1$ is the heat transfer rate $q$ in Watt.
+
+According to Ohm's Law, 
+\begin{equation}\label{eqn:ohm's law}
+	i = \frac{v}{r}
+\end{equation}
+where $i$ is the current in ampere; $v$ is the voltage in volt; and $r$ is resistance in ohm.
+
+Substituting \eqref{eqn:ohm's law} into \eqref{eqn:heating-rate-i}, we get
+
+\begin{equation}\label{eqn:heating-rate-v}
+q_1 = k_{heating} \cdot v^2
+\end{equation}
+
+Since our control signal $x$ is proportional to the voltage, it can simply be absorb into the $k_{heating}$ constant as 
+
+\begin{equation}\label{eqn:heating-rate-x}
+q_1 = k_{heating} \cdot x^2
+\end{equation}
+
+Then, we calculate the heat loss rate due to natural convection of the SMA wire. According to the Newton's Law of Cooling \cite{NewtonLawOfCooling}, 
+
+\begin{equation}\label{eqn:cooling-newton-law}
+q_2 = h_c \cdot A \cdot dT
+\end{equation}
+where $q_2$ is the heat transfer rate in Watt ($W$); $h_c$ is the convective heat transfer coefficient in $W/(m^2K)$; A is the area of the heat transfer surface; and $dT$ is the temperature difference between the air and the surface in Kelvin ($K$).
+
+If we approximate $h_c$, $A$, and the air temperature $T_{air}$ as constant, we get
+\begin{subequations}\label{eqn:cooling-newton-law-simple}
+	\begin{flalign}
+		q_2 &= k_{cooling} \cdot (T - T_{air}) \\
+			&= k_{cooling} \cdot T - k_{cooling} \cdot T_{air} \\
+			&= k_{cooling} \cdot T + k_{air}\label{eqn:cooling-newton-law-simple-end}
+	\end{flalign}
+\end{subequations}
+where $q_2$ is the heat transfer rate in Watt ($W$); $k_{cooling}$ and $k_{air}$ are constants; and $T$ is the temperature of the SMA wire in Kelvin ($K$).
+
+Combining \eqref{eqn:heating-rate-x} and \eqref{eqn:cooling-newton-law-simple-end}, we get the total heat transfer rate as 
+\begin{subequations}
+	\begin{flalign}
+		q &= q_1 - q_2 \\
+		  &= k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}\label{eqn:total_heat}
+	\end{flalign}
+\end{subequations}
+
+We can then calculate the kinetic energy generated  during time interval $\Delta t$ by multiplying \eqref{eqn:total_heat} by $\Delta t$.
+\begin{equation}
+	KE =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}) \cdot \Delta t \label{eqn:total_KE}
+\end{equation}
+
+Since temperature is directly proportional to kinetic energy, the proportionality constant can be absorbed into $k_{heating}$ and $k_{cooling}$ as well. 
+\begin{equation}
+	\Delta T =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T  + k_{air}) \cdot \Delta t\label{eqn:delta_T}
+\end{equation}
+
+Therefore, at each time step $\Delta t$, the temperature is incremented by $\Delta T$.  
+\begin{subequations}
+	\begin{flalign}
+	T_{t+1} &=  T_{t} + \Delta T \\
+		    &=  T_{t} + k_{heating} \cdot x^2 - k_{cooling} \cdot T_{t}  + k_{air}\label{eqn:sma-controller-model}
+	\end{flalign}
+\end{subequations}
+
+In this formulation the actual unit of the temperature is not important. Instead, we define 0 as the temperature when the SMA wire is the longest and 1 as the temperature when the SMA wire is the shortest. The steady state temperature of the SMA wire should be 0 when the input $x$ is 0. If we substitute 0 into $T_{t+1}$, $T_{t}$, and $x$ into \eqref{eqn:sma-controller-model}, we get $k_{air} = 0$. 
+
+\begin{equation}\label{eqn:sma-controller-model-1}
+T_{t+1} =  T_{t} + k_{heating} \cdot x^2 - k_{cooling} \cdot T_{t}
+\end{equation}
+
+From SMA wire's technical specifications\cite{FlexinolTechSpecs}, we identify the maximum current that the SMA wire can operate continuously and indefinitely without damage. Using that value, we determine the maximum continuous output level $x_c$. This means that even when the desired temperature $T$ is equal to 1, at steady-state, $x$ should be below $x_c$. This means, 
+\begin{subequations}
+	\begin{flalign}
+	 0 &= k_{heating} \cdot x_c^2 - k_{cooling} \\
+	 k_{cooling} &=  k_{heating} \cdot x_c^2\label{eqn:k_cooling}
+	\end{flalign}
+\end{subequations}
+
+The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. In fact, we can set $k_heating$ to 1 arbitrarily to simplify \eqref{eqn:sma-controller-model-1} further. At the end, we get
+\begin{equation}\label{eqn:sma-controller-model-2}
+	T_{t+1} =  T_{t} + x^2 -  x_c^2 \cdot T_{t}
+\end{equation}
+as the temperature model of the SMA Controller.
+
+We then apply and tune a PI controller on this temperature model to track a desired temperature as shown in \Cref{fig:SMA Controller}. A Node can specifies a desired temperature $T_{desired}$ between 0 and 1 and the SMA Controller tracks this temperature within its internal temperature model. The control signal generated by this PI Controller is applied to the actual SMA wire in parallel. 
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/SMA Controller"}
+	\caption[Block diagram of the SMA Controller]{Block diagram of the SMA Controller. }
+	\label{fig:SMA Controller}
+\end{figure}
+
+Due to the lack of feedback control and the simplification of the model, the accuracy of this controller is relatively low. However, the main purpose of this SMA Controller is to enable the CBLA Node to hold the Fin at a particular position within its range. This allows the CBLA Engine run at a higher rate and expands its number of possible action. 
+
+
+\subsubsection{LED Driver Node}
+
+
+LED Driver
+
+\subsection{Isolated CBLA Nodes}
+
+
 They are arranged as such [figure]
 
 The action for the Fins are lowered to specific point based on an open loop controller that was calibrated. In other words, input represents bending of the fin. For the light an addition driver was added to ramp up an down in 1s. that's the same for reflex. This give Reflex a update period of 0.5s, Light at 1.0s and Fin at 5.0s. 
@@ -121,6 +254,15 @@ For this mode, we link nodes that are closer to each other spatially. We expect 
 
 \subsubsection{Random Mode}
 For this mode, each node might have the output feeding into another node. It works by first allocating nodes to different nodes to ensure the distribution is even. The number of connections match what we have in Spatial Mode.
+
+\section{Multi-Cluster Experiment}\label{sec:multi-cluster-experiment}
+
+This experiment investigates the behaviours of the CBLA system on a small scale four-cluster test bed. In addition to shared inputs, Nodes are connected through virtual inputs. Essentially, the output of one Node is fed into another Node as input. This mechanism sets up a network that enables information to go from one part of the sculpture to another. Under different network configurations, the CBLA system behaves differently. We hypothesized that users will find activations closer to them more relevant, and hence more interesting. We devised a metric to quantify this proximal activation. The configuration with higher proximal activation is then used for subsequent user study. 
+
+\subsection{Set-up}\label{sec:multi-cluster-setup}
+
+The test bed has four identical Clusters. Electrically, each Cluster consists of three Light Units and three Fins Units. Abstractly, there are three types of Nodes: Light Node, Half-Fin Node, and Reflex Node. Each Node represents an actuator in the test bed. These Nodes are connected in two different ways, Spatial Mode and Random Mode, in this experiment.
+
 
 \subsection{Procedures}
 In this experiment for each configuration, we run it 3 times. 
@@ -145,7 +287,7 @@ In fact over a period of uninterrupted activation, a self activation pattern bec
 
 
 
-\section{User Study}
+\section{User Study}\label{sec:user-study}
 
 A curiosity-based learning algorithm (CBLA) is used on interactive art sculptures to automatically generate interactive behaviours. This study aims to determine whether the behaviours generated through this method can make the experience of interacting with the sculptures more interesting, compared with pre-scripted behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than pre-scripted behaviours designed by human experts. The test subjects will report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey will be given to assess the subjects' overall experience. The results of this study will enable designers to design more engaging and interesting interactive art sculptures. 
 
