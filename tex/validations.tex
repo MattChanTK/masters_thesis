@@ -98,6 +98,8 @@ The system's intrinsic curiosity drives itself to perform actions and elicit res
 
 An experimental test bed was built to investigate how user interact with the a CBLA system. This test bed resembles a typical interactive sculpture produced by the Philip Beesley Achitect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}.
 
+%TODO  add a picture of how the test bed looks like. 
+
 \subsection{Electronic Components}
 
 A Light Unit is made up of one high-power LED and one ambient light sensor. The high-power LED is mounted on top of a flask containing coloured liquid. The ambient light sensor is mount on the side of the flask under the LED. This allows the ambient light sensor the measure the intensity of the light emitted by the LED. 
@@ -261,16 +263,33 @@ where $x(0)$ is the initial output level when the desired output level is change
 
 \subsection{Isolated CBLA Nodes}
 
+Each Isolated CBLA Node is associated with one actuator. A CBLA system is constructed by linking these Isolated CBLA Nodes through virtual inputs. In this test bed, three main types of Isolated CBLA Node exists: Half-Fin Node, Light Node, and Reflex Node.
+ 
+\Cref{fig:Isolated CBLA Nodes} presents the make up of the different Isolated CBLA Nodes in a cluster. Two Half-Fin Nodes control the bending of a Fin through their respective SMA controllers (Fx.SMA-L and Fx.SMA-R). The pair of Half-Fin Nodes share a Fin-mounted IR proximity sensor (Fx.IR-F), and the 3 axes of the accelerometer (Fx.ACC). A Light Node controls the brightness of a high-power LED through a LED driver (Lx.LED) and its sensory space consists of an ambient light sensor (Lx.ALS). There are two types of Reflex Nodes, one is associated with a pair of LEDs (Fx.RFX-L), and one is associated with a vibration motor (Fx.RFX-M). However, they are both being controlled through an LED Driver. In their sensory space, they share one bottom-mounted IR proximity sensor (Fx.IR-S). 
 
-They are arranged as such [figure]
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/Isolated CBLA Nodes"}
+	\caption[Make up of a cluster of Isolated CBLA Nodes]{Make up of a cluster of Isolated CBLA Nodes. Half-Fin Nodes are shown in red; Light Nodes are shown in orange; and Reflex Nodes are shown in blue.}
+	\label{fig:Isolated CBLA Nodes}
+\end{figure}
 
-The action for the Fins are lowered to specific point based on an open loop controller that was calibrated. In other words, input represents bending of the fin. For the light an addition driver was added to ramp up an down in 1s. that's the same for reflex. This give Reflex a update period of 0.5s, Light at 1.0s and Fin at 5.0s. 
 
-The other parameters are as shown. and this is what each parameter mean.
+\subsection{Prescripted Behaviours}
 
-A picture of how the test bed looks like. 
+For the purpose of comparing between CBLA and prescripted behaviours, each CBLA Node has a Prescripted Engine in addition to the CBLA Engine. This allow us to quickly switch between the two kinds of behaviours during the user study described in \Cref{sec:user-study}. Although the two engines are both associated with the same actuators, they may have different sensors in its sensory space. 
 
-\subsection{Configurations}
+The overall system behaviour can be described without going into the implementation details of each Prescripted Engine.
+
+For the Fin mechanism, when its Fin-mounted IR proximity sensor detects an object, it bends down toward the direction of a neighbouring bottom-mounted IR proximity sensor that has also detected an object. If both or neither of IR proximity sensors has detected an object, it simply bends straight down. It returns to upright rest position when its Fin-mounted IR proximity sensor does not detect an object in its proximity.
+
+For the high-power LEDs its output ramps up and down continuously when its corresponding Fin-mounted IR proximity sensor has detected an object. It then dims gradually when the object is removed.
+
+For the reflex vibration motor or LEDs, its output also ramps up and down continuously when its corresponding bottom-mounted IR proximity sensor has detected an object. It then ramps down gradually when the object is removed.
+
+An additional virtual node is added to provide cluster-level group behaviours.This node counts the number of outputs within its cluster that are active. It then determines a probability of random activation by mapping this count to a Gaussian function. The Fin mechanism or the high-power LED may turn on at random based on this probability. Using a Gaussian function allows the probability to random activation to increase when a number of outputs are activated. However, when too many outputs are activated, this probability decreases and make random activation less probable. 
+
+\subsection{Network Configurations}
 
 Here we investigate two types of modes. We mainly want to see if Spatial mode is matters by comparing it with Random Mode. 
 
@@ -279,6 +298,8 @@ For this mode, we link nodes that are closer to each other spatially. We expect 
 
 \subsubsection{Random Mode}
 For this mode, each node might have the output feeding into another node. It works by first allocating nodes to different nodes to ensure the distribution is even. The number of connections match what we have in Spatial Mode.
+
+
 
 \section{Multi-Cluster Experiment}\label{sec:multi-cluster-experiment}
 
@@ -371,15 +392,6 @@ Whether or not participants agree to the exit questionnaire, they will be provid
 information about the learning algorithm in form of a debriefing letter, and the version of
 interactive behaviours that they were interacting with will be revealed verbally after all
 questionnaires and surveys have been collected.
-
-\subsection{Prescripted Behaviour}
-
-The Prescripted Behaviour is as such:
-For Reflex node, when the IR sensor detects something, it will pulse on nd off until the object is removed.
-For Light Node, the Light will pulse on and off when the corresponding Fin IR sensors.
-For Fin IR, the Half Fin will move down when the scout detects something and its reflex IR detects something as well.  
-The number of output determines the probability of random activation for Light and Fin IR. The number of output mapped to a gaussian function. 
-
 
 \subsection{Results Analysis}
 
