@@ -231,8 +231,33 @@ Due to the lack of feedback control and the simplification of the model, the acc
 
 \subsubsection{LED Driver Node}
 
+If a CBLA Node controls an LED directly, any change in brightness would be set instantly. The LED may appear to be flicking and flashing erratically to the viewer as it rapidly jump between brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the light gradually was introduce. However, the relationship between brightness level of a typical LED and the input voltage is non-linear. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, larger increase in voltage is needed to have increase brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to control the output level of the LED. 
 
-LED Driver
+At every time step, 
+\begin{equation}\label{eqn:led-driver discrete update}
+	x_{t+1} =
+	\begin{cases}
+		0.00001 & \text{if } x_{t} == 0 \text{ and }  x_{desired} > 0 \\
+		x_{t} + k \cdot x_{t}, & \text{if } x_{t} < x_{desired} \\
+		x_{t} - k \cdot x_{t}, & \text{if } x_{t} > x_{desired} \\
+		x_{t}, & \text{otherwise}
+	\end{cases} 
+\end{equation}
+where $x_{t+1}$ is the output level in the next time step; $x_t$ is the current output level; $x_{desired}$ is the desired output level; and $k$ is a constant that determines speed of change in brightness. $x$ must be between 0 and 1. 
+
+To show that \eqref{eqn:led-driver discrete update} matches the profile of an LED, its second and third cases are formulated as a first-order ODE. 
+
+\begin{equation}\label{eqn:led-driver ODE}
+	 \frac{dx(t)}{dt} \pm k \cdot x(t)  = 0
+\end{equation}
+
+Solving \eqref{eqn:led-driver ODE}, we get 
+\begin{equation}\label{eqn:led-driver ODE_solved}
+	x = x(0) \cdot e^k \cdot e^{\mp k \cdot t}
+\end{equation}
+where $x(0)$ is the initial output level when the desired output level is changed.
+
+\eqref{eqn:led-driver ODE_solved} is an exponential function which increases the output level of the LED at a faster rate at higher brightness region. 
 
 \subsection{Isolated CBLA Nodes}
 
