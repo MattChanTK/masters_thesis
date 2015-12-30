@@ -186,7 +186,7 @@ We can then calculate the kinetic energy generated  during time interval $\Delta
 	KE =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}) \cdot \Delta t \label{eqn:total_KE}
 \end{equation}
 
-Since temperature is directly proportional to kinetic energy, the proportionality constant can be absorbed into $k_{heating}$ and $k_{cooling}$ as well. 
+Since temperature is directly proportional to kinetic energy, the proportionality constant can be absorbed into $k_{heating}$, $k_{cooling}$, and $ k_{air}$ as well. 
 \begin{equation}
 	\Delta T =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T  + k_{air}) \cdot \Delta t\label{eqn:delta_T}
 \end{equation}
@@ -213,7 +213,7 @@ From SMA wire's technical specifications\cite{FlexinolTechSpecs}, we identify th
 	\end{flalign}
 \end{subequations}
 
-The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. In fact, we can set $k_heating$ to 1 arbitrarily to simplify \eqref{eqn:sma-controller-model-1} further. At the end, we get
+The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. In fact, we can set $k_{heating}$ to 1 arbitrarily to simplify \eqref{eqn:sma-controller-model-1} further. At the end, we get
 \begin{equation}\label{eqn:sma-controller-model-2}
 	T_{t+1} =  T_{t} + x^2 -  x_c^2 \cdot T_{t}
 \end{equation}
@@ -228,7 +228,7 @@ We then apply and tune a PI controller on this temperature model to track a desi
 	\label{fig:SMA Controller}
 \end{figure}
 
-Due to the lack of feedback control and the simplification of the model, the accuracy of this controller is relatively low. However, the main purpose of this SMA Controller is to enable the CBLA Node to hold the Fin at a particular position within its range. This allows the CBLA Engine run at a higher rate and expands its number of possible action. 
+Due to the lack of feedback control and the simplification of the model, the accuracy of this controller is relatively low. However, the main purpose of this SMA Controller is to enable the CBLA Node to hold the Fin at a particular position within its range. This allows the CBLA Engine run at a higher rate and expands its number of possible actions. 
 
 
 \subsubsection{LED Driver Node}
@@ -255,13 +255,13 @@ To show that \eqref{eqn:led-driver discrete update} matches the profile of an LE
 
 Solving \eqref{eqn:led-driver ODE}, we get 
 \begin{equation}\label{eqn:led-driver ODE_solved}
-	x = x(0) \cdot e^k \cdot e^{\mp k \cdot t}
+	x(t) = x(0) \cdot e^k \cdot e^{\mp k \cdot t}
 \end{equation}
 where $x(0)$ is the initial output level when the desired output level is changed.
 
 \eqref{eqn:led-driver ODE_solved} is an exponential function which increases the output level of the LED at a faster rate at higher brightness region. 
 
-\subsection{Isolated CBLA Nodes}
+\subsection{Isolated CBLA Nodes}\label{sec:isolated-cbla-node}
 
 Each Isolated CBLA Node is associated with one actuator. A CBLA system is constructed by linking these Isolated CBLA Nodes through virtual inputs. In this test bed, three main types of Isolated CBLA Node exists: Half-Fin Node, Light Node, and Reflex Node.
  
@@ -274,6 +274,38 @@ Each Isolated CBLA Node is associated with one actuator. A CBLA system is constr
 	\label{fig:Isolated CBLA Nodes}
 \end{figure}
 
+
+\subsection{Network Configurations}
+
+Isolated CBLA Nodes described in \Cref{sec:isolated-cbla-node} are connected each other via virtual input. In essence, output of a CBLA Node is treated as an input variable to other Nodes, much like input variables associated with their own sensors. This creates a interconnected network of CBLA Nodes that span the entire sculpture. This allows information regarding the external environment to travel through the sculpture. 
+
+Different network configurations produce different system behaviours. Here we investigate two types of network configurations which we called Spatial Mode and Random Mode. For fair comparison, the two modes have exactly 111 links. In addition, each node is linked to at least one other node via virtual inputs. 
+
+\subsubsection{Spatial Mode}
+
+In Spatial Mode, CBLA Nodes are linked based on their spatial proximity. \Cref{fig:Spatial Local Modes} shows the connections among Nodes within a cluster. Neighbouring Nodes are connected via a directional link. Two connected Nodes take each other's output as input variable. Nodes in neighbouring clusters that are in close proximity are linked via unidirectional links as shown in \Cref{fig:Spatial Global Mode}. The circular connections that daisy-chain the four clusters allow information to spread throughout the test bed. 
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/Spatial Local Mode"}
+	\caption[Connectivity graph within a cluster in Spatial Mode]{Connectivity graph within a cluster in Spatial Mode. Each directional green arrow represents a pair of input links. Two connected Nodes take each other's output as input variable. Note that each directional link is counted as two links.}
+	\label{fig:Spatial Local Modes}
+\end{figure}
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[height=0.85 \textheight]{"fig/validations/Spatial Global Mode"}
+	\caption[Connectivity graph of the entire test bed in Spatial Mode]{Connectivity graph of the entire test bed in Spatial Mode. Each blue unidirectional arrow represent an input link. The output of the Node at the origin of an arrow is fed into the Node that it is pointing toward as input variable.}
+	\label{fig:Spatial Global Mode}
+\end{figure}
+
+Under this configuration, Nodes' responses to external disturbances or environmental changes are expected to concentrate close to the source, and spread to other Nodes gradually. 
+
+\subsubsection{Random Mode}
+
+In Random Mode, CBLA Nodes are linked to other CBLA Nodes randomly. This means that the output of a Node might be fed into another Node that is on the other side of the sculpture. Since there are 60 Nodes and 111 links are required, the algorithm links the output of each Node to another random Node to ensure that each Node has an effect in the overall system. Then, the algorithm pick 51 unique Nodes at random and link each of them another random Node. This ensures that the state space of each Node are relatively even. 
+
+The specific random configuration is generated at run-time and it is different every time. In addition, it should be noted that this method does not guarantee that there would not be any disparate sub-networks. It is possible that a set of Node is completely isolated from another set of Node under this network configuration scheme.
 
 \subsection{Prescripted Behaviours}
 
@@ -288,17 +320,6 @@ For the high-power LEDs its output ramps up and down continuously when its corre
 For the reflex vibration motor or LEDs, its output also ramps up and down continuously when its corresponding bottom-mounted IR proximity sensor has detected an object. It then ramps down gradually when the object is removed.
 
 An additional virtual node is added to provide cluster-level group behaviours.This node counts the number of outputs within its cluster that are active. It then determines a probability of random activation by mapping this count to a Gaussian function. The Fin mechanism or the high-power LED may turn on at random based on this probability. Using a Gaussian function allows the probability to random activation to increase when a number of outputs are activated. However, when too many outputs are activated, this probability decreases and make random activation less probable. 
-
-\subsection{Network Configurations}
-
-Here we investigate two types of modes. We mainly want to see if Spatial mode is matters by comparing it with Random Mode. 
-
-\subsubsection{Spatial Mode}
-For this mode, we link nodes that are closer to each other spatially. We expect information to travel in a manner that spread away from the source of triggers. 
-
-\subsubsection{Random Mode}
-For this mode, each node might have the output feeding into another node. It works by first allocating nodes to different nodes to ensure the distribution is even. The number of connections match what we have in Spatial Mode.
-
 
 
 \section{Multi-Cluster Experiment}\label{sec:multi-cluster-experiment}
