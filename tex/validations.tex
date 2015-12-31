@@ -98,9 +98,15 @@ The system's intrinsic curiosity drives itself to perform actions and elicit res
 
 \section{Multi-Cluster Test Bed}\label{sec:multi-cluster-test-bed}
 
-An experimental test bed was built to investigate how user interact with the a CBLA system. This is a small scale four-cluster test bed that resembles a typical interactive sculpture produced by the Philip Beesley Architect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}.
+An experimental test bed was built to investigate how user interact with the a CBLA system. This is a small scale four-cluster test bed that resembles a typical interactive sculpture produced by the Philip Beesley Architect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}. A photograph of the complete test bed is shown in \Cref{fig:cbla-test-bed photo 2}
 
-%TODO  add a picture of how the test bed looks like. 
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla-test-bed photo 2"}
+	\caption[Photograph of the multi-cluster test bed]{Photograph of the multi-cluster test bed when actuated. The names of the Clusters from left to right are: Cluster 1 ($C1$), Cluster 2 ($C2$), Cluster 3 ($C3$), and Cluster 4 ($C4$).}
+	\label{fig:cbla-test-bed photo 2}
+\end{figure}
+
 
 \subsection{Electronic Components}
 
@@ -343,6 +349,8 @@ This procedure was repeated three times for both Spatial Mode and Random Mode.
 The level of output is referred to as activation. All clusters are expected to have approximate the same level of activation during the initial learning period. After that, the amount of activation would reduced as the knowledge gain potential decreases. 
 
 For Spatial Mode, it is expected that the activation as a result of the trigger at 300s point will be concentrated around the source which is Cluster 3 ($C3$). On the other hand, for Random Mode, since Nodes are connected randomly, activation will be more spread out and no one cluster should have a larger than average level of activation. To quantify the activation level, we devised a metric that evaluate the average total activation and average cluster activation.
+
+%TODO add calculation the processes the data
 
 The total activation level at time interval $t$ is the average output level of all CBLA Nodes at time interval $t$. It can be calculated as followed:
  
