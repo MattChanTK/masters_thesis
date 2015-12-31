@@ -315,7 +315,7 @@ In Random Mode, CBLA Nodes are linked to other CBLA Nodes randomly. This means t
 
 The specific random configuration is generated at run-time and it is different every time. In addition, it should be noted that this method does not guarantee that there would not be any disparate sub-networks. It is possible that a set of Node is completely isolated from another set of Node under this network configuration scheme.
 
-\subsection{Prescripted Behaviours}
+\subsection{Prescripted Behaviours}\label{sec:prescripted-behaviours}
 
 For the purpose of comparing between CBLA and prescripted behaviours, each CBLA Node has a Prescripted Engine in addition to the CBLA Engine. This allow us to quickly switch between the two kinds of behaviours during the user study described in \Cref{sec:user-study}. Although the two engines are both associated with the same actuators, they may have different sensors in its sensory space. 
 
@@ -472,20 +472,27 @@ As mentioned in \Cref{sec:action_selection}, this periodic activation pattern is
 
 \section{User Study}\label{sec:user-study}
 
-A curiosity-based learning algorithm (CBLA) is used on interactive art sculptures to automatically generate interactive behaviours. This study aims to determine whether the behaviours generated through this method can make the experience of interacting with the sculptures more interesting, compared with pre-scripted behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than pre-scripted behaviours designed by human experts. The test subjects will report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey will be given to assess the subjects' overall experience. The results of this study will enable designers to design more engaging and interesting interactive art sculptures. 
+The CBLA system described thus far used on interactive art sculptures to automatically generate interactive behaviours. This user study aims to determine whether the behaviours generated through this method can make the experience of interacting with the sculptures more interesting, compared with prescripted behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than prescripted behaviours designed by human experts. The test subjects report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey is given to assess the subjects' overall experience. The results of this study enables designers to design more engaging and interesting interactive art sculptures. 
 
 \subsection{Objectives}
-This study will test the efficacy of increasing users' interest level in an interactive art sculpture, by using a curiosity-based learning algorithm (CBLA) to adjust the sculpture's dynamic behaviours. 
+
+This study aims to examine the users' responses to the behaviour emerged from the CBLA system in an interact art sculpture. In addition, we aim to reveal the relationships between the intensity and type of activation and users' level of interest as they interact with the sculpture.
 
 \subsubsection{Research Questions}
+
+The objectives can be summed up in the following three questions.
+
 \begin{enumerate}
-	\item Does the use of the CBLA increase user's interest level over pre-scripted behaviours?
+	\item Does the use of the CBLA increase user's interest level over prescripted behaviours?
 	\item Do people perceive CBLA as non-random?
 	\item Are certain behaviours  more interesting than others?
 \end{enumerate}
 
 
 \subsubsection{Hypotheses}
+
+Prior to the user study, an hypothesis was made for each of the research questions raised.
+
 \begin{enumerate}
 	\item The CBLA works by continuously generating new behaviours in order to improve its internal mathematical model of the sculpture and its sensed environment. The behaviours are adaptive and analogous to how animals and human beings learn. It is hypothesized that the user will find this kind of behaviour more interesting than pre-programmed behaviours.
 	\item Although the CBLA continuously generates new behaviours, it is not random. We hypothesize that the users will not perceive the CBLA-generated behaviours as random. 
@@ -494,41 +501,60 @@ This study will test the efficacy of increasing users' interest level in an inte
 
 \subsection{Set-up}
 
-The TestBed is same as what described in the Multi-Cluster Experiment in Section \ref{sec:multi-cluster-setup}. The floor will be lined with a grid numbered from 1 to 12 and 
+The multi-cluster test bed described in \Cref{sec:multi-cluster-test-bed} was used in this user study at the interactive art sculpture that the participants would interact with. In addition, the floor is lined with a grid numbered from 1 to 12 as shown in \Cref{fig:cbla-test-bed gird photo}. This grid allows the participants to specify their locations within the sculpture.  
 
-\subsection{Procedures}
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{"fig/validations/cbla-test-bed gird photo"}
+	\caption[Photograph of the floor grid underneath the multi-cluster test bed]{Photograph of the floor grid underneath the multi-cluster test bed.}
+	\label{fig:cbla-test-bed gird photo}
+\end{figure}
 
-\subsubsection{At the beginning of the study}
+In addition, a screen is set up next to sculpture to display a number. This number indicates the sample number. A laptop running the software is set up facing away from the sculpture beside the screen. 
 
-Test participants will be invited to interact with an interactive art sculpture that will be
-installed in the Toronto studio of Philip Beesley Architect Inc. (PBAI). Participants of this study will be informed about the procedures of the study and be asked to sign the consent forms before they are allowed to participate in the study. (Though they may visit and interact with the sculpture whether they choose to participate in the study or not).
 
-After that, each participant will be given an envelope and a stack of 8 identical business-
-card-sized questionnaires. 
+\subsection{Recruitment}
 
-%TODO include picture of the card
+Participants are recruited from the researchers' contact lists. All participants are healthy, physically able and seeing adults within the age range of 18 to 65 years old, male and female. Potential participants who are blind are excluded because they will be unable to perceive many of the behaviours, which are visually-manifested. Potential participants who are wheelchair users are excluded because they will not be able to access the studio, which has no elevator access.
 
-\subsubsection{During the study}
+In addition, participants should have little prior knowledge about that the workings of the CBLA system to avoid the subject-expectancy effect. This is a form of bias in which the test subject expects a particular result and this unconsciously affects the outcome. 
 
-Test participants will be free to roam around the space and interact with the art sculpture. A tone will go off periodically at a 2.5 minute interval. When the tones goes off, each participant will take out an empty questionnaire card from the envelope, and answer the questions on the card. The experiment will go on for 20 minutes which is equivalent to 8 cards. 
+\subsection{Procedures}\label{sec:user-study-procedure}
 
-There are two versions of the interactive behaviours: a pre-scripted version and a CBLA
-version. The participants will not be informed about which version of the behaviours they
-were interacting with nor the fact that there are two different version of the interactive
-behaviours. 
+Each participant is told the same information about the procedure of this user study. Only one participant would interact with the sculpture at any one time. 
 
-On the card, the participant will write down the location of that they are standing, how interesting they think the sculpture is, and what number they were at. This help us to correlate their level of interest to the state of of sculpture.
+\subsubsection{Before the Trial}
 
-Participants will not include any identifying information on the questionnaire cards, and will not be required to complete all the cards. They may choose to cease their participation at any time, and may decide themselves whether to submit any completed cards to the researchers.
+The test participant is invited to interact with an interactive art sculpture installed in the Toronto studio of Philip Beesley Architect Inc. (PBAI). This sculpture is the multi-cluster test bed described in \Cref{sec:multi-cluster-test-bed}. The participant is then informed about the procedures of the study and be asked to sign the consent forms in \Cref{Append:User Study Materials info-form} before they are allowed to participate in the study. 
 
-\subsubsection{At the end of the study}
+After that, each participant will be given a pen and an envelope of a stack of 8 identical business-card-sized questionnaires as shown in \Cref{fig:Questionaire-Card2}. He or she is asked fill out one card every time a long tone is heard. The first question asks the subject to write down the current sample number as shown on the screen. The second asks for the subject's subjective interest level regarding the behaviour of the sculpture at that moment. The third question asks the subject to mark his or her location at that moment by looking down on to the grid on the floor. The subject is told to make a mark between boxes if he or she is standing in between those boxes. 
 
-If returning questionnaire cards, participants will place their cards in the envelope and return it to the researcher. Participants will then be asked if they would fill out an exit questionnaire before they leave the venue. Each participant will have the right to leave the study and withdraw all data collected from him or her at any time before he or she has submitted the questionnaires and signed the consent forms. 
+\begin{figure} [!htbp]
+	\centering
+	\fbox{\includegraphics[height=0.5\textheight]{"fig/validations/Questionaire-Card2"}}
+	\caption[Questionnaire card for the user study]{Questionnaire card for the user study.}
+	\label{fig:Questionaire-Card2}
+\end{figure}
 
-Whether or not participants agree to the exit questionnaire, they will be provided with
-information about the learning algorithm in form of a debriefing letter, and the version of
-interactive behaviours that they were interacting with will be revealed verbally after all
-questionnaires and surveys have been collected.
+
+Prior to the start of the trial, the researcher runs through the study procedures with the participant one last time. The participant is told that he or she is free to walk around the space and interact with the art sculpture in any way and there is not any prescribed interaction. The subject is also told that the entire trial would last for 20 minutes and he or she may request to terminate the study at any time.
+
+
+\subsubsection{During the trial}
+
+The test participant is free to roam around the space and interact with the art sculpture. A distinct long tone will go off periodically at a 2.5 minutes interval. When the tone goes off, the participant takes out an empty questionnaire card, and answer the questions on the card. The experiment will go on for 20 minutes which is equivalent to 8 cards.
+
+There are two versions of interactive behaviours: a prescripted version and a CBLA version. The prescripted version is powered by the Prescripted Engine and is described in \Cref{sec:prescripted-behaviours}. The CBLA version, powered by the CBLA Engine and its mechanics is described in detail in \Cref{chap:cbla}. The participants will not be informed about which version of the behaviours they were interacting with nor the fact that there are two different version of the interactive behaviours. Both versions of the behaviours would be run for approximately the same amount of time. After the fourth tone (which is half-way through the trial), the researcher would switch to the other version manually after the participant has finished filling in the questionnaire card and resume interacting with the sculpture. Some participants would be exposed to the prescripted version first and some would be exposed to the CBLA version first.
+
+\subsubsection{After the trial}
+
+After the eighth tone, the participant would be informed that the trial has been completed. He or she is then asked to return the questionnaire cards in the envelope given to him or her prior to the trial. The participant is the asked to fill out an exit questionnaire in \Cref{Append:User Study Materials exit-survey}. 
+
+After that, the test participant is provided with a debriefing letter in \Cref{Append:User Study Materials debriefing}, which has more information about the learning algorithm, the interactive behaviours, and the purpose of this study. In addition, the interactive behaviours that he or she has interacted with are explained verbally after all questionnaires are collected.
+
+
+\subsection{Design of the Methodology}
+
 
 \subsection{Results Analysis}
 
@@ -549,6 +575,8 @@ However the only significant is when Prescripted is on after Prescripted seems t
 
 different people interact with sculpture different and have different expectation
 need different kinds of way to measure interest level. 
+
+might be different if multiple people interact at the same time
 
 
 

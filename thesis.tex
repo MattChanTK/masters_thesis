@@ -39,6 +39,19 @@
 % In addition, this is where you should specify the thesis title
 % and author as they appear in the properties of the PDF document.
 % Use the "hyperref" package 
+
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{placeins}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\usepackage{tablefootnote}
+\usepackage{enumitem}
+\usepackage{dirtree}
+\usepackage{boldline}
+\usepackage{pdfpages}
+
 % N.B. HYPERREF MUST BE THE LAST PACKAGE LOADED; ADD ADDITIONAL PKGS ABOVE
 \usepackage[pdftex,pagebackref=false]{hyperref} % with basic options
 %\usepackage{hyperref}
@@ -113,18 +126,8 @@
 	\clearpage{\pagestyle{empty}\origdoublepage}}
 \let\cleardoublepage\clearemptydoublepage
 
-\usepackage{lipsum}
-\usepackage{listings}
-\usepackage{placeins}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
+
 \usepackage{cleveref}
-\usepackage{tablefootnote}
-\usepackage{enumitem}
-\usepackage{dirtree}
-\usepackage{boldline}
-
-
 \setlength{\footnotemargin}{10pt}
 
 %======================================================================
@@ -146,6 +149,20 @@
 	\input{tex/interactive_control_system}\newpage\cleardoublepage
 	\input{tex/validations}\newpage\cleardoublepage
 	\input{tex/conclusions_future_work}\newpage\cleardoublepage
+
+	% The \appendix statement indicates the beginning of the appendices.
+	\appendix
+	% Add a title page before the appendices and a line in the Table of Contents
+	\chapter*{APPENDICES}
+	\addcontentsline{toc}{chapter}{APPENDICES}
+	
+	\chapter[User Study Materials]{User Study Materials}\label{Append:User Study Materials}
+	\section{Information and Consent Form}\label{Append:User Study Materials info-form}
+	\includepdf[frame=true, scale=.75, pages={-}]{pdf/information_and_consent_form.pdf}
+	\section{Exit Questionnaire}\label{Append:User Study Materials exit-survey}
+	\includepdf[frame=true, scale=.75, pages={-}]{pdf/exiting_survey.pdf}
+	\section{Debriefing Letter}\label{Append:User Study Materials debriefing}
+	\includepdf[frame=true, scale=.75, pages={-}]{pdf/debriefing_letter.pdf}
 
 	
 	%----------------------------------------------------------------------
@@ -175,6 +192,6 @@
 	
 	% The following statement causes the specified references to be added to the bibliography% even if they were not 
 	% cited in the text. The asterisk is a wildcard that causes all entries in the bibliographic database to be included (optional).
-	\nocite{*}
+	%\nocite{*}
 	
 \end{document}
