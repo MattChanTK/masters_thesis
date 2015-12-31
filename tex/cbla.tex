@@ -10,7 +10,7 @@ In \cite{Oudeyer2007}, Oudeyer's goal was to develop a robot that is capable of 
  
 The system consists of two learning mechanisms, the Classic Machine learner (classM) and the Meta Machine learner (metaM).  Based on the context (the sensors' inputs) and the action (the actuators' outputs), classM computes a prediction of the consequence, i.e., the resultant sensors' inputs at the next time step. Then, it compares the actual consequence with the prediction and modifies its model in order to reduce the error in the subsequent prediction. The Meta Machine learner (metaM) predicts the error of classM. In other words, it estimates how accurately classM is able predict the consequence. The actual prediction error is then fed back to the metaM, and metaM modifies its estimate of prediction error of the newly modified classM. This change in the prediction error is recorded at each time step in the knowledge gain assessor (KGA). The KGA then computes the expected learning progress by calculating the change in error estimation.  This expected learning progress is used as the reward. 
 
-In Oudeyer's paper \cite{Oudeyer2007}, one important feature is the idea of regional experts. Each region collects exemplars of similar sensorimotor context, and has an expert that is trained on the exemplars in the region. Exemplars are the training data for the prediction model and they are collected as the system selects actions and observes the consequences. The "features" are the sensory inputs $S(t)$, and selected actions $M(t)$ at time $t$; and the "labels" are the resultant sensory inputs $S(t+1)$ at time $t+1$. The regional experts constrain the estimate of learning progress within their respective sensorimotor contexts. This is important because it allows each expert to use a simpler model, as it covers only a small region of the state space.  
+In Oudeyer's paper \cite{Oudeyer2007}, one important feature is the idea of regional experts. Each region collects exemplars of similar sensorimotor context, and has an expert that is trained on the exemplars in the region. Exemplars are the training data for the prediction model and they are collected as the system selects actions and observes the consequences. The ``features'' are the sensory inputs $S(t)$, and selected actions $M(t)$ at time $t$; and the ``labels'' are the resultant sensory inputs $S(t+1)$ at time $t+1$. The regional experts constrain the estimate of learning progress within their respective sensorimotor contexts. This is important because it allows each expert to use a simpler model, as it covers only a small region of the state space.  
 
 The following are the steps for the learning algorithm:
 
@@ -103,7 +103,7 @@ After the best cut value and cut dimension is identified, the exemplars of the p
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram RegionSplitter"}
-	\caption[Block diagram of the Region Splitter]{When the function “split()” is called, it first checks if the split criteria are met by calling "is\_splitting()". If the split criteria are met, it forwards the exemplars to the Region Splitter. The Region Splitter then splits the exemplars into two and assigns them to the Left and Right Expert. Other properties such as the previous errors and rewards are passed on as well. }
+	\caption[Block diagram of the Region Splitter]{When the function “split()” is called, it first checks if the split criteria are met by calling ``is\_splitting()''. If the split criteria are met, it forwards the exemplars to the Region Splitter. The Region Splitter then splits the exemplars into two and assigns them to the Left and Right Expert. Other properties such as the previous errors and rewards are passed on as well. }
 	\label{fig:Block Diagram RegionSplitter}
 \end{figure}
 
@@ -157,40 +157,40 @@ $S_1$ and $S_2$ are the total variances of the two regions split using the candi
 
 Furthermore, this method is susceptible to leaving a small number of sample points near a desirable cut value since the random selection might not pick up the exemplars that are right at the edge. On the other hand, although one can simply iterate through every exemplar in the region and find the cut value with the lowest variance, this is impractical. This implies that a significant number of iterations is required as the number of dimensions and exemplars increase. To improve the likelihood of finding the best cut value while keeping the number of iterations low, a new divide-and-zoom-in method is implemented to focus on promising ranges of cut values. The toy example in  \Cref{fig:divide-and-zoom-in_1,fig:divide-and-zoom-in_2,fig:divide-and-zoom-in_3,fig:divide-and-zoom-in_4} illustrates how this method works. This method is more likely to find the local minimum which cleanly splits a region into two while keeping the number of relative variance computation low. 
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 	\centering
 	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_1"}
-	\caption[Illustration explaining the "Divid-and-Zoom-In" region split values computation method 1]{An toy example of how relative variance changes with different cut values. At this point, the relative variances have not been calculated yet. The red dots represent the actual relative variances before they are calculated by the algorithm.}
+	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 1]{An toy example of how relative variance changes with different cut values. At this point, the relative variances have not been calculated yet. The red dots represent the actual relative variances before they are calculated by the algorithm.}
 	\label{fig:divide-and-zoom-in_1}
 \end{figure}	
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 	\centering
-	\includegraphics[height=0.3 \textheight]{"fig/cbla/divide-and-zoom-in_2"}
-	\caption[Illustration explaining the "Divid-and-Zoom-In" region split values computation method 2]{This is the first iteration of the toy example. First, compute the relative variances of $N/k$ of the cut values (blue); then, select the point with the lowest relative variance (yellow ring); after that, identify the two adjacent points and zoom in to the range between those two points in the next iteration (light blue)}
+	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_2"}
+	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 2]{This is the first iteration of the toy example. First, compute the relative variances of $N/k$ of the cut values (blue); then, select the point with the lowest relative variance (yellow ring); after that, identify the two adjacent points and zoom in to the range between those two points in the next iteration (light blue)}
 	\label{fig:divide-and-zoom-in_2}
 \end{figure}	
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 	\centering
 	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_3"}
-	\caption[Illustration explaining the "Divid-and-Zoom-In" region split values computation method 3]{This is the second iteration of the toy example. The computation is repeated in a smaller, zoomed-in range.}
+	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 3]{This is the second iteration of the toy example. The computation is repeated in a smaller, zoomed-in range.}
 	\label{fig:divide-and-zoom-in_3}
 \end{figure}	
-\begin{figure}[htbp]
+\begin{figure}![htbp]
 	\centering
 	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_4"}
-	\caption[Illustration explaining the "Divid-and-Zoom-In" region split values computation method 4]{Zooming in until the variance for every point within the range is computed.}
+	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 4]{Zooming in until the variance for every point within the range is computed.}
 	\label{fig:divide-and-zoom-in_4}
 \end{figure}
 
 
 \FloatBarrier 
-\subsubsection{Action Selection}
+\subsubsection{Action Selection}\label{sec:action_selection}
 
 Visually, it is difficult to distinguish between the periods when the CBLA is learning from the periods when the CBLA is simply executing random actions after all regions are learnt. In order to better demonstrate the learning process, we introduce some constrains that produce different action given different level of activation. 
 
 We considered two different types of implementations. First is introducing idle Mode. The idle mode action is chosen as the action that requires the least power. This gives the visitors the sense that the sculpture is resting. During idle mode, the system selects the idle action a majority of the time. Otherwise, it will select an action based on its regular action selection policy. The CBLA engine enters idle mode when there is large knowledge gain potential. Conversely, it exits idle mode when the knowledge gain potential, or the change of it is higher than a threshold. Once it exits idle mode, it must stay in non-idle for at least a certain period of time before being allowed to enter idle mode again. 
 
-Alternatively, instead of having a hard threshold that go from totally quiet to totally active, we used a sigmoid function shown in Equation~\eqref{eqn:map_sigmoid} to define the region of low activation to high activation. In this formulation, we capped the maximum output level $m_{max}$ based on the knowledge gain potential $x$. This way, there is a visually lower level of activation while the knowledge gain potential is low. In an exhibition perspective, it is better to always have some kinds of activation to entice people than having a long dead period which user might be gone before the sculpture gets activated.
+Alternatively, instead of having a hard threshold that go from totally quiet to totally active, we used a sigmoid function shown in \Cref{eqn:map_sigmoid} to define the region of low activation to high activation. In this formulation, we capped the maximum output level $m_{max}$ based on the knowledge gain potential $x$. This way, there is a visually lower level of activation while the knowledge gain potential is low. In an exhibition perspective, it is better to always have some kinds of activation to entice people than having a long dead period which user might be gone before the sculpture gets activated.
 
 \begin{subequations}\label{eqn:map_sigmoid}
 	\begin{flalign} 
