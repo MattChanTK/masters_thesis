@@ -15,7 +15,7 @@ The system in this experiment consists of a Light node, which is a single-input,
 In this experiment, the system ran for 2500 time steps without any external interference. 
 Based on the reward structure, which favours learning first the most predictable regions of the state-space, the CBLA is expected to first explore the regions of the sensorimotor space that have low variance. Once the model in that region is learnt, it should move onto areas with higher variance.
 
-\subsection{Actual Results}
+\subsection{Results}
 
 \Cref{fig:LED_ALS Model Evolution} shows the evolution of the prediction model and actual exemplars over time. As expected, the CBLA first selects actions associated with lower LED output levels, as this leads to measurements in the low variance regions. Over time, once the model in the low variance region is acquired, it moves toward higher brightness regions. \Cref{fig:LED_ALS Action Selection} shows that the best action and the actual selected action were completely random at first. The system then focused on the easy-to-learn areas in the lower brightness level. After that, it moved toward the higher brightness and harder-to-learn regions when it hadn't seen much improvement in the low brightness regions. After some exploration of the bright regions, prediction error is reduced in those regions, and the system returns again to explore the low-brightness region.  The resulting pattern of activation is interesting visually, as it results in non-random activations that have the potential to convey a notion of intent to the viewer. 
  
@@ -74,7 +74,7 @@ The Light node was the same as in \Cref{sec:single-node}, with the addition of t
 \subsection{Procedures and Expected Results}
 The system runs undisturbed until, after some initial learning, all of the nodes enter Idle Mode.  During this time, the IR proximity sensor pointed toward an empty area. Afterwards, a participant enters into the sculpture space in an area detectable by the IR proximity sensor. The system should then exit idle mode and begin learning the changed model introduced by the change in the environment.  Since the IR sensor is shared by all nodes, they are all expected to recognize the change and exit idle mode at approximately the same time. 
 
-\subsection{Actual Results}
+\subsection{Results}
 
 \Cref{fig:Single_Cluster Action Value Vs Time} shows how the action values change over time for each of the nodes. The coloured lines represent the action values and each colour represents a region. The blue dots underneath the plot indicate when the node was in idle mode.
 
@@ -96,7 +96,7 @@ The system's intrinsic curiosity drives itself to perform actions and elicit res
 
 \section{Multi-Cluster Test Bed}\label{sec:multi-cluster-test-bed}
 
-An experimental test bed was built to investigate how user interact with the a CBLA system. This test bed resembles a typical interactive sculpture produced by the Philip Beesley Achitect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}.
+An experimental test bed was built to investigate how user interact with the a CBLA system. This is a small scale four-cluster test bed that resembles a typical interactive sculpture produced by the Philip Beesley Architect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}.
 
 %TODO  add a picture of how the test bed looks like. 
 
@@ -233,7 +233,7 @@ Due to the lack of feedback control and the simplification of the model, the acc
 
 \subsubsection{LED Driver Node}
 
-If a CBLA Node controls an LED directly, any change in brightness would be set instantly. The LED may appear to be flicking and flashing erratically to the viewer as it rapidly jump between brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the light gradually was introduce. However, the relationship between brightness level of a typical LED and the input voltage is non-linear. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, larger increase in voltage is needed to have increase brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to control the output level of the LED. 
+If a CBLA Node controls an LED directly, any change in brightness would be set instantly. The LED may appear to be flicking and flashing erratically to the viewer as it rapidly jump between brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the light gradually was introduce. However, the relationship between brightness level of a typical LED and the input voltage is non-linear \cite{CreeLEDDatasheet}. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, larger increase in voltage is needed to have increase brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to control the output level of the LED. 
 
 At every time step, 
 \begin{equation}\label{eqn:led-driver discrete update}
@@ -324,34 +324,140 @@ An additional virtual node is added to provide cluster-level group behaviours.Th
 
 \section{Multi-Cluster Experiment}\label{sec:multi-cluster-experiment}
 
-This experiment investigates the behaviours of the CBLA system on a small scale four-cluster test bed. In addition to shared inputs, Nodes are connected through virtual inputs. Essentially, the output of one Node is fed into another Node as input. This mechanism sets up a network that enables information to go from one part of the sculpture to another. Under different network configurations, the CBLA system behaves differently. We hypothesized that users will find activations closer to them more relevant, and hence more interesting. We devised a metric to quantify this proximal activation. The configuration with higher proximal activation is then used for subsequent user study. 
+This experiment investigates the behaviours of the CBLA system on a small scale four-cluster test bed described in \Cref{sec:multi-cluster-test-bed}. The test bed has two different network configurations: Spatial Mode, and Random Mode. Under different network configurations, the CBLA system is expected to behave differently. We hypothesize that users will find activations closer to them more relevant, and hence more interesting. We devised a metric to quantify this proximal activation. The configuration with higher proximal activation is then used for subsequent user study. 
 
 \subsection{Set-up}\label{sec:multi-cluster-setup}
 
-The test bed has four identical Clusters. Electrically, each Cluster consists of three Light Units and three Fins Units. Abstractly, there are three types of Nodes: Light Node, Half-Fin Node, and Reflex Node. Each Node represents an actuator in the test bed. These Nodes are connected in two different ways, Spatial Mode and Random Mode, in this experiment.
-
+The multi-cluster test bed described in \Cref{sec:multi-cluster-test-bed} is used for this experiment. Since the goal of this experiment is to examine the behaviours of the CBLA system, the Prescripted Engine is not used in this experiment. In addition, within the CBLA Engine, a sigmoid function based idle mode as described in \Cref{eqn:map_sigmoid} is used.
 
 \subsection{Procedures}
-In this experiment for each configuration, we run it 3 times. 
 
-For all experiments, I let it run from blank state for 5 minutes. Then I use my hand to block the IR sensor 0 at Cluster 3, Fin 2 for 30 seconds. Then I leave and continue recording data for 2 more minutes
+The CBLA system first starts at blank state without any preexisting exemplars or prediction models. It operates without any external interferences for five minutes or 300 seconds. After that an object is placed in front of the IR proximity sensor C3.F2.IR-S (refer to \Cref{fig:Spatial Global Mode}) for approximately 30 seconds. Then, the object is removed and the experiment continues on for another 2 minutes or 120 seconds before terminating the program.
 
+This procedure was repeated three times for both Spatial Mode and Random Mode.
 
 \subsection{Expected Results}
-Since random connection connect random, activation will be spread out and proximial activation is low. On the other hand, spatial connection will results in large activation. 
+
+The level of output is referred to as activation. All clusters are expected to have approximate the same level of activation during the initial learning period. After that, the amount of activation would reduced as the knowledge gain potential decreases. 
+
+For Spatial Mode, it is expected that the activation as a result of the trigger at 300s point will be concentrated around the source which is Cluster 3 ($C3$). On the other hand, for Random Mode, since Nodes are connected randomly, activation will be more spread out and no one cluster should have a larger than average level of activation. To quantify the activation level, we devised a metric that evaluate the average total activation and average cluster activation.
+
+The total activation level at time interval $t$ is the average output level of all CBLA Nodes at time interval $t$. It can be calculated as followed:
+ 
+\begin{equation}\label{eqn:total_activation}
+	a_t = \frac{1}{N} \sum_{j=0}^{N} \overline{m_{jt}} \text{, for all Node $j$}
+\end{equation}
+where $a_t$ is the total activation level at time interval $t$; $N$ is the total number of CBLA Nodes; $\overline{m_{jt}}$ is the average output value of CBLA Node $j$ at time interval $t$.
+
+We are interested in the total activation level during period immediately after the trigger was applied. Therefore, we computer average total activation between the time of the trigger $t_{trig}$, and the end of the readjustment period $t_{readj}$ as followed.
+\begin{equation}\label{eqn:average_total_activation}
+\overline{a} = \frac{1}{| \left\{ a_{T_{trig}}, ... , a_{T_{readj}} \right\}|} \sum_{t=T_{trig}}^{T_{readj}} a_{t}
+\end{equation}
+where $\overline{a}$ is the average total activation from $T_{trig}$ to $T_{readj}$; and $| \left\{ a_{T_{trig}}, ..., a_{T_{readj}} \right\}|$ is the number of time intervals between $T_{trig}$ and $T_{readj}$.
+
+By looking at the cluster activation level, we can determine if the concentration of activation is what we expect. 
+To find the cluster activation level, we apply \eqref{eqn:total_activation}, but only for the CBLA Nodes within a particular cluster.
+\begin{equation}\label{eqn:cluster_activation}
+	a_{ct} = \frac{1}{N_c} \sum_{j=0}^{N_c} \overline{m_{jt}} \text{, for all Node $j$ in cluster $c$}
+\end{equation}
+where $a_{ct}$ is the cluster activation level at time interval $t$; $N_c$ is the total number of CBLA Nodes in cluster $c$; $\overline{m_{jt}}$ is the average output value of CBLA Node $j$ at time interval $t$.
+
+Similarly, we can calculate the average cluster activation level during the period between $t_{trig}$ and $t_{readj}$ as followed.
+
+\begin{equation}\label{eqn:average_cluster_activation}
+\overline{a_c} = \frac{1}{| \left\{ a_{cT_{trig}}, ... , a_{cT_{readj}} \right\}|} \sum_{t=T_{trig}}^{T_{readj}} a_{ct}
+\end{equation}
+where $\overline{a_c}$ is the average cluster activation from $T_{trig}$ to $T_{readj}$; and $| \left\{ a_{cT_{trig}}, ..., a_{cT_{readj}} \right\}|$ is the number of time intervals between $T_{trig}$ and $T_{readj}$.
+
+In this experiment, we set  $T_{readj}$ to $360s$. This means that we are looking at the behaviours of the system within 60 seconds from the trigger at $T_{trig} = 300s$.
 
 \subsection{Results}
-For Spatial mode (Experiment 1, 2, 3), it's pretty clear that Cluster 3 (red) always activate first before other clusters. I can see that Cluster 1 usually seems to have high activation value similar to Cluster 3. Perhaps that can be attributed to the fact that there is a one-direction connection that connect C3.F0.SMA-L to C1.F1.SMA-R. This extra connection might have help Cluster 1 to activate earlier and more than the other clusters who are also nearby and connected to Cluster 3.
 
+The average total activation and average cluster activation values for Spatial and Random Mode trials are listed in \Cref{table:multi-cluster-results-spatial,table:multi-cluster-results-random}. The mean of results from the each set of the three trials was used to interpret the results. 
 
-For Random mode (experiment 4, 5, 6), it seems to just activate spontaneously periodically. Except for in Experiment 6, blocking of the IR sensors didn't cause much activation (the actuators associated with that IR sensors did turn on though). That's probably due to the fact the randomness arrangement make triggering less surprising 
+\begin{table}[!htbp]
+	\caption[Results of the multi-cluster experiment for Spatial Mode]{Results of the multi-cluster experiments for Spatial Mode. The average total activation ($\overline{a}$) and the average cluster activation for each cluster ($\overline{a_{c1}}$, $\overline{a_{c2}}$, $\overline{a_{c3}}$, and $\overline{a_{c4}}$) were computed from $T_{trig} = 300s$ to  $T_{readj} = 360s $.}
+	\begin{center}
+		\begin{tabular}{ | c | c | c | c | c | c |} 
+			\hline
+			\textbf{Trial \#} & \boldmath{$\overline{a}$}  & \boldmath{$\overline{a_{c1}}$}  & \boldmath{$\overline{a_{c2}}$} & \boldmath{$\overline{a_{c3}}$} & \boldmath{$\overline{a_{c4}}$} \\ 
+			\hline
+			\hline
+			1 & 0.07209 & 0.06259 & 0.07982 & 0.09966 & 0.04629 \\
+			\hline
+			2 & 0.07306 & 0.08146 & 0.07130 & 0.08726 & 0.05219 \\
+			\hline
+			3 & 0.06915 & 0.08628 & 0.04721 & 0.08548 & 0.05761 \\
+			\hlineB{3}	
+			\textbf{Mean} & 0.07143	 & 0.07678 & 0.06611 & 0.09080 & 0.05203 \\
+			\hline
+			\textbf{Std. Dev.} & 0.00203 & 0.01251 & 0.01691 & 0.00772 & 0.00565 \\
+			\hline			
+		\end{tabular}
+	\end{center}
+	\label{table:multi-cluster-results-spatial}
+\end{table}
 
-Results show that although activation is higher for random mode; proximal activation is higher. One can see that activation can spread to the side. 
+\begin{table}[!htbp]
+	\caption[Results of the multi-cluster experiment for Random Mode]{Results of the multi-cluster experiments for Random Mode. The average total activation ($\overline{a}$) and the average cluster activation for each cluster ($\overline{a_{c1}}$, $\overline{a_{c2}}$, $\overline{a_{c3}}$, and $\overline{a_{c4}}$) were computed from $T_{trig} = 300s$ to  $T_{readj} = 360s$. }
+	\begin{center}
+		\begin{tabular}{ | c | c | c | c | c | c |} 
+			\hline
+			\textbf{Trial \#} & \boldmath{$\overline{a}$}  & \boldmath{$\overline{a_{c1}}$}  & \boldmath{$\overline{a_{c2}}$} & \boldmath{$\overline{a_{c3}}$} & \boldmath{$\overline{a_{c4}}$} \\ 
+			\hline
+			\hline
+			4 & 0.03297	& 0.04193 &	0.02686 & 0.02951 & 0.03358 \\
+			\hline
+			5 &	0.08062 & 0.08114 & 0.07884 & 0.08035 & 0.08218 \\
+			\hline
+			6 &	0.05953 & 0.06105 &	0.05732 & 0.06237 & 0.05737 \\
+			\hlineB{3}	
+			\textbf{Mean} & 0.07008	& 0.06137 &	0.05434	& 0.05741 & 0.05771  \\
+			\hline
+			\textbf{Std. Dev.} & 0.01491 & 0.01960 & 0.02611 & 0.02578 & 0.02429 \\
+			\hline	
+		\end{tabular}
+	\end{center}
+	\label{table:multi-cluster-results-random}
+\end{table}
 
-these spontaneous activation are caused by the way "relative action value" was calculated by taking "\[action_val^2/avg_action_val\]". This means that when the action value hovers close to 0 for a long time, relative action value will become very large. This number correspond directly with the maximum output range. 
+For both Spatial mode (Trial 1, 2, and 3) and Random Mode (Trial 4, 5, and 6), their average total activation values $\overline{a}$ were similar. It shows that the overall intensity of their activation levels are similar. However, it can be seen that the variance is much greater for Random Mode. The level of variation may be attributed to the fact that the links among its CBLA Nodes are different at every trial.
 
-In fact over a period of uninterrupted activation, a self activation pattern becomes evident. This pattern can be seen at around 150s each. We speculate that kind of behaviour can perhaps be interesting as it ive the sculpture some self actuated action on top of reflexive.  
+On the other hand, for Spatial Mode, the average cluster activation values for Cluster 3 is larger than the other Clusters. Cluster 3 is where the trigger took place in the experiment. While for Random Mode, they are relatively consistent. This show that activation does tend to concentrate around the origin of the trigger in Spatial Mode as expected. Also as expected, the level of activation among its different Clusters is relatively even for Random Mode. 
 
+The total activation and the cluster activations over time plots for trial~2 (Spatial Mode) are shown in \Cref{fig:multi-cluster-results-spatial-2}. At the point at $t = 300s$ when the an object was presented in front of a sensor at in Cluster~3, the activation level at Cluster shot up and the activation levels in the other three clusters trails after as expected. Furthermore, it is interesting to point out the magnitudes of activation for the other clusters are actually similar or higher than Cluster 3. This means that CBLA Nodes in a cluster would also respond to an event happening in a neighbouring cluster with the same level of intensity although the timing would be delayed.
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla_spatial_global_2015-11-16_14-33-11 - Metrics"}
+	\caption[Average total activation and average cluster activations over time plots for trial 2 (Spatial Mode) of the multi-cluster experiment]{Average total activation and average cluster activations over time plots for trial 2 (Spatial Mode) of the multi-cluster experiment. For the Cluster Activation plot (bottom), the blue line represents Cluster 1; the green line represents Cluster 2; the red line represents Cluster 3; and the cyan line represents Cluster 4.}
+	\label{fig:multi-cluster-results-spatial-2}
+\end{figure}
+
+In contrast, in the total activation and the cluster activations over time plots for trial~5 (Random Mode) shown in \Cref{fig:multi-cluster-results-random-2}, the activation levels across different clusters are relatively even and without much delays. This is also expected since the CBLA Nodes are linked randomly, there is no expectation that CBLA Nodes in one Cluster should activate earlier than another.
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla_random_2015-11-16_15-14-04 - Metrics"}
+	\caption[Average total activation and average cluster activations over time plots for trial 5 (Random Mode) of the multi-cluster experiment]{Average total activation and average cluster activations over time plots for trial 5 (Random Mode) of the multi-cluster experiment. For the Cluster Activation plot (bottom), the blue line represents Cluster 1; the green line represents Cluster 2; the red line represents Cluster 3; and the cyan line represents Cluster 4.}
+	\label{fig:multi-cluster-results-random-2}
+\end{figure}
+
+\subsection{Discussions}
+
+In this experiment, we showed that activation in response to a triggering event is more likely to begin and concentrate near source of the trigger when the network is configured as Spatial Mode. Since we believe that user will find activations in close proximity to be more relevant and interesting, Spatial Mode seems to be a more promising network configuration. Therefore, in the User Study described in \Cref{sec:user-study}, the CBLA system would be configured under Spatial Mode. 
+
+Another observation we made in the experiment was that there seems to be some periodic spontaneous activations for either network configurations. For example, in both \Cref{fig:multi-cluster-results-spatial-2,fig:multi-cluster-results-random-2}, there were activation at around 100s to 200s points, even when there was not any external interference. In fact, over a long period of time, a self activation pattern becomes evident as shown in \Cref{fig:multi-cluster experiment cyclic activation} where the system was run in Spatial mode for 4500s uninterrupted. The CBLA Nodes activated spontaneously at a relatively consistent rate despite the absence of any external triggering events. 
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/multi-cluster experiment cyclic activation"}
+	\caption[Periodic spontaneous activation over a period of 4500s]{The CBLA system was running uninterrupted for 4500s under Spatial Mode. Even without external events, CBLA Nodes activates a relatively consistent rate.}
+	\label{fig:multi-cluster experiment cyclic activation}
+\end{figure}
+
+As mentioned in \Cref{sec:action_selection}, this periodic activation pattern is caused by the way relative action value $\widehat{q^2_z}$ was calculated. Looking back at 
+\Cref{eqn:relative_action_val}, \[\widehat{q^2_z} = \frac{q_t^2}{max(\overline{q^2_z}, \nu)}\] we can see that when the average squared action value $\overline{q^2_z}$ hovers close to 0 for a long time, relative action value $\widehat{q^2_z}$ would become very large. Fundamentally, this pattern is caused by the system's sensitivity to ambient sensor noise and can be adjusted by changing the sensitivity constant $\nu$. Although setting $\nu$ to a larger value can eliminate this periodic activation pattern, it will also make the sculpture less responsive to the user and to the external environment. In addition, we believe that this kind of behaviour can indeed be an interesting aspect of the behaviours of this interactive art sculpture. 
 
 
 \section{User Study}\label{sec:user-study}
