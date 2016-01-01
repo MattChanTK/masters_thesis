@@ -100,7 +100,7 @@ The system's intrinsic curiosity drives itself to perform actions and elicit res
 
 An experimental test bed was built to investigate how user interact with the a CBLA system. This is a small scale four-cluster test bed that resembles a typical interactive sculpture produced by the Philip Beesley Architect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}. A photograph of the complete test bed is shown in \Cref{fig:cbla-test-bed photo 2}
 
-\begin{figure} [!htbp]
+\begin{figure} [!htb]
 	\centering
 	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla-test-bed photo 2"}
 	\caption[Photograph of the multi-cluster test bed]{Photograph of the multi-cluster test bed when actuated. The names of the Clusters from left to right are: Cluster 1 ($C1$), Cluster 2 ($C2$), Cluster 3 ($C3$), and Cluster 4 ($C4$).}
@@ -385,7 +385,7 @@ In this experiment, we set  $T_{readj}$ to $360s$. This means that we are lookin
 
 The average total activation and average cluster activation values for Spatial and Random Mode trials are listed in \Cref{table:multi-cluster-results-spatial,table:multi-cluster-results-random}. The mean of results from the each set of the three trials was used to interpret the results. 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 	\caption[Results of the multi-cluster experiment for Spatial Mode]{Results of the multi-cluster experiments for Spatial Mode. The average total activation ($\overline{a}$) and the average cluster activation for each cluster ($\overline{a_{c1}}$, $\overline{a_{c2}}$, $\overline{a_{c3}}$, and $\overline{a_{c4}}$) were computed from $T_{trig} = 300s$ to  $T_{readj} = 360s $.}
 	\begin{center}
 		\begin{tabular}{ | c | c | c | c | c | c |} 
@@ -408,7 +408,7 @@ The average total activation and average cluster activation values for Spatial a
 	\label{table:multi-cluster-results-spatial}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 	\caption[Results of the multi-cluster experiment for Random Mode]{Results of the multi-cluster experiments for Random Mode. The average total activation ($\overline{a}$) and the average cluster activation for each cluster ($\overline{a_{c1}}$, $\overline{a_{c2}}$, $\overline{a_{c3}}$, and $\overline{a_{c4}}$) were computed from $T_{trig} = 300s$ to  $T_{readj} = 360s$. }
 	\begin{center}
 		\begin{tabular}{ | c | c | c | c | c | c |} 
@@ -437,7 +437,7 @@ On the other hand, for Spatial Mode, the average cluster activation values for C
 
 The total activation and the cluster activations over time plots for trial~2 (Spatial Mode) are shown in \Cref{fig:multi-cluster-results-spatial-2}. At the point at $t = 300s$ when the an object was presented in front of a sensor at in Cluster~3, the activation level at Cluster shot up and the activation levels in the other three clusters trails after as expected. Furthermore, it is interesting to point out the magnitudes of activation for the other clusters are actually similar or higher than Cluster 3. This means that CBLA Nodes in a cluster would also respond to an event happening in a neighbouring cluster with the same level of intensity although the timing would be delayed.
 
-\begin{figure} [!htbp]
+\begin{figure} [!htb]
 	\centering
 	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla_spatial_global_2015-11-16_14-33-11 - Metrics"}
 	\caption[Average total activation and average cluster activations over time plots for trial 2 (Spatial Mode) of the multi-cluster experiment]{Average total activation and average cluster activations over time plots for trial 2 (Spatial Mode) of the multi-cluster experiment. For the Cluster Activation plot (bottom), the blue line represents Cluster 1; the green line represents Cluster 2; the red line represents Cluster 3; and the cyan line represents Cluster 4.}
@@ -446,7 +446,7 @@ The total activation and the cluster activations over time plots for trial~2 (Sp
 
 In contrast, in the total activation and the cluster activations over time plots for trial~5 (Random Mode) shown in \Cref{fig:multi-cluster-results-random-2}, the activation levels across different clusters are relatively even and without much delays. This is also expected since the CBLA Nodes are linked randomly, there is no expectation that CBLA Nodes in one Cluster should activate earlier than another.
 
-\begin{figure} [!htbp]
+\begin{figure} [!htb]
 	\centering
 	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla_random_2015-11-16_15-14-04 - Metrics"}
 	\caption[Average total activation and average cluster activations over time plots for trial 5 (Random Mode) of the multi-cluster experiment]{Average total activation and average cluster activations over time plots for trial 5 (Random Mode) of the multi-cluster experiment. For the Cluster Activation plot (bottom), the blue line represents Cluster 1; the green line represents Cluster 2; the red line represents Cluster 3; and the cyan line represents Cluster 4.}
@@ -529,9 +529,9 @@ The test participant is invited to interact with an interactive art sculpture in
 
 After that, each participant will be given a pen and an envelope of a stack of 8 identical business-card-sized questionnaires as shown in \Cref{fig:Questionaire-Card2}. He or she is asked fill out one card every time a long tone is heard. The first question asks the subject to write down the current sample number as shown on the screen. The second asks for the subject's subjective interest level regarding the behaviour of the sculpture at that moment. The third question asks the subject to mark his or her location at that moment by looking down on to the grid on the floor. The subject is told to make a mark between boxes if he or she is standing in between those boxes. 
 
-\begin{figure} [!htbp]
+\begin{figure} [!htb]
 	\centering
-	\fbox{\includegraphics[height=0.40\textheight]{"fig/validations/Questionaire-Card2"}}
+	\fbox{\includegraphics[height=0.55\textheight]{"fig/validations/Questionaire-Card2"}}
 	\caption[Questionnaire card for the user study]{Questionnaire card for the user study.}
 	\label{fig:Questionaire-Card2}
 \end{figure}
@@ -574,7 +574,7 @@ A total of 10 trials were run. There were three main sets of data collected in e
 
 The questionnaire cards record each subject's levels of interest and locations at the 8 sample points. The levels of interest data allow us to compute the subject's overall interest level for each of the two segments, Prescripted Mode and CBLA Mode. We further separate the data into two groups based on either the trial started with Prescripted first or CBLA first and the data is shown in \Cref{table:user-study-cards-results-prescripted-first,table:user-study-cards-results-cbla-first}. On the other hand, the locations data allow us to examine the relationship between the level of activation near the test subjects to his or her reported interest level.
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 	\caption[Self-reported interest levels for Prescripted-first trials in the user study]{Self-reported interest levels at the sample points collected during Prescripted-first trials in the user study}
 	\begin{center}
 		\begin{tabularx}{0.75\textwidth}{ | c | *{8}{>{\centering\arraybackslash}X|}}
@@ -596,7 +596,7 @@ The questionnaire cards record each subject's levels of interest and locations a
 	\label{table:user-study-cards-results-prescripted-first}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 	\caption[Self-reported interest levels for CBLA-first trials in the user study]{Self-reported interest levels at the sample points collected during CBLA-first trials in the user study}
 	\begin{center}
 		\begin{tabularx}{0.75\textwidth}{ | c | *{8}{>{\centering\arraybackslash}X|}}
