@@ -483,9 +483,9 @@ This study aims to examine the users' responses to the behaviour emerged from th
 The objectives can be summed up in the following three questions.
 
 \begin{enumerate}
-	\item Does the use of the CBLA increase user's interest level over prescripted behaviours?
-	\item Do people perceive CBLA as non-random?
-	\item Are certain behaviours  more interesting than others?
+	\item Does the use of the CBLA increase user's interest level over prescripted behaviours? 	\label{itm:research-q1}
+	\item Do people perceive CBLA as non-random? \label{itm:research-q2}
+	\item Are certain behaviours  more interesting than others? \label{itm:research-q3}
 \end{enumerate}
 
 
@@ -531,11 +531,10 @@ After that, each participant will be given a pen and an envelope of a stack of 8
 
 \begin{figure} [!htbp]
 	\centering
-	\fbox{\includegraphics[height=0.5\textheight]{"fig/validations/Questionaire-Card2"}}
+	\fbox{\includegraphics[height=0.40\textheight]{"fig/validations/Questionaire-Card2"}}
 	\caption[Questionnaire card for the user study]{Questionnaire card for the user study.}
 	\label{fig:Questionaire-Card2}
 \end{figure}
-
 
 Prior to the start of the trial, the researcher runs through the study procedures with the participant one last time. The participant is told that he or she is free to walk around the space and interact with the art sculpture in any way and there is not any prescribed interaction. The subject is also told that the entire trial would last for 20 minutes and he or she may request to terminate the study at any time.
 
@@ -544,34 +543,169 @@ Prior to the start of the trial, the researcher runs through the study procedure
 
 The test participant is free to roam around the space and interact with the art sculpture. A distinct long tone will go off periodically at a 2.5 minutes interval. When the tone goes off, the participant takes out an empty questionnaire card, and answer the questions on the card. The experiment will go on for 20 minutes which is equivalent to 8 cards.
 
-There are two versions of interactive behaviours: a prescripted version and a CBLA version. The prescripted version is powered by the Prescripted Engine and is described in \Cref{sec:prescripted-behaviours}. The CBLA version, powered by the CBLA Engine and its mechanics is described in detail in \Cref{chap:cbla}. The participants will not be informed about which version of the behaviours they were interacting with nor the fact that there are two different version of the interactive behaviours. Both versions of the behaviours would be run for approximately the same amount of time. After the fourth tone (which is half-way through the trial), the researcher would switch to the other version manually after the participant has finished filling in the questionnaire card and resume interacting with the sculpture. Some participants would be exposed to the prescripted version first and some would be exposed to the CBLA version first.
+There are two versions of interactive behaviours: a Prescripted Mode and a CBLA version. The Prescripted Mode is powered by the Prescripted Engine and is described in \Cref{sec:prescripted-behaviours}. The CBLA version, powered by the CBLA Engine and its mechanics is described in detail in \Cref{chap:cbla}. The participants will not be informed about which version of the behaviours they were interacting with nor the fact that there are two different version of the interactive behaviours. Both versions of the behaviours would be run for approximately the same amount of time. After the fourth tone (which is half-way through the trial), the researcher would switch to the other version manually after the participant has finished filling in the questionnaire card and resume interacting with the sculpture. 
+
+Since the experience of interacting with the sculpture is new to the test subjects, the order which the two types of behaviours is presented can make a big difference. The subjects may simply find the novelty of interacting with the sculpture interesting irrespective of the type of behaviour. In addition, since the exit questionnaires are given after the trials, the behaviours that the subjects experience near the end of the trials may have more profound effects than the experience earlier in the trials. Therefore, half of the participants would be exposed to the prescripted version first and the other half would be exposed to the CBLA version first.
 
 \subsubsection{After the trial}
 
-After the eighth tone, the participant would be informed that the trial has been completed. He or she is then asked to return the questionnaire cards in the envelope given to him or her prior to the trial. The participant is the asked to fill out an exit questionnaire in \Cref{Append:User Study Materials exit-survey}. 
+After the eighth tone, the participant would be informed that the trial has been completed. He or she is then asked to return the questionnaire cards in the envelope given to him or her prior to the trial. The participant is the asked to fill out an exit questionnaire in \Cref{Append:User Study Materials exit-survey}. There were five questions on the questionnaire. 
+
+\begin{enumerate}
+	\item How interesting was your overall experience while interacting with the art 
+	sculpture? \label{itm:survey-q1}
+	\item How responsive was the sculpture to your presence?  Do you think its behaviour was totally random, or do you think it was responding directly to you? \label{itm:survey-q2}
+	\item How familiar are you with machine learning algorithms? \label{itm:survey-q3}
+	\item How would you describe the behaviour of the sculpture? \label{itm:survey-q4}
+	\item Additional comments \label{itm:survey-q5}
+\end{enumerate}
+
+Question~\ref{itm:survey-q1} aims to elicit the participant's general opinion about how interesting it is interacting with the sculpture. Question~\ref{itm:survey-q2} aims to provide insights on research question~\ref{itm:research-q2}. Both questions~\ref{itm:survey-q1}~and~\ref{itm:survey-q2} are rated from a scale of 0 to 9. Question~\ref{itm:survey-q3} allows us to gauge whether or not the participant's prior exposure to machine learning has any effect of his or her perceptions of the behaviours of sculpture and it is rated on a scale of 0 to 4. Questions~\ref{itm:survey-q4}~and~\ref{itm:survey-q5} are open-ended questions that can give us qualitative information about the participant's experience that we might not be able to capture in our quantitative analyses. 
+
 
 After that, the test participant is provided with a debriefing letter in \Cref{Append:User Study Materials debriefing}, which has more information about the learning algorithm, the interactive behaviours, and the purpose of this study. In addition, the interactive behaviours that he or she has interacted with are explained verbally after all questionnaires are collected.
 
+\subsection{Results and Analyses}
 
-\subsection{Design of the Methodology}
+
+\subsubsection{Collected Data}
+
+A total of 10 trials were run. There were three main sets of data collected in each trial: the set of 8 questionnaire cards, the exit questionnaire, and the states of the CBLA system during the entire trial.
+
+The questionnaire cards record each subject's levels of interest and locations at the 8 sample points. The levels of interest data allow us to compute the subject's overall interest level for each of the two segments, Prescripted Mode and CBLA Mode. We further separate the data into two groups based on either the trial started with Prescripted first or CBLA first and the data is shown in \Cref{table:user-study-cards-results-prescripted-first,table:user-study-cards-results-cbla-first}. On the other hand, the locations data allow us to examine the relationship between the level of activation near the test subjects to his or her reported interest level.
+
+\begin{table}[!htbp]
+	\caption[Self-reported interest levels for Prescripted-first trials in the user study]{Self-reported interest levels at the sample points collected during Prescripted-first trials in the user study}
+	\begin{center}
+		\begin{tabularx}{0.75\textwidth}{ | c | *{8}{>{\centering\arraybackslash}X|}}
+			% Headers
+			\hline
+			\multirow{2}{*}{\textbf{Trial \#} } & \multicolumn{8}{c|}{\textbf{Sample Interest Level}} \\ 
+			\cline{2-9}
+			& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} 
+			& \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} \\ 
+			\hline\hline
+			% Data
+			1 & 6 &	4 &	6 & 3 & 7 & 6 & 4 & 7 \\ \hline
+			3 & 1 & 4 & 2 & 3 & 5 & 3 & 3 & 2 \\ \hline
+			5 & 4 & 4 & 5 & 5 & 3 & 3 & 5 & 4 \\ \hline
+			7 & 7 & 6 & 7 & 5 & 5 & 6 & 5 & 6.5 \\ \hline
+			10 & 9 & 9 & 7 & 5 & 5 & 3 & 3 & 2 \\ \hline
+		\end{tabularx}
+	\end{center}
+	\label{table:user-study-cards-results-prescripted-first}
+\end{table}
+
+\begin{table}[!htbp]
+	\caption[Self-reported interest levels for CBLA-first trials in the user study]{Self-reported interest levels at the sample points collected during CBLA-first trials in the user study}
+	\begin{center}
+		\begin{tabularx}{0.75\textwidth}{ | c | *{8}{>{\centering\arraybackslash}X|}}
+			% Headers
+			\hline
+			\multirow{2}{*}{\textbf{Trial \#} } & \multicolumn{8}{c|}{\textbf{Sample Interest Level}} \\ 
+			\cline{2-9}
+			& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} 
+			& \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} \\ 
+			\hline\hline
+			% Data
+			2 & 8 &	7 &	6 & 7 & 7 & 6 & 8 & 6 \\ \hline
+			4 & 0 & 4 & 6 & 9 & 7 & 9 & 2 & 0 \\ \hline
+			6 & 5 & 5 & 5 & 5 & 2 & 2 & 1 & 1 \\ \hline
+			8 & 8 & 3 & 6 & 8 & 5 & 3 & 2 & 6 \\ \hline
+			9 & 5 & 8 & 8 & 7 & 7 & 7 & 4 & 5 \\ \hline
+		\end{tabularx}
+	\end{center}
+	\label{table:user-study-cards-results-cbla-first}
+\end{table}
 
 
-\subsection{Results Analysis}
+In addition, The input, output, and internal variables of the CBLA Nodes and non-CBLA Nodes during the entire trial were collection. The activation level of each CBLA Node was extract at 1.0s time interval for analyses on the correlation between activation levels and interest levels. 
 
-\subsubsection{Overall Interest Level}
-The survey data show thatt there's no significant between CBLA and Prescripte.
-However the only significant is when Prescripted is on after Prescripted seems to be more interesting
+Lastly, the exit questionnaires were given to the test subjects after the trials but before revealing any additional information about the user study. In addition, observations of the participants' behaviours and interesting comments made during verbal conversations with were noted. 
+
+\subsubsection{Average Interest Levels between Prescripted Mode and CBLA Mode}
+
+We first separated the levels of interest data samples that we collected from the questionnaire cards (\Cref{table:user-study-cards-results-prescripted-first,table:user-study-cards-results-cbla-first}) into four groups: Prescripted Mode (first half),  Prescripted Mode (second half),  CBLA Mode (first half), and CBLA Mode (second half). The ``Prescripted Mode'' or ``CBLA Mode'' indicates the version of the behaviours that was running when the level of interest was recorded, and ``(first half)'' or ``(second half)'' indicates whether the sample was taken during the first half or second half of the trial. We then take the average across all trials for each sample and we get four set of data with five elements each.
+
+\begin{tabular}{l l}
+	Prescripted Mode (first half):      &(4.75, 2.5, 4.5, 6.25, 7.5) \\
+	Prescripted Mode (second half):     &(7.0, 4.75, 5.0, 6.25, 7.0) \\
+	CBLA Mode (first half):             &(6.75, 4.5, 1.5, 4.0, 5.75) \\
+	CBLA Mode (second half):            &(6.0, 3.25, 3.75, 5.625, 3.25)	
+\end{tabular}
+
+We then perform Welch's T-Test for unequal variance on different combinations of these four sets of data. For each test, the two-tails P-value must be below 0.1 in order for the null hypothesis (H0) to be reject in favour of the alternate hypothesis (H1).
+
+\begin{enumerate}
+	\item Prescripted Mode: on during first half vs one during second half
+		\begin{itemize}[align=left]
+			\item[Data Set 1: ] Prescripted Mode (first half)
+			\item[Data Set 2: ] Prescripted Mode (second half)
+			\begin{itemize}
+				\item[--- H0.] Average interest level for prescripted mode is the same regardless if it is on first or second.
+				\item[--- H1.] Average interest level for prescripted mode is different depending on whether it is on first or second.
+			\end{itemize}
+		\end{itemize}
+	\item CBLA Mode: on during first half vs one during second half
+		\begin{itemize}[align=left]
+			\item[Data Set 1: ] CBLA Mode (first half)
+			\item[Data Set 2: ] CBLA Mode (second half)
+			\begin{itemize}
+				\item[--- H0.] Average interest level for CBLA mode is the same regardless if it is on first or second.
+				\item[--- H1.] Average interest level for CBLA mode is different depending on whether it is on first or second.			
+			\end{itemize}
+		\end{itemize}
+	\item Either Modes: on during first half vs one during second half
+		\begin{itemize}[align=left]
+			\item[Data Set 1: ] Prescripted Mode (first half) + CBLA Mode (first half)
+			\item[Data Set 2: ] Prescripted Mode (second half) + CBLA Mode (second half)
+			\begin{itemize}
+				\item[--- H0.] Average interest level is the same regardless if it is on first or second.
+				\item[--- H1.] Average interest level is different depending on whether it is on first or second.
+			\end{itemize}
+		\end{itemize}
+	\item CBLA Mode vs. Prescripted Mode: on during first half
+		\begin{itemize}[align=left]
+			\item[Data Set 1: ] CBLA Mode (first half)
+			\item[Data Set 2: ]  Prescripted Mode (first half)
+			\begin{itemize}
+				\item[--- H0.] Average interest level for CBLA mode is the same as Prescripted mode when it is on first.
+				\item[--- H1.] Average interest level for CBLA mode is different from Prescripted mode when it is on first.
+			\end{itemize}
+		\end{itemize}
+	\item CBLA Mode vs. Prescripted Mode: on during second half
+		\begin{itemize}[align=left]
+			\item[Data Set 1: ] CBLA Mode (Second half)
+			\item[Data Set 2: ] Prescripted Mode (second half)
+			\begin{itemize}
+				\item[--- H0.] Average interest level for CBLA mode is the same as Prescripted mode when it is on second.
+				\item[--- H1.] Average interest level for CBLA mode is different from Prescripted mode when it is on second.
+			\end{itemize}
+		\end{itemize}
+	\item CBLA Mode vs. Prescripted Mode: on during either half
+		\begin{itemize}[align=left]
+			\item[Data Set 1: ] CBLA Mode (first half) + CBLA Mode (second half)
+			\item[Data Set 2: ] Prescripted Mode (first half) + Prescripted Mode (second half)
+			\begin{itemize}
+				\item[--- H0.] Average interest level for CBLA mode is the same as Prescripted mode.
+				\item[--- H1.] Average interest level for CBLA mode is different from Prescripted mode.
+			\end{itemize}
+		\end{itemize}
+\end{enumerate}
+
+
+Out of the six Welch's T-Test, only Test 5, which compares the level of interest between CBLA Mode and Prescripted Mode when they are on during second half of the trial, is able to reject the null hypothesis with a two-tailed P-value of 0.0684. Since the mean of the interest level of Prescripted Mode and CBLA Mode are 6.0 and 4.375 respectively. We can interpret that Prescripted Mode is more interesting than CBLA mode when it is on during the second segment with 96.58\% confidence.
  
 \subsubsection{Responsiveness}
 
-\subsubsection{Correlation: Activation level vs Interest LEvel}
+\subsubsection{Correlation: Activation level vs Interest Level}
 
 \subsubsection{Correlation: Activation Type vs Interest Level}
-\subsubsection{Correlation:Proximal activation vs interest level}
+\subsubsection{Correlation: Proximal activation vs interest level}
 
 
 
-\subsection{Discussion}
+\subsection{Discussions}
 
 different people interact with sculpture different and have different expectation
 need different kinds of way to measure interest level. 
