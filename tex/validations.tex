@@ -483,9 +483,9 @@ This study aims to examine the users' responses to the behaviour emerged from th
 The objectives can be summed up in the following three questions.
 
 \begin{enumerate}
-	\item Does the use of the CBLA increase user's interest level over prescripted behaviours? 	\label{itm:research-q1}
-	\item Do people perceive CBLA as non-random? \label{itm:research-q2}
-	\item Are certain behaviours  more interesting than others? \label{itm:research-q3}
+	\item Does the use of the CBLA increase user's interest level over prescripted behaviours?\label{itm:research-q1}
+	\item Do people perceive CBLA as non-random?\label{itm:research-q2}
+	\item Are certain behaviours  more interesting than others?\label{itm:research-q3}
 \end{enumerate}
 
 
@@ -565,10 +565,7 @@ Question~\ref{itm:survey-q1} aims to elicit the participant's general opinion ab
 
 After that, the test participant is provided with a debriefing letter in \Cref{Append:User Study Materials debriefing}, which has more information about the learning algorithm, the interactive behaviours, and the purpose of this study. In addition, the interactive behaviours that he or she has interacted with are explained verbally after all questionnaires are collected.
 
-\subsection{Results and Analyses}
-
-
-\subsubsection{Collected Data}
+\subsection{Results and Data}
 
 A total of 10 trials were run. There were three main sets of data collected in each trial: the set of 8 questionnaire cards, the exit questionnaire, and the states of the CBLA system during the entire trial.
 
@@ -623,7 +620,9 @@ In addition, The input, output, and internal variables of the CBLA Nodes and non
 
 Lastly, the exit questionnaires were given to the test subjects after the trials but before revealing any additional information about the user study. In addition, observations of the participants' behaviours and interesting comments made during verbal conversations with were noted. 
 
-\subsubsection{Average Interest Levels between Prescripted Mode and CBLA Mode}
+\newcounter{analysis-id} \stepcounter{analysis-id}
+\subsection{Analysis~\Roman{analysis-id} -- Average Interest Levels between Prescripted Mode and CBLA Mode}
+\stepcounter{analysis-id}
 
 We first separated the levels of interest data samples that we collected from the questionnaire cards (\Cref{table:user-study-cards-results-prescripted-first,table:user-study-cards-results-cbla-first}) into four groups: Prescripted Mode (first half),  Prescripted Mode (second half),  CBLA Mode (first half), and CBLA Mode (second half). The ``Prescripted Mode'' or ``CBLA Mode'' indicates the version of the behaviours that was running when the level of interest was recorded, and ``(first half)'' or ``(second half)'' indicates whether the sample was taken during the first half or second half of the trial. We then take the average across all trials for each sample and we get four set of data with five elements each.
 
@@ -673,8 +672,7 @@ We then perform Welch's T-Test for unequal variance on different combinations of
 				\item[--- H1.] Average interest level for CBLA mode is different from Prescripted mode when it is on first.
 			\end{itemize}
 		\end{itemize}
-	\item CBLA Mode vs. Prescripted Mode: on during second half
-		\begin{itemize}[align=left]
+	\item CBLA Mode vs. Prescripted Mode: on during second half\label{itm:w-ttest-cbla-2nd}		\begin{itemize}[align=left]
 			\item[Data Set 1: ] CBLA Mode (Second half)
 			\item[Data Set 2: ] Prescripted Mode (second half)
 			\begin{itemize}
@@ -694,14 +692,79 @@ We then perform Welch's T-Test for unequal variance on different combinations of
 \end{enumerate}
 
 
-Out of the six Welch's T-Test, only Test 5, which compares the level of interest between CBLA Mode and Prescripted Mode when they are on during second half of the trial, is able to reject the null hypothesis with a two-tailed P-value of 0.0684. Since the mean of the interest level of Prescripted Mode and CBLA Mode are 6.0 and 4.375 respectively. We can interpret that Prescripted Mode is more interesting than CBLA mode when it is on during the second segment with 96.58\% confidence.
- 
-\subsubsection{Responsiveness}
+Out of the six Welch's T-Test, only Test~\ref{itm:w-ttest-cbla-2nd}, which compares the level of interest between CBLA Mode and Prescripted Mode when they are on during second half of the trial, is able to reject the null hypothesis with a two-tailed P-value of 0.0684. Since the mean of the interest level of Prescripted Mode and CBLA Mode are 6.0 and 4.375 respectively. We can interpret that Prescripted Mode is more interesting than CBLA mode by approximately 37\% when it is on during the second segment with 96.58\% confidence. 
 
-\subsubsection{Correlation: Activation level vs Interest Level}
+Furthermore, we are interested in finding out if a participant find Prescripted Mode more or less interesting than CBLA Mode. Since each participant has seen both versions of behaviours, we can compare their responses by performing Paired T-Tests. 
 
-\subsubsection{Correlation: Activation Type vs Interest Level}
-\subsubsection{Correlation: Proximal activation vs interest level}
+We first compare the each test subject's average levels of interests in CBLA Mode and Prescripted Mode, irrespective of which halves such behaviour was presented. 
+\begin{enumerate}[resume]
+ 	\item CBLA Mode vs Prescripted Mode
+ 	\begin{itemize}[align=left]\label{itm:paired-ttest-both-halves}
+ 		\item[Data Set 1: ]  CBLA Mode (first half) + CBLA Mode (second half)
+ 		\item[Data Set 2: ]  Prescripted Mode (second half) + Prescripted Mode (first half) 
+ 		\begin{itemize}
+ 			\item[--- H0.] Participants find that CBLA Mode is equally as interesting as Prescripted Mode.
+ 			\item[--- H1.] Participants find that CBLA Mode is not equally as interesting as the Prescripted Mode.
+ 		\end{itemize}
+ 	\end{itemize}
+\end{enumerate}
+
+In Test~\ref{itm:paired-ttest-both-halves}, we find that CBLA Mode is in fact less interesting than Prescripted Mode with 96.16\% confidence. For an average participant who has interacted with both kinds of behaviours, he or she gives Prescripted Mode a rate of 5.55 and a CBLA Mode a rate of 4.44. This means that Prescripted mode approximately 25\% more interesting than CBLA Mode irrespective of the order that they were presented. 
+
+Taking a closer look, we want to see if the orders of which of the two versions is presented to the test subjects make a difference.
+
+\begin{enumerate}[resume]
+	\item CBLA Mode vs. Prescripted Mode when Prescripted Mode is on first
+	\begin{itemize}[align=left]\label{itm:paired-ttest-first-half}
+		\item[Data Set 1: ] CBLA Mode (second half)
+		\item[Data Set 2: ] Prescripted Mode (first half)
+		\begin{itemize}
+			\item[--- H0.] Participants find that CBLA Mode is equally as interesting as Prescripted Mode when Prescripted Mode is on first.
+			\item[--- H1.] Participants find that CBLA Mode is not equally as interesting as the Prescripted Mode when Prescripted Mode is on first.
+		\end{itemize}
+	\end{itemize}
+	\item CBLA Mode vs Prescripted Mode when CBLA Mode is on first
+	\begin{itemize}[align=left]\label{itm:paired-ttest-second-half}
+		\item[Data Set 1: ]  CBLA Mode (first half) 
+		\item[Data Set 2: ]  Prescripted Mode (second half) 
+		\begin{itemize}
+			\item[--- H0.] Participants find that CBLA Mode is equally as interesting as Prescripted Mode when CBLA Mode is on first.
+			\item[--- H1.] Participants find that CBLA Mode is not equally as interesting as the Prescripted Mode when CBLA Mode is on first.
+		\end{itemize}
+	\end{itemize}
+\end{enumerate}
+
+In Test~\ref{itm:paired-ttest-first-half}, we could not find any significance that a participant would find CBLA Mode more or less interesting than Prescripted Mode when Prescripted Mode is on first. On the other hand, in Test~\ref{itm:paired-ttest-second-half}, we found that CBLA Mode is rated lower at an average of 4.5 compared to Prescripted Mode at an average of 6.0 with a 96.32\% confidence. This translates to a 33\% increase in interest level when the behaviour is switched from CBLA Mode to Prescripted Mode. This is quite surprising as we have always expected the initial curiosity of the participants would get boost the interest level of the behaviour presented first. However, this is not the case since the level of interest of Prescripted Mode should be even higher when it was presented first in the trial.
+
+
+\subsection{Analysis~\Roman{analysis-id} -- Correlation between Activation level and Interest Level}
+\stepcounter{analysis-id}
+
+We want to determine if there are any correlations between the participants' reported level of interest to the activation levels of the sculpture. In this analysis, we do not consider which version of the behaviours was running at the sample point and focus on the actual activation levels of the sculpture.
+
+The extracted activation levels for each CBLA Node are the output levels of each node averaged in 1.0s windows. For each trial, there are 8 sample points and they are the times when the participant fills out a questionnaire card and reported his or her level of interest and location. For each sample point, the time interval containing it and 30 time intervals (which translates to 30 seconds) preceding it are considered as activations related to the sample point.
+
+There are two general ways to calculate activation. The first is ``Average Sample Average Activation'',  $\overline{\overline{\alpha}}$. It is computed by taking the average of the output values at the 30 time intervals preceding and at the sample point and taking the average of that value across all the nodes under consideration as formulated in \eqref{eqn:bar_bar_alpha}.
+
+\begin{equation}\label{eqn:bar_bar_alpha}
+	\overline{\overline{\alpha}} = \frac{1}{N}\sum_{j=0}^{N}\frac{1}{31}\sum_{t=t_{s-30}}^{t_{s}}\overline{m_{jt}}
+\end{equation}
+where $\overline{\overline{\alpha}}$ is the average sample average activation level among all CBLA Nodes being considered; $N$ is the number of CBLA Nodes being considered; $t_s$ is the time interval that the sample point is in. $t_{s-30}$ is the time interval that is 30 time intervals before $t_s$; and $\overline{m_{jt}}$ is the output level of CBLA Node $j$ at time interval $t$. 
+
+Here are the explanation of what each kind of activation levels were calculated.
+Average Sample Average Activation (all nodes): For each node, for each sample, I took the average activation of the 30 preceding and during the sample point. I then took the average across all nodes for each sample.
+
+At the end, I computed the averages and standard deviations of those correlation value across all the studies. 
+I don’t’ think there’s any correlation on average even though there seems to be some correlations within each study. I am not sure how I can perform T-Tests on these data or if that makes any sense at all. 
+
+
+
+There are two ways to calculate the activation level. 
+
+
+
+\subsection{Analysis~\Roman{analysis-id} -- Responsiveness}
+\stepcounter{analysis-id}
 
 
 
