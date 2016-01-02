@@ -89,7 +89,7 @@ The system runs undisturbed until, after some initial learning, all of the nodes
 
 All the nodes first started learning their own models and entered idle mode. At around 390s, a human participant walked in front of the IR proximity sensor. This triggered a large reduction in action value at first, due to an increase in prediction error. However, as more data was collected, the action values for all four nodes quickly jumped up. This prompted the nodes to exit idle mode and begin generating actions to learn the model. After a period of readjustment, all four nodes re-entered idle mode after the new environment is learnt. 
 
-\subsection{Discussion}
+\subsection{Discussions}
 
 From \Cref{fig:Single_Cluster Action Value Vs Time}, one can see that the Light Node and the three Fin Nodes reacted to the environmental change nearly simultaneously. They exited the idle state and shifted to more exploratory actuation patterns. This showed that the shared sensor input variable was able link the CBLA engines together, even though they run independently at different frequencies. This experiment demonstrates that the reaction of the system to the changed environmental conditions creates an interaction with the visitor without any explicitly pre-programmed behaviours. The system appears to respond to the participant and their action, as its internal model of the environment cannot predict the behaviour of the participant. 
 
@@ -737,32 +737,99 @@ Taking a closer look, we want to see if the orders of which of the two versions 
 In Test~\ref{itm:paired-ttest-first-half}, we could not find any significance that a participant would find CBLA Mode more or less interesting than Prescripted Mode when Prescripted Mode is on first. On the other hand, in Test~\ref{itm:paired-ttest-second-half}, we found that CBLA Mode is rated lower at an average of 4.5 compared to Prescripted Mode at an average of 6.0 with a 96.32\% confidence. This translates to a 33\% increase in interest level when the behaviour is switched from CBLA Mode to Prescripted Mode. This is quite surprising as we have always expected the initial curiosity of the participants would get boost the interest level of the behaviour presented first. However, this is not the case since the level of interest of Prescripted Mode should be even higher when it was presented first in the trial.
 
 
-\subsection{Analysis~\Roman{analysis-id} -- Correlation between Activation level and Interest Level}
+\subsection{Analysis~\Roman{analysis-id} -- Correlations between Activation level and Interest Level}
 \stepcounter{analysis-id}
 
 We want to determine if there are any correlations between the participants' reported level of interest to the activation levels of the sculpture. In this analysis, we do not consider which version of the behaviours was running at the sample point and focus on the actual activation levels of the sculpture.
 
 The extracted activation levels for each CBLA Node are the output levels of each node averaged in 1.0s windows. For each trial, there are 8 sample points and they are the times when the participant fills out a questionnaire card and reported his or her level of interest and location. For each sample point, the time interval containing it and 30 time intervals (which translates to 30 seconds) preceding it are considered as activations related to the sample point.
 
-There are two general ways to calculate activation. The first is ``Average Sample Average Activation'',  $\overline{\overline{\alpha}}$. It is computed by taking the average of the output values at the 30 time intervals preceding and at the sample point and taking the average of that value across all the nodes under consideration as formulated in \eqref{eqn:bar_bar_alpha}.
+There are two general ways to calculate activation. The first way is ``Average Sample Average Activation'',  $\overline{\overline{\alpha}}$. It is computed by taking the average of the output values in the 30 time intervals preceding and at the sample point and taking the average of that value across all the nodes under consideration as formulated in \eqref{eqn:bar_bar_alpha}.
 
 \begin{equation}\label{eqn:bar_bar_alpha}
-	\overline{\overline{\alpha}} = \frac{1}{N}\sum_{j=0}^{N}\frac{1}{31}\sum_{t=t_{s-30}}^{t_{s}}\overline{m_{jt}}
+	\overline{\overline{\alpha}} = \frac{1}{N}\sum_{j=0}^{N}\frac{1}{31}\sum_{t=t_{s-30}}^{t_{s}}\overline{m}_{jt}
 \end{equation}
-where $\overline{\overline{\alpha}}$ is the average sample average activation level among all CBLA Nodes being considered; $N$ is the number of CBLA Nodes being considered; $t_s$ is the time interval that the sample point is in. $t_{s-30}$ is the time interval that is 30 time intervals before $t_s$; and $\overline{m_{jt}}$ is the output level of CBLA Node $j$ at time interval $t$. 
+where $\overline{\overline{\alpha}}$ is the average sample average activation level among all CBLA Nodes being considered; $N$ is the number of CBLA Nodes being considered; $t_s$ is the time interval that the sample point is in. $t_{s-30}$ is the time interval that is 30 time intervals before $t_s$; and $\overline{m}_{jt}$ is the output level of CBLA Node $j$ at time interval $t$. 
 
-Here are the explanation of what each kind of activation levels were calculated.
-Average Sample Average Activation (all nodes): For each node, for each sample, I took the average activation of the 30 preceding and during the sample point. I then took the average across all nodes for each sample.
+The second way is the ``Average Sample Peak Activation'', $\overline{\widehat{\alpha}}$. It is computed by taking the maximum output values in the 30 time intervals preceding and at the sample point and taking the average of that value across all the nodes under consideration as formulated in \eqref{eqn:bar_hat_alpha}.
 
-At the end, I computed the averages and standard deviations of those correlation value across all the studies. 
-I don’t’ think there’s any correlation on average even though there seems to be some correlations within each study. I am not sure how I can perform T-Tests on these data or if that makes any sense at all. 
+\begin{equation}\label{eqn:bar_hat_alpha}
+\overline{\widehat{\alpha}} = \frac{1}{N}\sum_{j=0}^{N} \text{max}(\overline{m}_{jt_{s-30}}, ... , \overline{m}_{jt_{s}})
+\end{equation}
+where $\overline{\widehat{\alpha}}$ is the average sample peak activation level among all CBLA Nodes being considered; $N$ is the number of CBLA Nodes being considered; $\overline{m}_{jt_{s-30}}$ and $\overline{m}_{jt_s}$ are the output levels of the CBLA Node $j$ at time intervals $t_{s-30}$ and $t_s$ respectively.
+
+Using those two metrics, we can examine if there is any correlations between interest level and different types of activation levels. One type of activation levels is the system wide activation which we compute the metrics among all CBLA Nodes. The other type is device type activation, which we compute the metrics among just Half-Fin Nodes, Light Nodes, or Reflex Nodes. 
+
+In addition, proximity of the activation to the participant should also be considered. For this, we formulate a modified version of $\overline{\overline{\alpha}}$ and $\overline{\widehat{\alpha}}$ that are weighted by the inverse proximities of the Nodes to the participant. They are called ``Average Sample Proximal Average Activation'', $\overline{\overline{\rho}}$, and ``Average Sample Proximal Peak Activation'',  $\overline{\widehat{\rho}}$. The proximity is measured in relative distance unit as only the relative proximity among Nodes is being considered in this metrics. 
+
+\begin{equation}\label{eqn:bar_bar_rho}
+\overline{\overline{\rho}} = \frac{1}{N}\sum_{j=0}^{N} \frac{1}{31 \cdot d_j} \sum_{t=t_{s-30}}^{t_{s}}\overline{m}_{jt}
+\end{equation}
+where $\overline{\overline{\rho}}$ is the average sample proximal average activation level among all CBLA Nodes being considered; $N$ is the number of CBLA Nodes being considered; $d_j$ is the relative distance between the CBLA Node $j$ and the subject; $t_s$ is the time interval that the sample point is in; $t_{s-30}$ is the time interval that is 30 time intervals before $t_s$; and $\overline{m}_{jt}$ is the output level of CBLA Node $j$ at time interval $t$. 
+
+\begin{equation}\label{eqn:bar_hat_rho}
+\overline{\widehat{\rho}} = \frac{d_j}{N}\sum_{j=0}^{N} \frac{1}{d_j} \text{max}(\overline{m}_{jt_{s-30}}, ... , \overline{m}_{jt_{s}})
+\end{equation}
+where $\overline{\widehat{\rho}}$ is the average sample proximal peak activation level among all CBLA Nodes being considered; $N$ is the number of CBLA Nodes being considered; $d_j$ is the relative distance between the CBLA Node $j$ and the subject; $\overline{m}_{jt_{s-30}}$ and $\overline{m}_{jt_{s}}$ are the output levels of the CBLA Node $j$ at time intervals $t_{s-30}$ and $t_s$ respectively.
+
+Since we are interested in the correlation between activation levels of the sculpture and the interest level of an average user, we combine the data for all 10 studies and compute metrics described above. We then compute the Pearson correlation coefficient, $r$, between those metrics and the user's level of interest in \Cref{table:user-study-correlation-results}.
+
+\begin{table}[!htb]
+	\caption[Correlations between activation levels and user's interest level]{Correlations between activation levels and user's interest level}
+	\begin{center}
+		\begin{tabularx}{0.75\textwidth}{| c | l | *{2}{>{\centering\arraybackslash}X|}}
+			% Headers
+			\hline
+			\textbf{Metric} &  \textbf{Nodes} & \boldmath{$r$} & \textbf{P-value} \\ 
+			\hline\hline
+			% Data
+			$\overline{\overline{\alpha}_{all}}$ & all CBLA Nodes & 0.366304 & 0.000833 \\ \hline
+			$\overline{\overline{\alpha}_{hf}}$  & Half-Fin Nodes  & 0.357302 & 0.001139 \\ \hline
+			$\overline{\overline{\alpha}_{l}}$   & Light Nodes & 0.395201 & 0.000286 \\ \hline
+			$\overline{\overline{\alpha}_{rfx}}$ & Reflex Nodes & -0.083434 & 0.461854 \\ \hline
+			$\overline{\widehat{\alpha}_{all}}$  & all CBLA Nodes & 0.317221 & 0.004143 \\ \hline
+			$\overline{\widehat{\alpha}_{hf}}$   & Half-Fin Nodes & 0.374608 & 0.000618 \\ \hline
+			$\overline{\widehat{\alpha}_{l}}$    & Light Nodes & 0.322380 & 0.003541 \\ \hline
+			$\overline{\widehat{\alpha}_{rfx}}$  & Reflex Nodes & 0.021213 & 0.851844 \\ \hline
+			$\overline{\overline{\rho}_{all}}$   & all CBLA Nodes & 0.345267 & 0.001709 \\ \hline
+			$\overline{\widehat{\rho}_{all}}$    & all CBLA Nodes & 0.317167 & 0.004149\\ \hline
+		\end{tabularx}
+	\end{center}
+	\label{table:user-study-correlation-results}
+\end{table}
+
+Over the whole system, there is a weak positive correlation between interest level and both average sample average activation levels $\overline{\overline{\alpha}_{all}}$ and average sample peak activation levels $\overline{\widehat{\alpha}_{all}}$ with over 99\% confidence.
+
+For device type correlation, we find the highest correlations for Light Nodes when considering average sample average activation levels. On the other hand, the highest correlation is found for Half-Fin Nodes when considering peak sample peak activation levels. Interestingly, we did not find any significant correlation between the activation levels of Reflex Node to the user's interest level. 
+
+The proximities of the activations do not increase the correlation. The correlation coefficients for average sample proximal average activation $\overline{\overline{\rho}_{all}}$ and average sample proximal peak activation $\overline{\widehat{\rho}_{all}}$ are rough the same as their system-wide counterparts. This might be attributed to the fact that the sculpture is relatively small. 
+
+Although the overall correlations across all ten studies is relatively weak, there is large variations among different studies. For instance, the average total peak activations level $\overline{\widehat{\alpha}_{all}}$ for Study 10 shows strong correlation with the subject's interest level. It has a Pearson coefficient $r$ of 0.924443 with over 98\% confidence. On the other hand, the same metrics for Study 3 shows no significant correlation. The two cases are plotted in \Cref{fig:correlation-study-specific} for a visual side-by-side comparison.
 
 
+\begin{figure}[!htb]
+	\centering
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/study_10 - correlation total activation"}
+		\caption[Study 10]{Study 10 with strong correlation}
+		\label{fig:correlation-study10}
+	\end{subfigure}
+	~ 
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/study_3 - correlation total activation"}
+		\caption[Study 3]{Study 3 with no significant correlation}
+		\label{fig:correlation-study3}
+	\end{subfigure}
+	\caption[Study specific correlation between activation level and user's level of interest]{Study specific correlation between average sample peak activation level, $\overline{\widehat{\alpha}_{all}}$, and user's level of interest.}
+	\label{fig:correlation-study-specific}
+\end{figure}
 
-There are two ways to calculate the activation level. 
+This shows that different people respond and interact very differently to the behaviour of the sculpture. For instance, some people might indeed be attracted by the activation and was engaged to interact with the sculpture, while some might be attracted to sculpture due to other reasons, such as the aesthetic of the design. More samples would be needed to further categorize different types of test subjects. 
 
 
-
+\FloatBarrier
 \subsection{Analysis~\Roman{analysis-id} -- Responsiveness}
 \stepcounter{analysis-id}
 
