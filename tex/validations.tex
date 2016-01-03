@@ -474,7 +474,7 @@ As mentioned in \Cref{sec:action_selection}, this periodic activation pattern is
 
 The CBLA system described thus far used on interactive art sculptures to automatically generate interactive behaviours. This user study aims to determine whether the behaviours generated through this method can make the experience of interacting with the sculptures more interesting, compared with prescripted behaviours. Simply put, we would like to test whether behaviours generated using the CBLA are more interesting than prescripted behaviours designed by human experts. The test subjects report their level of interest at several points in time as they interact with sculpture, with the two versions of behaviours. Afterwards, a short survey is given to assess the subjects' overall experience. The results of this study enables designers to design more engaging and interesting interactive art sculptures. 
 
-\subsection{Objectives}
+\subsection{Objectives}\label{sec:user-study-objectives}
 
 This study aims to examine the users' responses to the behaviour emerged from the CBLA system in an interact art sculpture. In addition, we aim to reveal the relationships between the intensity and type of activation and users' level of interest as they interact with the sculpture.
 
@@ -621,7 +621,7 @@ In addition, The input, output, and internal variables of the CBLA Nodes and non
 Lastly, the exit questionnaires were given to the test subjects after the trials but before revealing any additional information about the user study. In addition, observations of the participants' behaviours and interesting comments made during verbal conversations with were noted. 
 
 \newcounter{analysis-id} \stepcounter{analysis-id}
-\subsection{Analysis~\Roman{analysis-id} -- Average Interest Levels between Prescripted Mode and CBLA Mode}
+\subsection{Analysis~\Roman{analysis-id} -- Average Interest Levels between Prescripted Mode and CBLA Mode} \label{sec:user-study-analysis-interest}
 \stepcounter{analysis-id}
 
 We first separated the levels of interest data samples that we collected from the questionnaire cards (\Cref{table:user-study-cards-results-prescripted-first,table:user-study-cards-results-cbla-first}) into four groups: Prescripted Mode (first half),  Prescripted Mode (second half),  CBLA Mode (first half), and CBLA Mode (second half). The ``Prescripted Mode'' or ``CBLA Mode'' indicates the version of the behaviours that was running when the level of interest was recorded, and ``(first half)'' or ``(second half)'' indicates whether the sample was taken during the first half or second half of the trial. We then take the average across all trials for each sample and we get four set of data with five elements each.
@@ -737,7 +737,7 @@ Taking a closer look, we want to see if the orders of which of the two versions 
 In Test~\ref{itm:paired-ttest-first-half}, we could not find any significance that a participant would find CBLA Mode more or less interesting than Prescripted Mode when Prescripted Mode is on first. On the other hand, in Test~\ref{itm:paired-ttest-second-half}, we found that CBLA Mode is rated lower at an average of 4.5 compared to Prescripted Mode at an average of 6.0 with a 96.32\% confidence. This translates to a 33\% increase in interest level when the behaviour is switched from CBLA Mode to Prescripted Mode. This is quite surprising as we have always expected the initial curiosity of the participants would get boost the interest level of the behaviour presented first. However, this is not the case since the level of interest of Prescripted Mode should be even higher when it was presented first in the trial.
 
 
-\subsection{Analysis~\Roman{analysis-id} -- Correlations between Activation level and Interest Level}
+\subsection{Analysis~\Roman{analysis-id} -- Correlations between Activation level and Interest Level} \label{sec:user-study-analysis-activations}
 \stepcounter{analysis-id}
 
 We want to determine if there are any correlations between the participants' reported level of interest to the activation levels of the sculpture. In this analysis, we do not consider which version of the behaviours was running at the sample point and focus on the actual activation levels of the sculpture.
@@ -830,10 +830,10 @@ This shows that different people respond and interact very differently to the be
 
 
 \FloatBarrier
-\subsection{Analysis~\Roman{analysis-id} -- Responsiveness}
+\subsection{Analysis~\Roman{analysis-id} -- Responsiveness}\label{sec:user-study-analysis-responsiveness}
 \stepcounter{analysis-id}
 
-In the exit questionnaire, we asked the participants to rate their overall interest level and how responsiveness they think the behaviour was. In \Cref{table:user-study-responsive-data}, responses for the two questions and the average interest level reported on the questionnaire cards were tabulated. 
+In the exit questionnaire, we asked the participants to rate their overall interest level and how responsiveness they think the behaviour was. In \Cref{table:user-study-responsive-data}, responses for the two questions and the average interest level reported on the questionnaire cards were tabulated. All three rating were reported in a scale of 0 to 9. 
 
 \begin{table}[!htb]
 	\caption[User reported overall interest levels and responsiveness]{User reported overall interest levels and responsiveness for each trial. The trials are further grouped into Prescripted First and CBLA First.}
@@ -871,10 +871,21 @@ On the other hand, there is moderate discrepancy between the overall interest le
 
 \subsection{Discussions}
 
-different people interact with sculpture different and have different expectation
-need different kinds of way to measure interest level. 
+In this user study, we attempt to answer the three research questions raised in \Cref{sec:user-study-objectives}. 
 
-might be different if multiple people interact at the same time
+First,  does the use of the CBLA increase user's interest level over prescripted behaviours?  In the analyses done in \Cref{sec:user-study-analysis-interest}, we showed that CBLA Mode was in fact less interesting than Prescripted Mode by 25\%. This effect is even more pronounced when the trial started with CBLA Mode first and switched to Prescripted Mode halfway. Prescripted Mode was on average 33\% more interesting that CBLA Mode. This is contrary to our hypothesis as we did not find any significant evident that the use of the CBLA increase the user's interest level. 
 
+Second, do people perceive CBLA as non-random? It is more difficult to answer this question since we did not ask the participants to rate the sculpture's responsiveness for each types of behaviours. In fact, based on question~\ref{itm:survey-q4} of the exit questionnaire, most participants did not realize that there were two distinct sets of behaviours that were switched over midway. This wasn't asked since we couldn't reveal the type of behaviours that they should expect during the trial. However, we do find a positive correlation between interest level and responsiveness rating. Since CBLA Mode is considered less interesting, it shows that CBLA Mode is considered somewhat random. In addition, we speculated test subjects tends to emphasize on later half of the trial when answering the exit questionnaires. On that front, we also found that the responsiveness rating is lower when CBLA Mode was on in the second half. In addition, the written responses when the participants were asked to described the behaviours of the sculpture, they tend to describe the CBLA portion using words like as ``random'', ''totally random'', ``somewhat random'', or ``unresponsive''. This shows that the participants did think that CBLA Mode was indeed random. This is also contrary to our hypothesis that the participants can perceive the learning behaviours as non-random.
 
+Finally, are certain behaviours more interesting than others? In the analysis done in \Cref{sec:user-study-analysis-activations}, we found that there is a weak positive correlation between the overall activation levels and the user's interest level. In other word, the participants found that more actuations is more interesting than fewer actuations. On the other hand, we did not find that any specific device has a significantly stronger positive correlation. Similarly, we did not find that proximity of the actuations play influences the user's level of interest either. This may be because the size of the sculpture is relatively small and the participants can easily see, hear, and walk to anywhere in the sculpture relatively quickly compared with the time needed to fill out the questionnaire cards. Again, we can show that activations do tend to increase user's level of interest but, contrary to our hypothesis, we could not find any particular category of behaviours that is more interesting than the other. 
+
+However, these conclusions may only apply to this particular set-up under this particular set of procedures. For instance, we believe that over a long period of time, prescripted behaviour would become repetitive and less interesting. In this user study the participants were only interacting with the prescripted behaviours for 10 minutes and perhaps that is insufficient for them to realize that it's repetitive and lose interest. In fact, one participant thought it was responsive to sound and was making noise and was still trying to figure out its non-existent response to sound until the end. 
+
+Moreover, set up of this interaction is also very different from typical set-up. Typically, this sculpture is either set up as an art exhibition in some kind of public space like department stores, office buildings, and museums. Visitors are free to enter or leave the space as they like. In cases of a permanent installation, the sculpture is placed in the background to some other daily activities. This is very different from a some what one-on-one, timed interactions that we tested in this user study. In addition, typically visitors would be accompanied with others and the effect of multiple occupants in the same space is not covered. 
+
+In addition, this project is motivated by the desire to generate life-like behaviours automatically. We don't know if being life-like is interesting to all people. In fact, from the informal conversations after the studies, we realized that people have very different expectations about the behaviours of the sculpture and interests. Some expected much more coordinated, fast-pace movement, while some found the much slower and organic looking movements interesting. Some expected the sculpture to be very responsive, while some did not even know that there were sensors that can detect their presence at first. Some participants take figuring out the exact mechanism of sculpture's behaviours as challenge; some were enjoying it and some were frustrated by their abilities to figure out the patterns. Moreover, there are also participants who enjoyed looking at the design of the sculpture and some are interested in the design of the circuit boards and actuators. They spent a great deal of time examining the details of the sculpture itself rather than interacting with the sculpture.
+
+Furthermore, the ways how the participants interact with the sculpture vary greatly. Some mainly stood back and mainly observe, while some walked around the space rapidly and touching many parts of the sculpture at great frequency and perhaps randomly. In fact, one participant was taking apart the sculpture in order to better examine the part and how those alterations change the activation patterns of the sculpture. 
+
+This shows that the data should be further categorized based on the type of users. Different people expect different things out of this experience, and analyzing the different groups separately may reveal more useful information about user's response to the different types of behaviours. In addition, the user study should be done in a more realistic setting over a longer period of time to reveal whether CBLA can indeed be more interesting in the long run.
 
