@@ -124,25 +124,11 @@ Thus, for this experiment, a position controller Node is needed to enable the SM
 
 This controller essentially produces a control signal that allows the SMA wire to quickly reaches its desired temperature by setting the output voltage very high. It then gradually lowers the voltage as the SMA wire reaches its desired position according to an internal model. Development of this model starts with the intuition that the temperature of the wire increases when the rate of heating is greater than the rate of cooling. The rate of heating is related to the voltage across the wire. On the other hand, the rate of cooling is related to the temperature of the wire since it is mainly driven by the wire's own natural convection. 
 
-We first calculate the heat transfer rate as a result of current passing through the SMA wire. According to Joule's Law of Heating \cite{JouleHeating},
+We first calculate the heat transfer rate as a result of current passing through the SMA wire. According to Joule's Law \cite{JoulesLaw},
 \begin{equation}
-	H = \frac{1}{J}i^2 \cdot r \cdot t
+	q_1 = i^2 \cdot r
 \end{equation}
-where $H$ is heat generated in joule (J); $J$ is a constant known as the Joule's mechanical equivalent of heat; $i$ is the current in ampere (A); $r$ is the resistance of the wire in ohm; and $t$ is time is second.
-
-We can simplify the equation by lumping $\frac{1}{J}\cdot r$ together and treating it as one constant $k_{heating}$
-In our case, although $r$ is not actually a constant since the resistance of the SMA wire decreases as it shortens~\cite{FlexinolTechSpecs}, the effect is sufficiently small that we can ignore. Therefore, we get,
-
-\begin{equation}\label{eqn:simple-joule-heating}
-H = k_{heating} \cdot i^2 \cdot t
-\end{equation}
-
-Taking the derivative of \eqref{eqn:simple-joule-heating}, we can get the heat transfer rate, $q$, in watt (W) due to the electrical current at $i$ amperes. 
-
-\begin{equation}\label{eqn:heating-rate-i}
-	q_1 = \frac{dH}{dt} = k_{heating} \cdot i^2
-\end{equation}
-where $q_1$ is the heat transfer rate in watt (W).
+where $q_1$ is heat transfer rate in Watt; $i$ is the current in Ampere; $r$ is the resistance of the wire in ohm.
 
 According to Ohm's Law, 
 \begin{equation}\label{eqn:ohm's law}
@@ -153,8 +139,15 @@ where $i$ is the current in ampere; $v$ is the voltage in volt (V); and $r$ is r
 Substituting \eqref{eqn:ohm's law} into \eqref{eqn:heating-rate-i}, we get
 
 \begin{equation}\label{eqn:heating-rate-v}
+q_1 = \frac{v^2}{r}
+\end{equation}
+
+In our case, although $r$ is not actually a constant since the resistance of the SMA wire decreases as it shortens~\cite{FlexinolTechSpecs}, the effect is sufficiently small that we can treat it as a constant. Therefore, we get,
+
+\begin{equation}\label{eqn:heating-rate-i}
 q_1 = k_{heating} \cdot v^2
 \end{equation}
+where $q_1$ is the heat transfer rate in watt (W).
 
 Since our control signal, $x$, is proportional to the voltage, it can simply be absorbed into the $k_{heating}$ constant as 
 
@@ -162,7 +155,7 @@ Since our control signal, $x$, is proportional to the voltage, it can simply be 
 q_1 = k_{heating} \cdot x^2
 \end{equation}
 
-Then, we calculate the heat loss rate due to natural convection of the SMA wire. According to the Newton's Law of Cooling~\cite{NewtonLawOfCooling}, 
+Then, we calculate the heat loss rate due to natural convection of the SMA wire. According to the Newton's Law of Cooling~\cite{Burmeister1993}, 
 
 \begin{equation}\label{eqn:cooling-newton-law}
 q_2 = h_c \cdot A \cdot dT
@@ -239,7 +232,7 @@ Due to the lack of feedback control and the simplifications and approximations m
 
 \subsubsection{LED Driver Node}
 
-If a CBLA Node controls an LED directly, any change in brightness would be set instantly. As a result, the LED may appear to be flicking or flashing erratically to the viewers as it rapidly jumps between different brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the LED gradually is introduce. However, the relationship between brightness level of a typical LED and the input voltage is non-linear \cite{CreeLEDDatasheet}. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, a larger increase in voltage is needed to increase the brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to update the output level of an LED. 
+If a CBLA Node controls an LED directly, any change in brightness would be set instantly. As a result, the LED may appear to be flicking or flashing erratically to the viewers as it rapidly jumps between different brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the LED gradually is introduce. However, the relationship between brightness level of a typical LED and the input voltage is non-linear \cite{Cree2011}. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, a larger increase in voltage is needed to increase the brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to update the output level of an LED. 
 
 At every time step, 
 \begin{equation}\label{eqn:led-driver discrete update}

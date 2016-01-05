@@ -1,31 +1,9 @@
 \chapter[Curiosity-Based Learning Algorithm]
-{Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been submitted to IROS 2015 \cite{Chan2015} }} 
+{Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been published at IROS 2015 \cite{Chan2015} }} 
 \label{chap:cbla}
  
-In this section, we first briefly describe the Intrinsic Adaptive Curiosity (IAC) algorithm proposed by Oudeyer \cite{Oudeyer2007}. Then, our approach for adapting and generalizing the algorithm for implementation on a distributed kinetic sculpture is presented. This includes additional parameters, the introduction of an idle mode, and the integration of multiple independent learning agents in a distributed network. 
+In this section, our approach for adapting and generalizing the IAC algorithm for implementation on a distributed kinetic sculpture is presented. This includes additional parameters, modifications to action selection approaches, and the integration of multiple independent learning agents in a distributed network. 
 
-\section{Intrinsic Adaptive Curiosity}
-
-In \cite{Oudeyer2007}, Oudeyer's goal was to develop a robot that is capable of life-long learning. The robot makes sense of the mapping between its actuators and sensors through continuous self-experimentation, without explicit instruction from human experts. Fundamentally, the IAC is a reinforcement learning algorithm with an objective to maximize learning progress. Learning progress is defined as the reduction in prediction error. In other words, the agent seeks to explore the region of the sensorimotor space that leads to the highest improvement in predication error. As a result, the algorithm avoids learning in the parts of sensorimotor space that are either too random or too predictable. This formulation leads to continual change in behaviour over time, as regions of the state space that are initially interesting become less interesting as the system becomes more knowledgeable about them. 
- 
-The system consists of two learning mechanisms, the Classic Machine learner (classM) and the Meta Machine learner (metaM).  Based on the context (the sensors' inputs) and the action (the actuators' outputs), classM computes a prediction of the consequence, i.e., the resultant sensors' inputs at the next time step. Then, it compares the actual consequence with the prediction and modifies its model in order to reduce the error in the subsequent prediction. The Meta Machine learner (metaM) predicts the error of classM. In other words, it estimates how accurately classM is able predict the consequence. The actual prediction error is then fed back to the metaM, and metaM modifies its estimate of prediction error of the newly modified classM. This change in the prediction error is recorded at each time step in the knowledge gain assessor (KGA). The KGA then computes the expected learning progress by calculating the change in error estimation.  This expected learning progress is used as the reward. 
-
-In Oudeyer's paper \cite{Oudeyer2007}, one important feature is the idea of regional experts. Each region collects exemplars of similar sensorimotor context, and has an expert that is trained on the exemplars in the region. Exemplars are the training data for the prediction model and they are collected as the system selects actions and observes the consequences. The ``features'' are the sensory inputs $S(t)$, and selected actions $M(t)$ at time $t$; and the ``labels'' are the resultant sensory inputs $S(t+1)$ at time $t+1$. The regional experts constrain the estimate of learning progress within their respective sensorimotor contexts. This is important because it allows each expert to use a simpler model, as it covers only a small region of the state space.  
-
-The following are the steps for the learning algorithm:
-
-\begin{enumerate}
-	\item \label{learning_start} Read sensory inputs $S(t)$
-	\item Select action $M(t)$ with the highest predicted learning progress $R(SM(t))$ based on $\epsilon$-greedy selection policy
-	\item Consult expert specialized in the relevant sensorimotor context SM(t) to predict the expected sensory inputs $S(t+1)'$
-	\item Perform action $M(t)$
-	\item Observe actual sensory inputs $S(t+1)$ and add to the expert's training set
-	\item Compute prediction error $e(t+1) = S(t+1) – S(t+1)'$
-	\item Compute the change in prediction error $R(SM(t)) = -[e(t+1) - e(t)]$
-	\item Update the learning progress for the sensorimotor context $R(SM(t))$
-	\item \label{learning_loop} Repeat \ref{learning_start} to \ref{learning_loop} indefinitely
-\end{enumerate}
-	
 
 \section{CBLA Engine}
 
@@ -36,7 +14,7 @@ We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning archit
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram CBLA"}
-	\caption[Block diagram of the Curiosity Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M(t)$'s given $S(t)$. (2) Then, the Expert provides the Action Values associated with those possible $M(t)$ to the Action Selector. (3) After that, the Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the Action Value associated with $SM(t)$. }
+	\caption[Block diagram of the Curiosity Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M(t)$s given $S(t)$. (2) Then, the Expert provides the Action Values associated with those possible $M(t)$ to the Action Selector. (3) After that, the Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the Action Value associated with $SM(t)$. }
 	\label{fig:Block Diagram CBLA}
 \end{figure}
 
@@ -47,7 +25,25 @@ A node represents a subset of the sculptural system. Each node is specified by s
 
 \subsection{Action Selector}
 
-The action selector selects an action based on a list of possible actions, $M(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In our implementation, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $epsilon$ changes based on the magnitude of the action value. When the action value is low, the probability of selecting a random action is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards.
+The action selector selects an action based on a list of possible actions, $M(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In our implementation, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $epsilon$ changes linearly based on the magnitude of the action value, $q$ as shown in \eqref{eqn:exploring_rate}. 
+
+\begin{subequations}\label{eqn:exploring_rate}
+	\begin{equation}
+		\epsilon = 
+		\begin{cases}
+			\epsilon_{max}  &\text{, if } q < q_{min} \\
+			\epsilon_{min}  &\text{, if } q > q_{max} \\
+			m \cdot q + b   &\text{, otherwise} 
+		\end{cases}
+	\end{equation}
+	\begin{flalign}
+		m &= \frac{\epsilon_{max} - \epsilon_{min}}{q_{min} - q_{max}} \\
+		b &= \epsilon_{max} - m \cdot q_{min} 
+	\end{flalign}
+\end{subequations}
+where $\epsilon$ is the exploration probability; $\epsilon_{max}$ and $\epsilon{min}$ are constants representing the maximum and minimum exploration probability; $q$ is the action value; and $q_{min}$ and $q_{max}$ are constants representing the minimum and maximum action value thresholds.
+
+When the action value, $q$,  is low, the probability of selecting a random action, $\epsilon$, is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards. On the other hand, when $q$ is high, $\epsilon$ is low, since the current expected reward is high and it is worth spending time exploiting a high reward region. Limits on maximum and minimum $\epsilon$ are set to ensure that the exploration probability is kept within a range.
 
 \subsection{Expert}
 
@@ -58,13 +54,13 @@ An expert represents a region in the sensorimotor space defined by its exemplars
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram Expert"}
-	\caption[Block diagram of the Expert]{(1) The prediction model of the Expert first makes a prediction of the resultant sensor input $S(t+1)'$ based on the current sensorimotor context, $SM(t)$. (2) This prediction and the actual sensor input $S(t+1)$ is then fed into the KGA. $S(t+1)$ is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with $SM(t)$ in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.}
+	\caption[Block diagram of the Expert]{(1) The prediction model of the Expert first makes a prediction of the resultant sensor input $S(t+1)'$ based on the current sensorimotor context, $SM(t)$. (2) This prediction and the actual sensor input $S(t+1)$ are then fed into the KGA. $S(t+1)$ is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with $SM(t)$ in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.}
 	\label{fig:Block Diagram Expert}
 \end{figure}
 
 \subsubsection{Prediction Model}
 
-The prediction model models the relationship between the node's input and output variables. In all the experiments presented in this paper, linear regression or Lasso was used. At every time step, the model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as $[SM(t),S(t+1)]$ pairs. $SM(t)$ represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time $t$. $S(t+1)$ represents the observed sensory state at time $t+1$. 
+The prediction model models the relationship between the node's input and output variables. In all the experiments presented in this thesis, linear regression or Lasso (Least Absolute Shrinkage and Selection Operator) \cite{Tibshirani1996} was used. At every time step, the model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as $[SM(t),S(t+1)]$ pairs. $SM(t)$ represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time $t$. $S(t+1)$ represents the observed sensory state at time $t+1$. 
 
 \subsubsection{Knowledge Gain Assessor}
 
