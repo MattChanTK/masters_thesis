@@ -25,7 +25,7 @@ A node represents a subset of the sculptural system. Each node is specified by s
 
 \subsection{Action Selector}
 
-The action selector selects an action based on a list of possible actions, $M(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In our implementation, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $epsilon$ changes linearly based on the magnitude of the action value, $q$ as shown in \eqref{eqn:exploring_rate}. 
+The action selector selects an action based on a list of possible actions, $M(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In our implementation, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $\epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $\epsilon$ changes linearly based on the magnitude of the action value, $q$ as shown in \eqref{eqn:exploring_rate}. 
 
 \begin{subequations}\label{eqn:exploring_rate}
 	\begin{equation}
@@ -60,7 +60,9 @@ An expert represents a region in the sensorimotor space defined by its exemplars
 
 \subsubsection{Prediction Model}
 
-The prediction model models the relationship between the node's input and output variables. In all the experiments presented in this thesis, linear regression or Lasso (Least Absolute Shrinkage and Selection Operator) \cite{Tibshirani1996} was used. At every time step, the model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as $[SM(t),S(t+1)]$ pairs. $SM(t)$ represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time $t$. $S(t+1)$ represents the observed sensory state at time $t+1$. 
+The prediction model models the relationship between the node's input and output variables. At every time step, this model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as $[SM(t),S(t+1)]$ pairs. $SM(t)$ represents the sensorimotor context, i.e., the concatenation of the sensory state and the action taken at time $t$. $S(t+1)$ represents the observed sensory state at time $t+1$. 
+
+In all the experiments presented in this thesis, linear least squares regression or Lasso (Least Absolute Shrinkage and Selection Operator) \cite{Tibshirani1996} was used. Nominally, linear regression is used due to its simplicity and the absence of parameters that require tuning. Lasso is used when the sensorimotor space includes input and output variables that are not proprioceptive. These variables tend to have low correlations with prediction model as they do not directly detect the changes in the outputs. For instance, a node with virtual inputs (explained in \ref{sec:inter-node connections}) from another node would use Lasso. Using Lasso can improve the model's predictability by reducing the coefficients associated with that are highly unpredictable. Python library \textit{scikit-learn}'s\footnote{scikit-learn LinearRegression: \url{http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html}},\footnote{scikit-learn Lasso: \url{http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html}} implementations of the two models were used. 
 
 \subsubsection{Knowledge Gain Assessor}
 
@@ -93,8 +95,7 @@ $e$ is the mean error of the region and $\tau_2$ is a threshold parameter.
 Criterion 1 specifies that a region can only split into two when it contains a sufficient number of exemplars, to ensure that there will be enough training data in the sub-regions. Criterion 2 specifies that a region will only split if prediction error is high. This prevents learnt models with high accuracy from being split indefinitely. 
 If the split criteria are met, the Region Splitter finds a cut value and a cut dimension that minimizes the average variance in each sub-region. 
 
-
-After the best cut value and cut dimension is identified, the exemplars of the parent region are split between the two regions based on the cut dimensions and values. The high-level mechanism of the region splitting process is illustrated in \Cref{fig:Block Diagram RegionSplitter}.
+After the best cut value and cut dimension are identified, the exemplars of the parent region are split between the two regions based on the cut dimensions and values. The high-level mechanism of the region splitting process is illustrated in \Cref{fig:Block Diagram RegionSplitter}.
 
 \begin{figure}[!htbp]
 	\centering
@@ -140,53 +141,61 @@ In our implementation, an additional prediction error threshold is added to prev
 
 During the early stages of the learning process, learning opportunities are plenty. Setting the split number threshold too high can hamper the speed of learning. However, over time, easy learning opportunities diminish and complex regions require a larger number of exemplars. Thus, the split number threshold grows at a constant rate every time a split happens. This way, regions that are less explored can maintain low thresholds which promote learning, while mature regions have higher thresholds which promote gathering of more exemplars and reduce over-fitting.
 
-In addition, in \cite{Oudeyer2007}, the cut value and cut dimension are determined by generating a set of random cut values for each dimension and computing the corresponding variances of the resultant sensor inputs. The cut value and dimension pair with the lowest total variance is selected. Total variance is sum of the variances of $S(t+1)$ in each dimension. However, this method has several problems. 
+In addition, in \cite{Oudeyer2007}, the cut value and cut dimension are determined by generating a set of random cut values for each dimension and computing the corresponding variances of the resultant sensor inputs. The cut value and dimension pair with the lowest total variance is selected. The total variance is the sum of the variances of $S(t+1)$ in each dimension. Our implementation has made some changes to the way regions splitting is done.
 
-First, this method does not take into account the interdependency among dimensions. Instead of directly using the $S(t+1)$ value directly when computing variances, its principal components are used. Note that we are not taking the principal component of the $SM(t)$ which is where we specify the cut value and cut dimension. Instead, it only applies to $S(t+1)$ which we want to minimize its variance. 
+First, in order to the interdependency among dimensions into account, instead of using the $S(t+1)$ value directly when computing variances, herein, its principal components are used. Using its principal components can better reflect the underlying structure of the data by emphasizing the differences among data points along the direction of maximum variance. Note that we do not compute the principal components of the $SM(t)$, where the cut value and cut dimension are specified. Instead, the evaluation is based on the principal components of $S(t+1)$ for which we want to minimize the variance. 
 
-Second, if one dimension tends to have a lower variance than another, such dimension is much more likely to get picked, even if the cut does not lower its resultant variance. Since region splitting aims to separate groups into low variance regions, this is unproductive as it does not decrease the variance. Instead of using the variance, relative variance is used. It is computed by taking mean of the variance of the region divided by the total variance of the overall region before splitting. This gives a better indicator on whether or not the split results in generating more concentrated regions. A relative variance of 1 implies that the split does not improve and should not be cut in this way. On the other hand, a low relative variance implies that the split decreases the regional variances. This method can reduce the amount of unproductive splits that fragment the state space.
+Second, if one dimension tends to have a lower variance than another, that dimension is much more likely to get selected, even if the cut does not lower its resultant variance. Since region splitting aims to separate groups into low variance regions, this is unproductive as it does not decrease the variance. Instead of using the variance, relative variance is used. It is computed by taking mean of the variance of the region divided by the total variance of the overall region before splitting. This gives a better indicator on whether or not the split results in generating more concentrated regions. A relative variance of 1 implies that the split does not improve and should not be cut in this way. On the other hand, a low relative variance implies that the split decreases the regional variances. This method can reduce the amount of unproductive splits that fragment the state space.
 
 \begin{equation}
 S_{relative} = \frac{S_1+S_2}{S_{1,2}}
 \end{equation}
 $S_1$ and $S_2$ are the total variances of the two regions split using the candidate cut value and cut dimension; $S_{1,2}$ is the total variance of the two combined regions.
 
-Furthermore, this method is susceptible to leaving a small number of sample points near a desirable cut value since the random selection might not pick up the exemplars that are right at the edge. On the other hand, although one can simply iterate through every exemplar in the region and find the cut value with the lowest variance, this is impractical. This implies that a significant number of iterations is required as the number of dimensions and exemplars increase. To improve the likelihood of finding the best cut value while keeping the number of iterations low, a new divide-and-zoom-in method is implemented to focus on promising ranges of cut values. The toy example in  \Cref{fig:divide-and-zoom-in_1,fig:divide-and-zoom-in_2,fig:divide-and-zoom-in_3,fig:divide-and-zoom-in_4} illustrates how this method works. This method is more likely to find the local minimum which cleanly splits a region into two while keeping the number of relative variance computation low. 
+Furthermore, this method is susceptible to leaving a small number of sample points near a desirable cut value since the random selection might not pick up the exemplars that are right at the edge. On the other hand, although one can simply iterate through every exemplar in the region and find the cut value with the lowest variance, this is impractical. This implies that a significant number of iterations is required as the number of dimensions and exemplars increase. To improve the likelihood of finding the best cut value while keeping the number of iterations low, a new divide-and-zoom-in method is implemented to focus on promising ranges of cut values. The toy example in  \Cref{fig:divide-and-zoom-in} illustrates how this method works. This method can find a local minimum at each dimension that cleanly splits a region into two because it searches for cut value with the lowest variance by checking every single possible cut values within a range bounded by higher variance values. It keeps the number of relative variance computations low by focusing on promising regions where cut values with relatively low variances can be found.
 
 \begin{figure}[!htbp]
 	\centering
-	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_1"}
-	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 1]{An toy example of how relative variance changes with different cut values. At this point, the relative variances have not been calculated yet. The red dots represent the actual relative variances before they are calculated by the algorithm.}
-	\label{fig:divide-and-zoom-in_1}
-\end{figure}	
-\begin{figure}[!htbp]
-	\centering
-	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_2"}
-	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 2]{This is the first iteration of the toy example. First, compute the relative variances of $N/k$ of the cut values (blue); then, select the point with the lowest relative variance (yellow ring); after that, identify the two adjacent points and zoom in to the range between those two points in the next iteration (light blue)}
-	\label{fig:divide-and-zoom-in_2}
-\end{figure}	
-\begin{figure}[!htbp]
-	\centering
-	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_3"}
-	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 3]{This is the second iteration of the toy example. The computation is repeated in a smaller, zoomed-in range.}
-	\label{fig:divide-and-zoom-in_3}
-\end{figure}	
-\begin{figure}[!htbp]
-	\centering
-	\includegraphics[height=0.25 \textheight]{"fig/cbla/divide-and-zoom-in_4"}
-	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method 4]{Zooming in until the variance for every point within the range is computed.}
-	\label{fig:divide-and-zoom-in_4}
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_1"}
+		\caption{At this stage, the relative variances have not been calculated yet. The red dots represent the actual relative variances if the region is cut in between each pair of exemplars. }
+		\label{fig:divide-and-zoom-in_1}
+	\end{subfigure}	
+	~
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_2"}
+		\caption{This is the first iteration of the toy example. First, compute the relative variances of $N/k$ of the cut values (blue); then, select the point with the lowest relative variance (yellow ring); after that, identify the two adjacent points and zoom in to the range between those two points in the next iteration (light blue)}
+		\label{fig:divide-and-zoom-in_2}
+	\end{subfigure}	
+	
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_3"}
+		\caption{This is the second iteration of the toy example. The computation is repeated in a smaller, zoomed-in range.}
+		\label{fig:divide-and-zoom-in_3}
+	\end{subfigure}
+	~
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_4"}
+		\caption{Zooming in until the variance for every point within the range is computed.}
+		\label{fig:divide-and-zoom-in_4}
+	\end{subfigure}
+	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method]{An toy example explaining the ``Divid-and-Zoom-In'' region split values computation method by showing how relative variance changes with different cut values at each step.}
+	\label{fig:divide-and-zoom-in}
 \end{figure}
 
 
 \FloatBarrier 
 \subsubsection{Action Selection}\label{sec:action_selection}
 
-Visually, it is difficult to distinguish between the periods when the CBLA is learning from the periods when the CBLA is simply executing random actions after all regions are learnt. In order to better demonstrate the learning process, we introduce some constrains that produce different action given different level of activation. 
+Visually, it is difficult to distinguish between the periods when the CBLA is learning from the periods when the CBLA is simply executing random actions after all regions are learnt. In order to better demonstrate the learning process, we introduce some constraints that produce different actions given different levels of activation. 
 
-We considered two different types of implementations. First is introducing idle Mode. The idle mode action is chosen as the action that requires the least power. This gives the visitors the sense that the sculpture is resting. During idle mode, the system selects the idle action a majority of the time. Otherwise, it will select an action based on its regular action selection policy. The CBLA engine enters idle mode when there is large knowledge gain potential. Conversely, it exits idle mode when the knowledge gain potential, or the change of it is higher than a threshold. Once it exits idle mode, it must stay in non-idle for at least a certain period of time before being allowed to enter idle mode again. 
+We considered two different types of implementations. In the first implementation, we introduced idle mode. The idle mode action is chosen as the action that requires the least power. This gives the visitors the sense that the sculpture is resting. During idle mode, the system selects the idle action a majority of the time. Otherwise, it will select an action based on its regular action selection policy. The CBLA engine enters idle mode when there is small knowledge gain potential. Conversely, it exits idle mode when the knowledge gain potential, or the change of it is higher than a threshold. Once it exits idle mode, it must stay in non-idle for at least a certain period of time before being allowed to enter idle mode again. 
 
-Alternatively, instead of having a hard threshold that go from totally quiet to totally active, we used a sigmoid function shown in \Cref{eqn:map_sigmoid} to define the region of low activation to high activation. In this formulation, we capped the maximum output level $m_{max}$ based on the knowledge gain potential $x$. This way, there is a visually lower level of activation while the knowledge gain potential is low. In an exhibition perspective, it is better to always have some kinds of activation to entice people than having a long dead period which user might be gone before the sculpture gets activated.
+Alternatively, instead of having a hard threshold that moves the system from totally quiet to totally active, we used a sigmoid function shown in \Cref{eqn:map_sigmoid} to define a range of activations from low activation to high activation. In this formulation, we capped the maximum output level $m_{max}$ based on the knowledge gain potential $x$. This way, there is a visually lower level of activation while the knowledge gain potential is low. 
 
 \begin{subequations}\label{eqn:map_sigmoid}
 	\begin{flalign} 
@@ -197,7 +206,7 @@ Alternatively, instead of having a hard threshold that go from totally quiet to 
 \end{subequations}
 $m_{max}$ is the maximum output level which can be a number between 0 to 1; $x$ is the knowledge gain potential; $b$ determines the minimum output level when knowledge gain potential is 0; $c$ represents the $x$ required for $m_{max}$ to reach $d$. 
 
-In terms of how we compute the knowledge gain potential, we can either use average action value or relative action value. Average action value requires calibration and is not adaptive to fundamental changes in the system like when one sensors is covered or disconnected. 
+In terms of how we compute the knowledge gain potential, we can either use average action value or relative action value. Average action value requires calibration and is not adaptive to fundamental changes in the system like when a sensor is covered or disconnected. 
 
 Relative action value is used to reduce the difficulty of tuning for different actuators as different actuators have different inherent level of action values range. This relative action value is calculated by dividing the squared action value of this time step by average squared action values over the previous $W$ time steps as shown in \Cref{eqn:action_val_set,eqn:avg_action_val,eqn:relative_action_val}. This means that even if there is a fundamental change to the system, it can still adapt over time.  
 
@@ -212,12 +221,12 @@ $\overline{q^2_z}$ is the average squared action value at time step $z$.
 \begin{equation}\label{eqn:relative_action_val}
 	\widehat{q^2_z} = \frac{q_t^2}{max(\overline{q^2_z}, \nu)}
 \end{equation}
-$\widehat{q^2_z}$ is the relative action value; $q_z^2$ is the current action value; $nu$ is the sensitivity constant.
+$\widehat{q^2_z}$ is the relative action value; $q_z^2$ is the current action value; $\nu$ is the sensitivity constant.
 
 One consequence of this formulation is that the denominator will become too small over time and a very small increase in action value can trigger large activation. This can be a desirable feature as it creates a system that periodically wakes up in hope to attract visitors when there is nothing to be learnt for long time. This sensitivity level during low learning period can be adjusted by changing the value of $\nu$. On the other hand the window size $W$ affects how quickly the system can adapt to a new ambient environment. 
 
 
-\section{Multi-Node CBLA System}
+\section{Multi-Node CBLA System}\label{sec:cbla-system}
 
 One option for controlling a larger system of sensors and actuators is to control them centrally through a single CBLA engine.  However, if all output and input variables are grouped into one node, the sensorimotor state will become very large and it might take a very long time for the system to converge and react to changes. Therefore, subsets of related variables are grouped into nodes. Each node runs on its own CBLA engine in parallel.  While our implementation uses a centralized high-level processor to compute these parallel CBLA engines, this architecture also allows for distribution of the software agents to local processors.
 
@@ -229,15 +238,15 @@ Another approach is to group sensor input and actuator output variables by spati
 
 However, all sensor input and actuator output variables associated with a particular node are updated once per loop. This means that the loop speed is limited by the slowest actuator or sensor within the node. For instance, an SMA-actuated Fin node has heating and cooling cycle time of about 12 seconds, while an LED can be turned on and off many degrees of magnitude faster. This is very inefficient and limiting for the fast components. Therefore, components running at different speeds should be grouped into different nodes. This allows each node to run at its own speed, independently from the other nodes. 
 
-In our implementation, each node is constructed of components that are related functionally and proximally. For instance, LED output and ambient light sensor are in one node; Fin motion and accelerometer are in one node. Different nodes run at different frequencies and capture the dynamics of the system at different time scales. We limited the number of output per node to one. This structure keeps the system's dimensionality low and flexible. This also allows us to optimize the CBLA loop rate for each type of actuators as the bandwidth is mainly constrained by the bandwidth imposed by the actuators. Also, no more than one node can control one physical actuator since this will result in conflicts. 
+In our implementation, each node is constructed of components that are related functionally and proximally. For instance, LED output and ambient light sensor are in one node; Fin motion and accelerometer are in one node. Different nodes run at different frequencies and capture the dynamics of the system at different time scales. We limited the number of outputs per node to one. This structure keeps the system's dimensionality low and flexible. This also allows us to optimize the CBLA loop rate for each type of actuator as the bandwidth is mainly constrained by the bandwidth imposed by the actuators. Also, no more than one node can control one physical actuator since this will result in conflicts. 
 
-\subsection{Inter-Node Connections}
+\subsection{Inter-Node Connections}\label{sec:inter-node connections}
 
 Nevertheless, if the nodes perform learning independently, the CBLA does not actually capture the dynamics of the entire system. To integrate the nodes into one coherent entity, we have used shared sensors and virtual inputs.
 
 By sharing input variables that share the same sensor, system changes effected by one node can be detected by another node indirectly. For instance, two adjacent nodes might share a single IR Proximity sensor. This way, change in the environment can be seen by both nodes. However, when two Nodes share one input variable, if the action of the actuator does not affect the shared sensor, information about that event is not transferred to the other Node. 
 
-Another method is to treat output signal from a node as input to other nodes. We called this virtual input. This way environmental changes happening to another node can be detected by other nodes indirectly in the time steps afterwards. The idea is that external disturbance, like a user standing in front of the sensor of a node, may be represent as an output signal originated from that node, which may be measured by another node. This gives the other node information about the fact that there is someone nearby despite being somewhat delayed. \Cref{fig:Indirect input diagram} illustrates how Node 2 can detect changes in the environment that is not covered by its own sensors through Node 1.
+Another method is to treat output signal from a node as input to other nodes. We called this virtual input. This way environmental changes happening to another node can be detected by other nodes indirectly in the time steps afterwards. The idea is that external disturbances, like a user standing in front of the sensor of a node, may be represented as an output signal originating from that node, which may be measured by another node. This gives the other node information about the fact that there is someone nearby despite being somewhat delayed. \Cref{fig:Indirect input diagram} illustrates how Node 2 can detect changes in the environment that are not covered by its own sensors through Node 1.
 
 
 \begin{figure}[!htb]
@@ -246,6 +255,10 @@ Another method is to treat output signal from a node as input to other nodes. We
 	\caption[Illustration explaining how virtual inputs may be used to detect changes outside of a node's sensorimotor context]{An example of illustrating how Node 2 can indirectly detect the presence of a user through Node 1. The presence of the user may affect the output of Node 1. Since Node 2 takes the output of Node 1 as input, Node 2 would in effect respond to the presence of the user indirectly despite not having a sensor that can detect the user in its sensorimotor context.}
 	\label{fig:Indirect input diagram}
 \end{figure}
+
+\subsection{Summary of CBLA}
+
+This chapter details the implementation of the CBLA Engine, which is an reinforcement learning algorithm that selects actions that lead to the maximum potential knowledge gain. Each Engine represents a subset of the system and constructs a model that predicts the consequences of its actions given its current states. A system is then formed by connecting a network of CBLA Engines through shared sensors and virtual inputs. The distributed approach enables the system to respond to the occupants and adapt to localized changes in the surroundings quickly. Building on this CBLA system, a sculptural system that generates its own life-like, interactive behaviours may emerge.
 
 \FloatBarrier  
 

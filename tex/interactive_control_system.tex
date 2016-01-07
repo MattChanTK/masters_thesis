@@ -1,6 +1,6 @@
 \chapter[Interactive Control System]
 {Interactive Control System 
-	\footnote{Part of this chapter is adapted from papers submitted to IROS 2015 \cite{Chan2015} and Next Generation Building \cite{Gorbet2015}}} 
+	\footnote{Part of this chapter is adapted from papers published with IROS 2015 \cite{Chan2015} and Next Generation Building \cite{Gorbet2015}}} 
 \label{chap:ctrl_system}
 
 The CBLA requires a large increase in sensing and control capability which the previous versions of the Hylozoic Series embedded electronics \cite{Beesley2010} are unable to provide. A new Hylozoic Series 3 interactive control system was developed with re-designed hardware, to enable the control and sampling of a larger number of actuators and sensors at a higher frequency. 
@@ -12,27 +12,27 @@ This chapter discuss the design of the hardware and software mechanism that enab
 
 \section{System Architecture}
 
-In this implementation, we opted for an architecture which a centralized computer controls a number of smaller localized microcontrollers that interface with the sensors and actuators. By running the high-level logics on a central computer, complex algorithm can quickly be developed without the constraints of a embedded platform. In addition, it provides an abstraction layer that enables the designer to build virtual sub-systems using any of the sensors and actuators. These two features allow us to quickly test out different configurations. On the other hand, by distributing the low-level logics on localized microcontrollers, the system can be more modular and the number of wires can be reduced. In addition, the real-time nature of the microcontrollers allows protection of sensitive actuators in case of central computer failure. 
+In this implementation, we opted for an architecture where a centralized computer controls a number of smaller localized microcontrollers that interface with the sensors and actuators. By running the high-level algorithm on a central computer, complex algorithms can quickly be developed without the constraints of a embedded platform. In addition, it provides an abstraction layer that enables the designer to build virtual sub-systems using any of the sensors and actuators. These two features allow us to quickly test out different configurations. On the other hand, by distributing the low-level logics on localized microcontrollers, the system can be more modular and the number of wires can be reduced. In addition, the real-time nature of the microcontrollers allows protection of sensitive actuators in case of central computer failure. 
 
-\Cref{fig:system-architecture} shows the high-level system architecture of the Hylozoic Series 3 Interactive Control System. Each component runs asynchronously. At the bottom, there are the Teensy Devices. They represent the physical components in the sculptural system. Each Teensy Device consists of a Teensy Development Board \footnote{Teensy Development Board: \url{www.pjrc.com/teensy/teensy31.html}} and it communicates with a computer which hosts the abstract components via Universal Serial Bus (USB). Each controls and samples from a number of actuators and sensors. More details about the physical hardware are presented in \Cref{sec:hardware}. 
+\Cref{fig:system-architecture} shows the high-level system architecture of the Hylozoic Series 3 Interactive Control System. Each component runs asynchronously. At the bottom, there are the Teensy Devices. They represent the physical components in the sculptural system. Each Teensy Device consists of a Teensy Development Board\footnote{Teensy Development Board: \url{www.pjrc.com/teensy/teensy31.html}} that communicates with a computer which hosts the abstract components via Universal Serial Bus (USB). Each Teensy controls and samples from a number of actuators and sensors. More details about the physical hardware are presented in \Cref{sec:hardware}. 
 
 \begin{figure} [!htbp]
 	\centering
 	\includegraphics[height=0.90 \textheight]{"fig/interactive control system/high-level system architecture"}
-	\caption[High-level system architecture]{The system is comprised of abstract and physical components. Each component runs asynchronously in its own thread. Each arrow represents the data flow from one system to another.}
+	\caption[High-level system architecture]{The system is comprised of abstract and physical components. Each component runs asynchronously in its own thread. Each arrow represents the data flow from one component to another.}
 	\label{fig:system-architecture}
 \end{figure}
 
-For each Teensy Device, a Teensy Interface thread is created with the corresponding communication protocol and system parameters. Each type of Teensy Device has its own unique set of parameters that dictates or reflects the behaviours of its actuators or sensors respectively. Examples of some of the parameters are the brightness of an LED, and the readings from an accelerometer. The InteractiveCmd was created to provide a communication layer for all the physical components. Nodes can be created to control or sample any of the actuators and sensors through the InteractiveCmd. The InteractiveCmd handles the commands sent forth and forward them to the appropriate Teensy Interface in an efficient manner. A Messenger was created to streamline the message delivery system by periodically pushing commands received from the abstract Nodes in a more compressed form. This reduces the number of commands being sent to and received from InteractiveCmd and, thus, enables the system to operate more efficiently.
+For each Teensy Device, a Teensy Interface thread is created with the corresponding communication protocol and system parameters. Each type of Teensy Device has its own unique set of parameters that dictates or reflects the behaviours of its actuators or sensors respectively. Examples of some of the parameters are the brightness of an LED, and the readings from an accelerometer. The InteractiveCmd module was created to provide a communication layer for all the physical components. Nodes can be created to control or sample any of the actuators and sensors through the InteractiveCmd module. The InteractiveCmd module handles the commands sent from the high-level algorithm and forwards them to the appropriate Teensy Interface in an efficient manner. A Messenger was created to streamline the message delivery system by periodically pushing commands received from the abstract Nodes in a more compressed form. This reduces the number of commands being sent to and received from InteractiveCmd and, thus, enables the system to operate more efficiently.
 
-The Input Nodes and Output Nodes are the abstractions for sensors and actuators. Their sole purpose is to sample or update a particular sensor or actuator continuously. The second level of abstractions are the Device Nodes. Each Device Node is generally made up of one or more Input or Output Nodes, though it can also be completely virtual. It provides additional functionalities such as providing progressive dimming effect to the LEDs, or calculating running average of a variable. The third level of abstractions are the CBLA Nodes. They are made up of components of the Device Nodes. This is also where the CBLA Engine and Prescripted Engine reside. The internal working of the CBLA Engine is discussed in \Cref{chap:cbla}. A Prescripted Engine is an alternate set of behaviours that follow specially designed scripts, and do not involve any learning algorithm. A CBLA Node can be switched to either Engine while it is running. 
+The Input Nodes and Output Nodes are the abstractions for sensors and actuators. Their sole purpose is to sample or update a particular sensor or actuator continuously. The second level of abstraction are the Device Nodes. Each Device Node is generally made up of one or more Input or Output Nodes, though it can also be completely virtual. It provides additional functionalities such as providing progressive dimming effect to the LEDs, or calculating the running average of a variable. The third level of abstraction are the CBLA Nodes. They are made up of components of the Device Nodes. This is also where the CBLA Engine and Prescripted Engine reside. The internal working of the CBLA Engine is discussed in \Cref{chap:cbla}. A Prescripted Engine is an alternate set of behaviours that follow user designed scripts, and do not involve any learning algorithm. A CBLA Node can be switched to either Engine while it is running. 
 
-Data Logger is a special kind of abstract component that periodically samples the abstract variables of each abstract node, package the data in the memory, and save data in the hard drive in an efficient manner. The data collected are stored in a persistent key-value database for further analysis. In addition, the entire state of the CBLA Engine is also saved. This allows the CBLA system to recover from a previous state at a later time.
+The Data Logger is a special kind of abstract component that periodically samples the abstract variables of each abstract node, packages the data in the memory, and saves data in the hard drive in an efficient manner. The data collected are stored in a persistent key-value database for further analysis. In addition, the entire state of the CBLA Engine is also saved. This allows the CBLA system to recover from a previous state at a later time.
 
 
 \section{Hardware} \label{sec:hardware}
 
-The hardware are custom designed in collaboration with Mohammadreza Memarian. The goal is to develop a system that is modular, flexible, and expandable. Analogue sensors and actuators that are traditionally used in previous Hylozoic Series as well as off-the-shelf sensors that interface via I2C, SPI, or UART are supported. Most importantly, it enables high-speed two-way communication with a computer over USB. Sensor readings and control signals can be delivered to and from a computer at around 100Hz. This capability allows us to run algorithms that are more computationally intensive; simplify the implementation of multi-threaded and multi-process software; and collect and display a large amount of data at runtime on a standard computer. 
+The hardware was custom designed in collaboration with Mohammadreza Memarian. The goal is to develop a system that is modular, flexible, and expandable. Analogue sensors and actuators that are traditionally used in previous Hylozoic Series as well as off-the-shelf sensors that interface via I2C, SPI, or UART are supported. Most importantly, the design enables high-speed two-way communication with a computer over USB. Sensor readings and control signals can be delivered to and from a computer at around 100Hz. This capability allows us to run algorithms that are more computationally intensive; simplify the implementation of multi-threaded and multi-process software; and collect and display a large amount of data at runtime on a standard computer. 
 
 \subsection{Actuators and Sensors}
 
@@ -77,7 +77,7 @@ The sensors and actuators used in the experiments described in \Cref{chap:valida
 	\label{table:actuators-list}
 \end{table}
 
-The aforementioned actuators and sensors interface with the Control Module through some special drivers. We call these drivers Device Modules. Different actuators or sensors require different Device Modules due to their different power requirements. They are plugged into the Device Ports on the Control Modules (discussed in \Cref{subsec:controller}). These Device Modules provide the power switching and voltage regulation needed to drive the actuators and sensors. 
+The aforementioned actuators and sensors interface with the Control Module through some custom drivers. We call these drivers Device Modules. Different actuators or sensors require different Device Modules due to their different power requirements. They are plugged into the Device Ports on the Control Modules (discussed in \Cref{subsec:controller}). These Device Modules provide the power switching and voltage regulation needed to drive the actuators and sensors. 
 
 Combinations of the actuators and sensors listed in \Cref{table:sensors-list,table:actuators-list} are used to form three functional units: 1) Fin Unit, which is composed of two SMA wires, one infrared (IR) proximity sensor, and a three-axis accelerometer; 2) Reflex Unit, which has a pair of LEDs (wired in together), a vibration motor, and one infrared (IR) proximity sensors; and 3) Light unit, which comprises a high-power LED, and an ambient light sensor. Their spatial configurations are shown in \Cref{fig:Physical hardware}
 
@@ -88,7 +88,7 @@ Combinations of the actuators and sensors listed in \Cref{table:sensors-list,tab
 	\label{fig:Physical hardware}
 \end{figure}
 
-A Fin Unit moves its 2-DOF Fin-like mechanism that is made of flexible plastic rods by controlling its two SMA wires. A Reflex Unit actuates its a vibration motors and mobilizes the Frond-like mechanism attached to it. The pair of LEDs shine on to the Frond for additional effect. A Light Unit contains a very bright LED and it is hung high above on the sculpture. The IR proximity sensors detect the position of the occupants or objects within their ranges. The accelerometers detect contacts with the occupants and the deformations of the Fins. The ambient light sensors detect the light intensities of the ambient environment and their associated LEDs. 
+A Fin Unit moves a 2-DOF Fin-like mechanism made of flexible plastic rods by controlling its two SMA wires. A Reflex Unit actuates a vibration motor and mobilizes the Frond-like mechanism attached to it. The pair of LEDs shine on to the Frond for additional effect. A Light Unit contains a very bright LED and it is hung high above the sculpture. The IR proximity sensors detect the position of the occupants or objects within their ranges. The accelerometers detect contacts with the occupants and the deformations of the Fins. The ambient light sensors detect the light intensities of the ambient environment and their associated LEDs. 
 
 
 \subsection{Control Modules}\label{subsec:controller}
@@ -98,7 +98,7 @@ At the heart of a Control Module, shown in \Cref{fig:Control_Module}, there is a
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=0.68 \textwidth]{"fig/interactive control system/Control_Module"}
-	\caption[Block diagram of the Control Module]{A Control Module is consisted of a Teensy 3, 6 Device Ports, a SPI port, and a UART port. Each Device port has 8 wires and they carry the signals that are commonly used in our system.}
+	\caption[Block diagram of the Control Module]{A Control Module consists of a Teensy 3, 6 Device Ports, a SPI port, and a UART port. Each Device port has 8 wires and they carry the signals that are commonly used in our system.}
 	\label{fig:Control_Module}
 \end{figure}
 
@@ -127,30 +127,30 @@ CBLA executes as an application that communicates with the low-level layer using
 \FloatBarrier
 \subsection{Node Abstraction}
 
-Between the Nodes and the Teensy Interface, there is the InteractiveCmd. Its job is to forward messages to the correct Teensy Interface and hides the physical implementation of the low-level layer devices from the Nodes. In addition, since the InteractiveCmd module enables the control and sampling of any actuators and sensors in the system, a Node can be constructed unconstrained by spatial or hardware confines. Each Node, physical or virtual, is represented by a set of input and output variables which can be accessed by any other nodes in the system, and each runs continuously in its own thread. Input variables are simply variables in the memory that Nodes have read access to. Similarly, output variables are variables that Nodes have write access to. Multiple Nodes can share one input variable while only one Node can be associated with one output variable. \Cref{fig:Node_abstraction} illustrates the relationships between different Nodes. 
+Between the Nodes and the Teensy Interface, there is the InteractiveCmd. Its job is to forward messages to the correct Teensy Interface and hide the physical implementation of the low-level layer devices from the Nodes. In addition, since the InteractiveCmd module enables the control and sampling of any actuators and sensors in the system, a Node can be constructed unconstrained by spatial or hardware specificities. Each Node, physical or virtual, is represented by a set of input and output variables which can be accessed by any other nodes in the system, and each runs continuously in its own thread. Input variables are simply variables in the memory that Nodes have read access to. Similarly, output variables are variables that Nodes have write access to. Multiple Nodes can share one input variable while only one Node can be associated with one output variable. \Cref{fig:Node_abstraction} illustrates the relationships between different Nodes. 
 
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/interactive control system/Node_abstraction"}
-	\caption[Illustration of how abstract nodes work]{Illustration of how abstract nodes work. Each rectangle represents a thread. The purple one represent InteractiveCmd and Each of the green ones represents a Node. The blue circle represents a variable in the memory. The arrow represents the direction of access. Multiple Nodes can share read access to a variable while only one Node can have write access to one variable.}
+	\caption[Illustration of how abstract nodes work]{Illustration of how abstract nodes work. Each rectangle represents a thread. The purple one represents InteractiveCmd module and each green one represents a Node. The blue circle represents a variable in the memory. The arrow represents the direction of access. Multiple Nodes can share read access to a variable while only one Node can have write access to one variable.}
 	\label{fig:Node_abstraction}
 \end{figure}
 
-At the lowest level, Input Nodes continuously updates their associated variables and Output Nodes continuously send output requests to InteractiveCmd through the Messenger. Different types of Input and Output nodes are specially configured to run at a loop period compatible with the physical components that they represent. This mechanism makes implementation of the higher level Nodes much easier by eliminating the need of communicating with the InteractiveCmd by means of sending individual messages. Instead, each of the inputs and outputs variables can be accessed from the memory at any time. These variables are used as building blocks for higher level Nodes. In addition, intermediate level Nodes can embed extra functionalities. For instance, a LED Driver ramps up or dims an LED to the desired brightness level. A higher-level Node controlling that LED using the LED Driver can the operate at a lower update period and process more complex logics. This Node Abstraction system makes developing CBLA Nodes much simpler by eliminating the need of managing logics requiring different frequencies of control under one thread. 
+At the lowest level, Input Nodes continuously update their associated variables and Output Nodes continuously send output requests to InteractiveCmd through the Messenger. Different types of Input and Output nodes are configured to run at a loop period compatible with the physical components that they represent. This mechanism makes implementation of the higher level Nodes much easier by eliminating the need of communicating with the InteractiveCmd by means of sending individual messages. Instead, each of the input and output variables can be accessed from the memory at any time. These variables are used as building blocks for higher level Nodes. In addition, intermediate level Nodes can embed extra functionalities. For instance, a LED Driver ramps up or dims an LED to the desired brightness level. A higher-level Node controlling that LED using the LED Driver can then operate at a lower update period and process more complex logic. This Node Abstraction system makes developing CBLA Nodes much simpler by eliminating the need for managing logic requiring different frequencies of control under one thread. 
 
-The addition of Messenger node between the InteractiveCmd, and Input and Output Nodes streamlines the communication by reducing the number of messages. Over USB, each packet can contain up to 64 bytes. If each Node communicates with the InteractiveCmd directly, there will be many messages that might only require one or two bytes. A large portion of the communication bandwidth will be wasted and the update rate of the Nodes will be significantly throttled. Since many messages are likely to be delivered to the same Teensy, those messages can be combined and delivered as a single packet. The job of the Messenger Node is to collect all the messages, combine them appropriately, and deliver them to the InteractiveCmd periodically. Although this means that each message must wait for the next delivery cycle to be sent out, this mechanism allows the system to handle a much higher throughput. To avoid commands or requests being missed, the rate of each Input or Output node is set to be at least three times the Messenger's update period. 
+The addition of the Messenger node between the InteractiveCmd, and Input and Output Nodes streamlines the communication by reducing the number of messages. Over USB, each packet can contain up to 64 bytes. If each Node communicates with the InteractiveCmd directly, there will be many messages that might only require one or two bytes. A large portion of the communication bandwidth will be wasted and the update rate of the Nodes will be significantly throttled. Since many messages are likely to be delivered to the same Teensy, those messages can be combined and delivered as a single packet. The job of the Messenger Node is to collect all the messages, combine them appropriately, and deliver them to the InteractiveCmd periodically. Although this means that each message must wait for the next delivery cycle to be sent out, this mechanism allows the system to handle a much higher throughput. To avoid commands or requests being missed, the rate of each Input or Output node is set to be at least three times the Messenger's update period. 
 
 
 \FloatBarrier
 \section{Data Logging}
 
-For secondary analysis, the timings and the values of all inputs and output variables of every Node, as well as the internal variables within CBLA Engine must be collected and stored onto the hard drive. In addition, the state of the CBLA Learner including all the exemplars, the predictions models, and the definitions of the regions must be stored such that it can be recovered at a later time. 
+For secondary analysis, the values of all input and output variables of every Node, as well as the internal variables within each CBLA Engine must be collected and stored onto the hard drive. In addition, the state of the CBLA Learner including all the exemplars, the prediction models, and the definitions of the regions must be stored such that it can be recovered at a later time. 
 
-The CBLA system contains a large number of asynchronous threads that run at their own speeds. As a result, a large amount and variety of data are generated at high frequencies and at different times. These data must be handled in such a way that does not slow down the system. In addition, in case when the program fail to terminate safely, the majority of the data should still be recoverable. Also, the data must be saved to disk and be discarded from the memory continuously as the CBLA system is expected to operate for a long period of time.
+The CBLA system contains a large number of asynchronous threads that run at their own speeds. As a result, a large amount and variety of data are generated at high frequencies and at different times. These data must be handled in a way that does not slow down the system. In addition, in case when the program fails to terminate safely, the majority of the data should still be recoverable. Also, the data must be saved to disk and be discarded from the memory continuously as the CBLA system is expected to operate for a long period of time.
 
 \subsection{Key-Value Database}
  
-The data generated by the Nodes are in many different types, such as integer, floating point, string, list, tuple, and other custom object types. In addition, objects such as the CBLA Learner are continuously expanding and its hierarchy gets deeper over time. Moreover, each type of data packet gets generated at different non-constant time cycles. This makes simply saving them in a table or a relational database impractical. In our implementation, a simple key-value type NoSQL database based on Python's shelve\footnote{Python shelve documentation: \url{https://docs.python.org/3.4/library/shelve.html}} module was used. In shelve, the data are stored as serialized Python object using the pickle\footnote{Python pickle documentation: \url{https://docs.python.org/3.4/library/pickle.html}} module. This type of database gives the flexibility of storing an assortment of data types without the need of predefining them. However, since the data are not stored as plain text, a special script is required to extract the data in the desired formats for offline analysis. 
+The data generated by the Nodes are in many different types, such as integer, floating point, string, list, tuple, and other custom object types. In addition, objects such as the CBLA Learner are continuously expanding and its hierarchy gets deeper over time. Moreover, each type of data packet gets generated at different non-constant time cycles. This makes simply saving them in a table or a relational database impractical. In our implementation, a simple key-value type NoSQL database based on Python's shelve\footnote{Python shelve documentation: \url{https://docs.python.org/3.4/library/shelve.html}} module was used. In shelve, the data are stored as serialized Python objects using the pickle\footnote{Python pickle documentation: \url{https://docs.python.org/3.4/library/pickle.html}} module. This type of database gives the flexibility of storing an assortment of data types without the need of predefining them. However, since the data are not stored as plain text, a special script is required to extract the data in the desired formats for offline analysis. 
 
 \subsection{Database Structure}
 
@@ -197,7 +197,7 @@ Each time the CBLA System is run, a new shelve database is created for the sessi
 	\label{fig:data_structure}
 \end{figure}
 
-For each Node, there are two main types of data: Packet Type and Info Type. Each Packet Type data has a timestamp which indicates when the data block is generated. These data blocks are generated continuously and they must all be stored. It contains information about the sensor readings, actuator outputs, and the internal parameters of the CBLA Engine such as its current mean error, number of regions, and relative action values. Packet Type data are mainly used for secondary analysis purposes. On the other hand, Info Type data describes the system and does not have a timestamp. When new versions of Info Type data arrive, the old ones can be overwritten. Information like the names and order of the sensor and actuator variables, which do not change over the runtime of the system, are Info Type data. In addition, the state of the CBLA Engine, which is needed for recovering from a later time, is also an Info Type data. Over the long term, while it is desirable for the state to be saved frequently, the size of the data that describes it would become too large to allow multiple copies of it to be stored. By saving it as an Info Type, old version can simply be overwritten by a newer version.
+For each Node, there are two main types of data: Packet Type and Info Type. Each Packet Type data has a timestamp which indicates when the data block is generated. These data blocks are generated continuously and they must all be stored. It contains information about the sensor readings, actuator outputs, and the internal parameters of the CBLA Engine such as its current mean error, number of regions, and relative action values. Packet Type data are mainly used for secondary analysis purposes. On the other hand, Info Type data describes the system and does not have a timestamp. When new versions of Info Type data arrive, the old ones can be overwritten. Information like the names and order of the sensor and actuator variables, which do not change over the runtime of the system, are Info Type data. In addition, the state of the CBLA Engine, which is needed for recovering from a later time, is also an Info Type data. Over the long term, while it is desirable for the state to be saved frequently, the size of the data that describes it would become too large to allow multiple copies of it to be stored. By saving it as an Info Type, the old version can simply be overwritten by a newer version.
 
 \subsection{Data Logging Process}
 
@@ -210,11 +210,239 @@ Due to the large amount of data that are being generated at high frequencies, sa
 	\label{fig:DataLogger process}
 \end{figure}
 
-Packet Type data blocks are being generated at a rate of approximately one block every 20 milliseconds per Node. This is relatively high given the hundreds of Nodes that a typical CBLA system has. On the other hand, Info Type data are being generated at a much slower rate at roughly one data block every two minutes per Node. Both types of data blocks would first get enqueued onto the Data Logger first before being transferred to the Data Saver which is the module responsible for writing the data into the shelve database. This step is necessary to avoid slowing down the CBLA Nodes because Data Saver is a separate process, and transferring data to another Process takes significantly longer time than to another thread. 
+Packet Type data blocks are being generated at a rate of approximately one block every 20 milliseconds per Node. This is relatively high given the hundreds of Nodes that a typical CBLA system has. On the other hand, Info Type data are being generated at a much slower rate at roughly one data block every two minutes per Node. Both types of data blocks would first get enqueued onto the Data Logger before being transferred to the Data Saver which is the module responsible for writing the data into the shelve database. This step is necessary to avoid slowing down the CBLA Nodes because Data Saver is a separate process, and transferring data to another Process takes significantly longer time than to another thread. 
 
-For the higher frequency Packet Type data blocks, instead of directly being sent to the Data Saver, they are first being packed in Packet Arrays. This process decreases the total transfer time to the Data Saver by drastically lowering the number of enqueue calls which have some non-trivial overheads. There is one Packet Array for each Node and they get enqueued to the Data Saver periodically. 
+For the higher frequency Packet Type data blocks, instead of directly being sent to the Data Saver, they are first packed in Packet Arrays. This process decreases the total transfer time to the Data Saver by drastically lowering the number of enqueue calls which have non-trivial overhead. There is one Packet Array for each Node and they get enqueued to the Data Saver periodically. 
 
 The Data Saver is implemented as a process in order to avoid the GIL limitation imposed by Python \cite{Beazley2010}. This enables the system to make use of the parallel computing capability of a multi-core computer. Although transferring data to a process takes longer as it requires the copying of the actual data rather than just the pointers, it is still faster than writing the data onto the disk. Therefore, it is still more efficient to move the data and let a separate process load the data onto the database.
 
-Nevertheless, depending on the number of Nodes in the system, there are situations when data are indeed being generated at a rate faster than it can be stored. Eventually, over the long term, the memory of the host computer will be full and the program will crash. In addition, a long wait time between data generation and data storage means that if the program crashes unexpectedly, a large amount of data would be lost. To avoid crashing and the loss of data, once the length of the queue has reached a certain threshold, a clean-up procedure would be activated. It momentarily pauses all other threads, and allocates all the processing power for the purposes of data storage. Practically, this process would only takes around 50 to 70 milliseconds. Since it happens only once every few minutes, it is generally not noticeable by human viewer. In fact, the reason why it only takes so little time is because, by pausing all other threads, it eliminates the overhead of thread switching. This process ensures that the CBLA system can operate as long as there are sufficient storage space on the hard drive of the host computer. 
+Nevertheless, depending on the number of Nodes in the system, there are situations when data are indeed being generated at a rate faster than it can be stored. Eventually, over the long term, the memory of the host computer will be full and the program will crash. In addition, a long wait time between data generation and data storage means that if the program crashes unexpectedly, a large amount of data would be lost. To avoid crashing and the loss of data, once the length of the queue has reached a certain threshold, a clean-up procedure is activated. It momentarily pauses all other threads, and allocates all the processing power for the purposes of data storage. Practically, this process would only takes around 50 to 70 milliseconds. Since it happens only once every few minutes, it is generally not noticeable by human viewer. In fact, the reason why it only takes so little time is because, by pausing all other threads, it eliminates the overhead of thread switching. This process ensures that the CBLA system can operate as long as there is sufficient storage space on the hard drive of the host computer. 
 
+
+\section{Multi-Cluster Test Bed}\label{sec:multi-cluster-test-bed}
+
+An experimental test bed was built to investigate how users interact with the CBLA system. This is a small scale four-cluster test bed that resembles a typical interactive sculpture produced by Philip Beesley Architect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}. A photograph of the complete test bed is shown in \Cref{fig:cbla-test-bed photo 2}
+
+\begin{figure} [!htb]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla-test-bed photo 2"}
+	\caption[Photograph of the multi-cluster test bed]{Photograph of the multi-cluster test bed when actuated. The names of the Clusters from left to right are: Cluster 1 ($C1$), Cluster 2 ($C2$), Cluster 3 ($C3$), and Cluster 4 ($C4$).}
+	\label{fig:cbla-test-bed photo 2}
+\end{figure}
+
+
+\subsection{Electronic Components}
+
+A Light Unit is made up of one high-power LED and one ambient light sensor. The high-power LED is mounted on top of a flask containing coloured liquid. The ambient light sensor is mounted on the side of the flask under the LED. This allows the ambient light sensor to measure the intensity of the light emitted by the LED. 
+
+A Fin Unit is made up of two SMA wires, a pair of LEDs, a vibration motor, a 3-axis accelerometer, and two IR proximity sensors. The two SMA wires pull on two levers that move a Fin, which is a mechanism made of soft plastic rods that curls up. An IR proximity sensor and an accelerometer are mounted at around midway between the tip to the root of the Fin. At the bottom of the Fin, a vibration motor, a pair of LEDs, and an IR proximity sensor are mounted in the middle of two frond-like objects. 
+
+\subsection{Device Nodes}
+
+Device Nodes further abstract the Output and Input Nodes to enable higher level functionality. This frees the CBLA Nodes from managing the constraints imposed by the physical attributes of the actuators and sensors. 
+
+\subsubsection{SMA Controller Node}
+
+In the experiment described in \Cref{sec:multi-node}, the SMA wires were only operated in fully-off or fully-on mode. This means that a Fin with two SMA wires can only have four possible states. In addition, each actuation must be a cycle since the SMA wires cannot be fully actuated at 5V for more than 2 seconds. Empirically, we determined that the cooling period takes around 10 seconds. This means that the loop period for a CBLA Node cannot be lower than 12 seconds since it does not have the freedom to actuate the SMA wires again during the cooling period. These restrictions are problematic during interaction with the users since the learning period and response latency would likely take longer than what a typical visitor would spend in front of a section of a sculpture. In addition, only a very coarse model can be made with only four possible actions that the Fin can choose from. This means that the Fin Node would likely be very unresponsive since the variance in resultant state for each kind of action is likely to be very high.
+
+Thus, for this experiment, a position controller Node is needed to enable the SMA wire to hold its contraction while keeping the SMA wire at a safe temperature. Since the length of an SMA wire is related to the temperature, and current is passed through the SMA wire to generate heat, to maintain a position, the controller needs to adjust the output voltage to a level that can maintain the desired temperature. This can reduce the loop period as the SMA wires no longer need to cool down after actuating. In addition, the number of actions is no longer limited to four as the Node can select any value between fully-off and fully-on. However, it is difficult to attach a temperature sensor on the SMA wire. Thus, instead of using a feedback controller, only an open-loop controller with a model that estimates the temperature of an SMA wire is used.
+
+This controller essentially produces a control signal that allows the SMA wire to quickly reach its desired temperature by setting the output voltage very high. It then gradually lowers the voltage as the SMA wire reaches its desired position according to an internal model. Development of this model starts with the intuition that the temperature of the wire increases when the rate of heating is greater than the rate of cooling. The rate of heating is related to the voltage across the wire. On the other hand, the rate of cooling is related to the temperature of the wire since it is mainly driven by the wire's own natural convection. 
+
+We first calculate the heat transfer rate as a result of current passing through the SMA wire. According to Joule's Law \cite{JoulesLaw},
+\begin{equation}
+q_1 = i^2 \cdot r
+\end{equation}
+where $q_1$ is heat transfer rate in Watts; $i$ is the current in Amperes; $r$ is the resistance of the wire in Ohms.
+
+According to Ohm's Law, 
+\begin{equation}\label{eqn:ohm's law}
+i = \frac{v}{r}
+\end{equation}
+where $i$ is the current; $v$ is the voltage in Volts; and $r$ is the resistance.
+
+Substituting \eqref{eqn:ohm's law} into \eqref{eqn:heating-rate-i}, we get
+
+\begin{equation}\label{eqn:heating-rate-v}
+q_1 = \frac{v^2}{r}
+\end{equation}
+
+In our case, although $r$ is not actually a constant since the resistance of the SMA wire decreases as it shortens~\cite{FlexinolTechSpecs}, the effect is sufficiently small that it can be treated as a constant. Therefore, we get,
+
+\begin{equation}\label{eqn:heating-rate-i}
+q_1 = k_{heating} \cdot v^2
+\end{equation}
+where $q_1$ is the heat transfer rate in Watts.
+
+Since our control signal, $x$, is proportional to the voltage, it can simply be absorbed into the $k_{heating}$ constant as 
+
+\begin{equation}\label{eqn:heating-rate-x}
+q_1 = k_{heating} \cdot x^2
+\end{equation}
+
+Then, we calculate the heat loss rate due to natural convection of the SMA wire. According to Newton's Law of Cooling~\cite{Burmeister1993}, 
+
+\begin{equation}\label{eqn:cooling-newton-law}
+q_2 = h_c \cdot A \cdot dT
+\end{equation}
+where $q_2$ is the heat transfer rate in Watts; $h_c$ is the convective heat transfer coefficient; A is the area of the heat transfer surface in $m^2$; and $dT$ is the temperature difference between the air and the surface in Kelvin.
+
+If we approximate $h_c$, $A$, and the air temperature $T_{air}$ as constants, we get
+\begin{subequations}\label{eqn:cooling-newton-law-simple}
+	\begin{flalign}
+	q_2 &= k_{cooling} \cdot (T - T_{air}) \\
+	&= k_{cooling} \cdot T - k_{cooling} \cdot T_{air} \\
+	&= k_{cooling} \cdot T + k_{air}\label{eqn:cooling-newton-law-simple-end}
+	\end{flalign}
+\end{subequations}
+where $q_2$ is the heat transfer rate in Watts; $k_{cooling}$ and $k_{air}$ are constants; and $T$ is the temperature of the SMA wire in Kelvin.
+
+Combining \eqref{eqn:heating-rate-x} and \eqref{eqn:cooling-newton-law-simple-end}, we get the total heat transfer rate as 
+\begin{subequations}
+	\begin{flalign}
+	q &= q_1 - q_2 \\
+	&= k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}\label{eqn:total_heat}
+	\end{flalign}
+\end{subequations}
+
+We can then calculate the kinetic energy generated during time interval $\Delta t$ by multiplying \eqref{eqn:total_heat} by $\Delta t$.
+\begin{equation}
+KE =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}) \cdot \Delta t \label{eqn:total_KE}
+\end{equation}
+
+Since temperature is directly proportional to kinetic energy, the proportionality constant can be absorbed into $k_{heating}$, $k_{cooling}$, and $ k_{air}$ as well. 
+\begin{equation}
+\Delta T =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T  + k_{air}) \cdot \Delta t\label{eqn:delta_T}
+\end{equation}
+
+At each time step, $\Delta t$, the temperature is incremented by $\Delta T$.  
+\begin{subequations}
+	\begin{flalign}
+	T_{t+1} &=  T_{t} + \Delta T \\
+	&=  T_{t} + k_{heating} \cdot x^2 - k_{cooling} \cdot T_{t}  + k_{air}\label{eqn:sma-controller-model}
+	\end{flalign}
+\end{subequations}
+
+In this formulation, the actual unit of the temperature is not important. Instead, we define 0 as the temperature when the SMA wire is the longest and 1 when the SMA wire is the shortest. The steady-state temperature of the SMA wire should be 0 when the input, $x$, is 0. If we substitute 0 into $T_{t+1}$, $T_{t}$, and $x$ into \eqref{eqn:sma-controller-model}, we get $k_{air} = 0$. 
+
+\begin{equation}\label{eqn:sma-controller-model-1}
+T_{t+1} =  T_{t} + k_{heating} \cdot x^2 - k_{cooling} \cdot T_{t}
+\end{equation}
+
+From the SMA wire's technical specifications\cite{FlexinolTechSpecs}, we identify the maximum current at which the SMA wire can operate continuously without heat damage. Using that value, we determine the maximum continuous output level, $x_c$. This means that when the desired temperature, $T$, is equal to 1, at steady-state, $x$ should be at $x_c$. This means, 
+\begin{subequations}
+	\begin{flalign}
+	0 &= k_{heating} \cdot x_c^2 - k_{cooling} \\
+	k_{cooling} &=  k_{heating} \cdot x_c^2\label{eqn:k_cooling}
+	\end{flalign}
+\end{subequations}
+
+The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. In fact, we can set $k_{heating}$ to 1 arbitrarily to simplify \eqref{eqn:sma-controller-model-1} further. At the end, we get
+\begin{equation}\label{eqn:sma-controller-model-2}
+T_{t+1} =  T_{t} + x^2 -  x_c^2 \cdot T_{t}
+\end{equation}
+as the temperature model for the SMA Controller Node.
+
+We then apply and tune a PI controller on this temperature model to track a desired temperature as shown in \Cref{fig:SMA Controller}. A Node can specify a desired temperature, $T_{desired}$, between 0 and 1 and the SMA Controller tracks this temperature within its internal temperature model. The control signal generated by this PI Controller is applied to the actual SMA wire in parallel. 
+
+\begin{figure} [htb]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/SMA Controller"}
+	\caption[Block diagram of the SMA Controller]{Block diagram of the SMA Controller. }
+	\label{fig:SMA Controller}
+\end{figure}
+
+Due to the lack of feedback control and the simplifications and approximations made when developing the model, this controller is unlikely to be accurate. However, the main purpose of this SMA Controller is to enable the CBLA Node to hold the Fin at a particular position. As a result, this allows the CBLA Engine to run at a higher rate and expands the number of possible actions. 
+
+
+\subsubsection{LED Driver Node}
+
+If a CBLA Node controls an LED directly, any change in brightness would be set instantly. As a result, the LED may appear to be flicking or flashing erratically to the viewers as it rapidly jumps between different brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the LED gradually is introduced. However, the relationship between brightness level of a typical LED and the input voltage is non-linear \cite{Cree2011}. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, a larger increase in voltage is needed to increase the brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to update the output level of an LED. 
+
+At every time step, 
+\begin{equation}\label{eqn:led-driver discrete update}
+x_{t+1} =
+\begin{cases}
+0.00001 & \text{if } x_{t} == 0 \text{ and }  x_{desired} > 0 \\
+x_{t} + k \cdot x_{t}, & \text{if } x_{t} < x_{desired} \\
+x_{t} - k \cdot x_{t}, & \text{if } x_{t} > x_{desired} \\
+x_{t}, & \text{otherwise}
+\end{cases} 
+\end{equation}
+where $x_{t+1}$ is the output level in the next time step $t+1$; $x_t$ is the current output level at time $t$; $x_{desired}$ is the desired output level; and $k$ is a constant that determines rate of change in brightness. $x_{desired}$ must be between 0 and 1. 
+
+Formulating second and third cases of \eqref{eqn:led-driver discrete update} as a first-order ODE shows that is an exponential function. 
+
+\begin{equation}\label{eqn:led-driver ODE}
+\frac{dx(t)}{dt} \pm k \cdot x(t)  = 0
+\end{equation}
+
+Solving \eqref{eqn:led-driver ODE}, we get 
+\begin{equation}\label{eqn:led-driver ODE_solved}
+x(t) = x(0) \cdot e^k \cdot e^{\mp k \cdot t}
+\end{equation}
+where $x(0)$ is the initial output level when the desired output level is changed.
+
+This LED Driver enables the output level of the LED to increase at a faster rate in the higher brightness region. 
+
+\subsection{Isolated CBLA Nodes}\label{sec:isolated-cbla-node}
+
+Each Isolated CBLA Node is associated with one actuator. A CBLA system, as discussed in \Cref{sec:cbla-system}, is constructed by linking these Isolated CBLA Nodes through virtual inputs. In this test bed, three main types of Isolated CBLA Node exist: Half-Fin Node, Light Node, and Reflex Node.
+
+\Cref{fig:Isolated CBLA Nodes} presents the make-up of the different Isolated CBLA Nodes in a cluster. Two Half-Fin Nodes control the bending of a Fin through their respective SMA Controller Nodes (Fx.SMA-L and Fx.SMA-R). The pair of Half-Fin Nodes share a Fin-mounted IR proximity sensor (Fx.IR-F), and the 3 axes of the accelerometer (Fx.ACC). A Light Node controls the brightness of a high-power LED through an LED driver Node (Lx.LED) and its sensory space consists of an ambient light sensor (Lx.ALS). There are two types of Reflex Nodes, one is associated with a pair of LEDs (Fx.RFX-L), and one is associated with a vibration motor (Fx.RFX-M). They are both controlled through LED Driver Nodes. In their sensory space, they share one bottom-mounted IR proximity sensor (Fx.IR-S). 
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/Isolated CBLA Nodes"}
+	\caption[Make-up of a cluster of Isolated CBLA Nodes]{Make-up of a cluster of Isolated CBLA Nodes. Half-Fin Nodes are shown in red; Light Nodes are shown in orange; and Reflex Nodes are shown in blue.}
+	\label{fig:Isolated CBLA Nodes}
+\end{figure}
+
+
+\subsection{Network Configurations}
+
+The Isolated CBLA Nodes described in \Cref{sec:isolated-cbla-node} are connected to each other via virtual inputs. In essence, the output of a CBLA Node is treated as an input variable to other Nodes, much like input variables associated with their own sensors. This creates a interconnected network of CBLA Nodes that spans across the entire sculptural system. This allows information regarding the external environment to travel through the sculpture. 
+
+Different network configurations produce different system behaviours. Here we investigate two types of network configurations which are called Spatial Mode and Random Mode. For fair comparisons, the two configurations have exactly the same number of links. In the experiment, the number of links was arbitrarily chosen to be 111 so that there are sufficient links to cover the entire system. In addition, each Node is linked to at least one other Node via virtual input. 
+
+\subsubsection{Spatial Mode}
+
+In Spatial Mode, CBLA Nodes are linked based on their spatial proximity. \Cref{fig:Spatial Local Modes} shows the connections among Nodes within a cluster. Neighbouring Nodes are connected via bidirectional links. Two connected Nodes take each other's output as input variables. Nodes in neighbouring clusters that are in close proximity are linked via unidirectional links as shown in \Cref{fig:Spatial Global Mode}. The circular connections that daisy-chain the four clusters allow information to spread throughout the test bed. 
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/Spatial Local Mode"}
+	\caption[Connectivity graph within a cluster in Spatial Mode]{Connectivity graph within a cluster in Spatial Mode. Each bidirectional green arrow represents a pair of input links. Two connected Nodes take each other's output as input variable. Note that each bidirectional link is counted as two links.}
+	\label{fig:Spatial Local Modes}
+\end{figure}
+
+\begin{figure} [!htbp]
+	\centering
+	\includegraphics[height=0.85 \textheight]{"fig/validations/Spatial Global Mode"}
+	\caption[Connectivity graph of the entire test bed in Spatial Mode]{Connectivity graph of the entire test bed in Spatial Mode. Each blue unidirectional arrow represents an input link. The output of the Node at the origin of an arrow is fed into the Node that it is pointing toward as an input variable.}
+	\label{fig:Spatial Global Mode}
+\end{figure}
+
+Under this configuration, Nodes' responses to external disturbances or environmental changes are expected to concentrate close to the source, and spread to other Nodes gradually. 
+
+\subsubsection{Random Mode}
+
+In Random Mode, CBLA Nodes are linked to other CBLA Nodes randomly. This means that the output of a Node might be fed into another Node that is on the other side of the sculpture. Since there are 60 Nodes and 111 links are required, the algorithm first links the output of each Node to another random Node to ensure that each Node has an effect in the overall system. Then, the algorithm picks 51 unique Nodes at random and links each of them to another random Node. This ensures that the state space of each Node is relatively even. 
+
+The specific random configuration is generated at run-time and is different every time. In addition, it should be noted that this method does not guarantee that there will not be any disconnected sub-networks. It is possible that a set of Nodes is completely isolated from another set of Nodes under this network configuration scheme.
+
+\subsection{Prescripted Behaviours}\label{sec:prescripted-behaviours}
+
+For the purpose of comparing between CBLA and prescripted behaviours, each CBLA Node has a Prescripted Engine in addition to the CBLA Engine. This allows us to quickly switch between the two kinds of behaviours during the user study described in \Cref{sec:user-study}. Although the two engines are both associated with the same actuators, they may have different sensors in its sensory space. 
+
+The prescripted behaviours are implemented based on a specification by a human designer, and are similar to previous behaviours of the Hylozoic series\cite{Gorbet2015}. For the Fin mechanism, when its Fin-mounted IR proximity sensor detects an object, it bends down toward the direction of a neighbouring bottom-mounted IR proximity sensor that has also detected an object. If both or neither of IR proximity sensors have detected an object, it simply bends straight down. It returns to an upright rest position when its Fin-mounted IR proximity sensor no longer detects an object in its proximity.
+
+For the high-power LEDs, its output ramps up and down continuously when its corresponding Fin-mounted IR proximity sensor has detected an object. It then dims gradually when the object is removed.
+
+For the reflex vibration motor or LED pair, its output also ramps up and down continuously when its corresponding bottom-mounted IR proximity sensor has detected an object. It then ramps down gradually when the object is removed.
+
+An additional virtual node is added to provide cluster-level group behaviours. This node counts the number of outputs within its cluster that are active. It then determines a probability of random activation by mapping this count to a Gaussian function. The Fin mechanism or the high-power LED may turn on at random based on this probability. Using a Gaussian function allows the probability of random activation to increase when a number of outputs are activated. However, when too many outputs are activated, this probability decreases which makes random activations less probable. 
+
+%TODO discuss rationale for this behaviour
+
+%TODO probably should add a summary
