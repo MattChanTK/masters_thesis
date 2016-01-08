@@ -164,7 +164,13 @@ Furthermore, Oudeyer's method is susceptible to leaving a small number of exempl
 
 On the other hand, although one can simply iterate through every exemplar in the region and find the cut value with the lowest variance, this is impractical. This implies that a significant number of iterations are required as the number of dimensions and exemplars increase. 
 
-To improve the likelihood of finding the best cut value while keeping the number of iterations low, a new divide-and-zoom-in method is implemented to focus on promising ranges of cut values. The toy example in  \Cref{fig:divide-and-zoom-in} illustrates how this method works. This method can at least find a local minimum that cleanly splits a region into two because it searches for cut value with the lowest variance by checking every single possible cut values within a range bounded by higher variance values. It keeps the number of relative variance computations low by focusing on promising regions where cut values with relatively low variances can be found. Though this method may not necessarily find the global minimum, it is better than simply computing the variances of a set of random cut values given the same number of evaluations. It avoids the problem of points near a local minimum to be split into multiple regions over successive splitting processes. 
+To improve the likelihood of finding the best cut value while keeping the number of iterations low, a new divide-and-zoom-in method is implemented to focus on promising ranges of cut values. The toy example in \Cref{fig:divide-and-zoom-in} illustrates how this method works. In a region with $N$ exemplars, there are $N-1$ possible cut values for each dimension. Each dot represents the actual relative variances if the region is split in between each pair of exemplars. However, the relative variances are not evaluated for all of them. In \Cref{fig:divide-and-zoom-in_1}, all possible values are identified by the algorithm and plotted along the x-axis. The y-axis showing their true relative variances, though they are not known by the algorithm. The colour red indicates that the relative variance for the cut value has not been evaluated. 
+
+Then, the relative variances of the smallest, largest, and the $k$ potential cut values evenly spaced in the middle are evaluated as shown in \Cref{fig:divide-and-zoom-in_2}. The colour dark blue indicates that the relative variance for the cut value has been evaluated. After that, the point with the lowest relative variance as indicated by the yellow ring and its two adjacent evaluated points are identified. In the next iteration, the algorithm zoom in to the range between those two adjacent points as indicated by the light blue region. Note that the value of $k$ must be greater than 3, and if $k$ is set to $N-1$, it is equivalent to evaluating every single possible values. 
+
+The aforementioned process is then repeated in the new zoomed-in region as shown in \Cref{fig:divide-and-zoom-in_3}. This continues until the number of potential cut values in the zoomed-in range is fewer than or equal to $k$. When that happens, in the final step shown in \Cref{fig:divide-and-zoom-in_3}, the relative variance for potential cut value within the range at that iteration is evaluated. The one with the lowest relative variance would be selected as the best cut value for that particular cut dimension. 
+This entire process is repeated for each dimension and the cut dimension and cut value pair with the lowest relative variance is selected for the splitting process.
+
 
 %TODO possibly add legend
 %TODO change to black and white
@@ -173,34 +179,35 @@ To improve the likelihood of finding the best cut value while keeping the number
 	\begin{subfigure}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_1"}
-		\caption{At this stage, the relative variances have not been calculated yet. In a region with $N$ exemplars, the red dots represent the actual relative variances if the region is cut in between each pair of exemplars. There are $N$ }
+		\caption{Each dots represent the actual relative variances if the region is cut in between each pair of exemplars in a region. At this point, the relative variances have not been calculated yet and this is indicated by the colour red.}
 		\label{fig:divide-and-zoom-in_1}
 	\end{subfigure}	
 	~
 	\begin{subfigure}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_2"}
-		\caption{First, compute the relative variances of the smallest and largest potential cut values and $k$ potential cut values, evenly spaced in the middle (here, $k$=5) (dark blue). The value of $k$ must be greater than 3. If $k$ is set to $N-1$, it is equivalent to evaluating every single possible values. Then, select the point with the lowest relative variance (yellow ring); after that, identify the two adjacent points and zoom in to the range between those two points in the next iteration (light blue)}
+		\caption{In the first iteration, the relative variance of a subset of all possible cut values (shown as dark blue dots) are evaluated. The one with the lowest relative variance (yellow ring) and its two adjacent evaluated points are identified. This process is then repeated in the range between those two points (light blue) in the next iteration.}
 		\label{fig:divide-and-zoom-in_2}
 	\end{subfigure}	
 	
 	\begin{subfigure}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_3"}
-		\caption{In the second iteration, the computation is repeated in a smaller, zoomed-in range. It continues until the number of potential cut values in the zoomed-in range is fewer than or equal to $k$.}
+		\caption{In the second iteration, the computation is repeated in a smaller, zoomed-in range. It continues until the number of potential cut values in the zoomed-in range is below a threshold.}
 		\label{fig:divide-and-zoom-in_3}
 	\end{subfigure}
 	~
 	\begin{subfigure}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=1.0 \textwidth]{"fig/cbla/divide-and-zoom-in_4"}
-		\caption{In the last step, when the number of potential cut values remained is fewer than or equal to $k$, the relative variance for every point within the range is evaluated. The one with the lowest relative variance would be selected as the cut value.}
+		\caption{In the final step, the relative variance for every potential cut value within the range is evaluated. The one with the lowest relative variance would be selected as the best cut value.}
 		\label{fig:divide-and-zoom-in_4}
 	\end{subfigure}
-	\caption[Illustration explaining the ``Divid-and-Zoom-In'' region split values computation method]{An toy example explaining the ``Divid-and-Zoom-In'' region split values computation method by showing how relative variance changes with different cut values at each step.}
+	\caption[Illustrations explaining the ``Divid-and-Zoom-In'' region split values computation method]{A toy example explaining the ``Divid-and-Zoom-In'' region split values computation method.}
 	\label{fig:divide-and-zoom-in}
 \end{figure}
 
+This method can at least find a local minimum that cleanly splits a region into two because it searches for cut value with the lowest variance by checking every single possible cut values within a range bounded by higher variance values. It keeps the number of relative variance computations low by focusing on promising regions where cut values with relatively low variances can be found. Though this method may not necessarily find the global minimum, it is better than simply computing the variances of a set of random cut values given the same number of evaluations. It avoids the problem of points near a local minimum to be split into multiple regions over successive splitting processes. 
 
 \FloatBarrier 
 \subsubsection{Action Selection}\label{sec:action_selection}
