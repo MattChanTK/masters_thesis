@@ -60,6 +60,14 @@
 \usepackage{longtable}
 \usepackage{ltxtable}
 
+\newenvironment{blockquote}{%
+	\par%
+	\medskip
+	\leftskip=4em\rightskip=2em%
+	\noindent\ignorespaces}{%
+	\par\medskip}
+
+
 
 % N.B. HYPERREF MUST BE THE LAST PACKAGE LOADED; ADD ADDITIONAL PKGS ABOVE
 \usepackage[pdftex,pagebackref=false]{hyperref} % with basic options
