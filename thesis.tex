@@ -55,6 +55,10 @@
 \usepackage{tabularx, booktabs}
 \usepackage{subcaption}
 \usepackage{hhline}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{ltxtable}
 
 
 % N.B. HYPERREF MUST BE THE LAST PACKAGE LOADED; ADD ADDITIONAL PKGS ABOVE
@@ -168,7 +172,9 @@
 	\includepdf[frame=true, scale=.75, pages={-}]{pdf/exiting_survey.pdf}
 	\section{Debriefing Letter}\label{Append:User Study Materials debriefing}
 	\includepdf[frame=true, scale=.75, pages={-}]{pdf/debriefing_letter.pdf}
-
+	
+	\chapter[User Study Exit Questionnaires Written Responses]{User Study Exit Questionnaires Written Responses}\label{Append:User Study Written Responses}
+	\includepdf[frame=false, scale=1.0, pages={-}, pagecommand={}]{pdf/exit_survey_responses.pdf}
 	
 	%----------------------------------------------------------------------
 	% END MATERIAL

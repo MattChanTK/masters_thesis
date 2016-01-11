@@ -67,7 +67,7 @@ In all the experiments presented in this thesis, linear least squares regression
 
 \subsubsection{Knowledge Gain Assessor}
 
-The KGA calculates the reward given the predicted and actual sensory inputs. \Cref{fig:Block Diagram KGA} illustrates the internal workings of the KGA. The metaM in this case simply returns the average error over a window of $\tau$ time steps, $<e(t+1)-\tau>$. The reward is calculated by subtracting the current mean error, $<e(t+1)>$. This reward is then used by the action selector for computing the action values. 
+The KGA calculates the reward given the predicted and actual sensory inputs. It is implemented the way as in \cite{Oudeyer2007}. \Cref{fig:Block Diagram KGA} illustrates the internal workings of the KGA. The metaM in this case simply returns the average error over a window of $\tau$ time steps, $<e(t+1)-\tau>$. The reward is calculated by subtracting the current mean error, $<e(t+1)>$. This reward is then used by the action selector for computing the action values. 
 
 \begin{figure}[htbp]
 	\centering

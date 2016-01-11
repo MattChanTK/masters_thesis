@@ -232,9 +232,43 @@ An experimental test bed was built to investigate how users interact with the CB
 
 \subsection{Electronic Components}
 
-A Light Unit is made up of one high-power LED and one ambient light sensor. The high-power LED is mounted on top of a flask containing coloured liquid. The ambient light sensor is mounted on the side of the flask under the LED. This allows the ambient light sensor to measure the intensity of the light emitted by the LED. 
+A Light Unit is made up of one high-power LED and one ambient light sensor (shown in \Cref{fig:Light Unit}). The high-power LED is mounted on top of a flask containing coloured liquid. The ambient light sensor is mounted on the side of the flask under the LED. This allows the ambient light sensor to measure the intensity of the light emitted by the LED. 
 
-A Fin Unit is made up of two SMA wires, a pair of LEDs, a vibration motor, a 3-axis accelerometer, and two IR proximity sensors. The two SMA wires pull on two levers that move a Fin, which is a mechanism made of soft plastic rods that curls up. An IR proximity sensor and an accelerometer are mounted at around midway between the tip to the root of the Fin. At the bottom of the Fin, a vibration motor, a pair of LEDs, and an IR proximity sensor are mounted in the middle of two frond-like objects. 
+A Fin Unit is made up of two SMA wires, a pair of LEDs, a vibration motor, a 3-axis accelerometer, and two IR proximity sensors. The two SMA wires pull on two levers that move a Fin, which is a mechanism made of soft plastic rods that curls up (shown in \Cref{fig:Fin Unit}). An IR proximity sensor and an accelerometer are mounted at around midway between the tip to the root of the Fin. At the bottom of the Fin, a vibration motor, a pair of LEDs, and an IR proximity sensor are mounted in the middle of two frond-like objects (shown in \Cref{fig:Reflex Unit}). 
+
+\begin{figure}[!htb]
+	\centering
+	\begin{tabular}[t]{cc}
+		\begin{tabular}{c}
+			\begin{subfigure}{0.40\textwidth}
+				\centering
+				\includegraphics[width=0.99\textwidth]{"fig/validations/Light Unit"}
+				\caption{Light Unit}
+				\label{fig:Light Unit}
+			\end{subfigure}	
+		\end{tabular}
+		&
+		\begin{tabular}{c}
+			\begin{subfigure}{0.38\textwidth}
+				\centering
+				\includegraphics[width=0.99 \textwidth]{"fig/validations/Fin Unit"}
+				\caption{Fin Unit (top)}
+				\label{fig:Fin Unit}
+			\end{subfigure}	
+		 	\\
+			\begin{subfigure}{0.38\textwidth}
+				\centering
+				\includegraphics[width=0.99 \textwidth]{"fig/validations/Reflex Unit"}
+				\caption{Fin Unit (bottom)}
+				\label{fig:Reflex Unit}
+			\end{subfigure}
+		\end{tabular}
+	\end{tabular}
+	\caption[Photograph of components in the multi-cluster test bed]{Photograph of components in the multi-cluster test bed.}
+	\label{fig:cbla-test-bed components}
+\end{figure}
+
+
 
 \subsection{Device Nodes}
 
@@ -442,6 +476,6 @@ For the reflex vibration motor or LED pair, its output also ramps up and down co
 
 An additional virtual node is added to provide cluster-level group behaviours. This node counts the number of outputs within its cluster that are active. It then determines a probability of random activation by mapping this count to a Gaussian function. The Fin mechanism or the high-power LED may turn on at random based on this probability. Using a Gaussian function allows the probability of random activation to increase when a number of outputs are activated. However, when too many outputs are activated, this probability decreases which makes random activations less probable. 
 
-%TODO discuss rationale for this behaviour
+The prescripted behaviours described above was designed to be highly responsive, along with elements of group behaviours and random actuations. These kinds of behaviours are more similar to the types of behaviours of a typical interactive sculpture produced by LASG and PBAI than the CBLA-based behaviours introduced in this thesis. Its main purpose was to serve as a reference point when the visitors' responses to the CBLA system was studied in the user study described in \ref{sec:user-study}.
 
 %TODO probably should add a summary
