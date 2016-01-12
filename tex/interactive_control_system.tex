@@ -1,10 +1,10 @@
 \chapter[Interactive Control System]
-{Interactive Control System\footnote{Part of this chapter is adapted from papers published with IROS 2015 \cite{Chan2015} and Next Generation Building \cite{Gorbet2015}}} 
+{Interactive Control System\footnote{Part of this chapter is adapted from papers published with IROS~2015~\cite{Chan2015} and Next Generation  \mbox{Building}~\cite{Gorbet2015}}} 
 \label{chap:ctrl_system}
 
-The CBLA requires a large increase in sensing and control capability which the previous versions of the Hylozoic Series embedded electronics \cite{Beesley2010} are unable to provide. A new Hylozoic Series 3 interactive control system was developed with re-designed hardware, to enable the control and sampling of a larger number of actuators and sensors at a higher frequency. 
+To accommodate CBLA, it requires the system to be able to sense the consequences of its actions, similar to the human capability for proprioception. Similar to human proprioceptors, these sensors allow the sculpture to both detect its own actions, and the actions of occupants on its embodiment. For example, an accelerometer that is mounted on a mechanism senses both when the mechanism is activated by its actuators, and also when it is touched by a visitor during interaction. Without proprioceptors, the sculpture can only estimate its own dynamics based on a feed-forward model. For a human being, this capability is implemented through a neural mechanism known as efferent copy \cite{Arbib2003}. For example, human eyes are constantly moving while a stable image is reconstructed using the efferent copy. However, the efferent copy can be deceiving when the external environment is disturbed to conflict with the predicted model. For instance, a stationary image will appear to be moving when the eye is pressed \cite{Bridgeman2007}. However, if the disturbance is permanent, over time the efferent copy will be updated to reflect the new conditions, and an accurate model is once again available for prediction. Hence, not only is an accurate model of an agent's own dynamics difficult to obtain; such a model might change over the life of the installation due to wear and tear and interaction with its surrounding environments. Proprioceptors play an important role in giving the sculpture information about its own state to enable model learning and adaptation.
 
-To enable the sculpture to understand its own mechanisms, in addition to its surrounding environment and the occupants, there must be at least one proprioceptive sensor associated with each actuator. Note that while the nominal purpose of such a sensor is to directly sense the results of activation, they can also be used to detect changes in the environment, such as interaction with visitors.
+To enable the sculpture to understand its own mechanisms, in addition to its surrounding environment and the occupants, there must be at least one proprioceptive sensor associated with each actuator. Note that while the nominal purpose of such a sensor is to directly sense the results of activation, they can also be used to detect changes in the environment, such as interaction with visitors. This implies a large increase in sensing and control capability which the previous versions of the Hylozoic Series embedded electronics \cite{Beesley2010} are unable to provide. A new Hylozoic Series 3 interactive control system was developed with re-designed hardware, to enable the control and sampling of a larger number of actuators and sensors at a higher frequency. 
 
 This chapter discusses the design of the hardware and software mechanisms that enable the learning algorithm behaviours, and some of the specific actuators and sensors that we use. The design and implementation of the an experimental test bed are also presented. 
 
@@ -37,7 +37,7 @@ The hardware was custom designed in collaboration with Mohammadreza Memarian. Th
 
 The sensors and actuators used in the experiments described in \Cref{chap:validations} and their interface types are tabulated in \Cref{table:sensors-list} and \Cref{table:actuators-list} respectively.
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 	\caption[List of sensors and their interface types]{List of sensors that were used in the experiments and their interface types}
 	\begin{center}
 		\begin{tabular}{ | c | c |} 
@@ -56,7 +56,7 @@ The sensors and actuators used in the experiments described in \Cref{chap:valida
 \end{table}
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 	\caption[List of actuators and their interface types]{List of actuators that were used in the experiments and their interface types}
 	\begin{center}
 		\begin{tabular}{ | c | c |} 
@@ -80,7 +80,7 @@ The aforementioned actuators and sensors interface with the Control Module throu
 
 Combinations of the actuators and sensors listed in \Cref{table:sensors-list,table:actuators-list} are used to form three functional units: 1) Fin Unit, which is composed of two SMA wires, one infrared (IR) proximity sensor, and a three-axis accelerometer; 2) Reflex Unit, which has a pair of LEDs (wired in parallel), a vibration motor, and one infrared (IR) proximity sensors; and 3) Light unit, which comprises a high-power LED and an ambient light sensor. Their spatial configurations are shown in \Cref{fig:Physical hardware}.
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[height=0.85 \textheight]{"fig/interactive control system/Physical hardware"}
 	\caption[Typical spatial configuration of the physical functional units]{This is a typical spatial configuration of the functional units (figure adapted from an image provided by Philip Beesley Architect Inc.). Bright green denotes actuators and bright red denotes sensors. Light Unit is shaded yellow (1 shown); Fin Unit is shaded green (2 shown); and Reflex Unit is shaded purple (2 shown).}
@@ -94,7 +94,7 @@ A Fin Unit moves a 2-DOF Fin-like mechanism made of flexible plastic rods, by co
 
 At the heart of a Control Module, shown in \Cref{fig:Control_Module}, there is a Teensy 3 USB-based development board. It controls each device through the Device Port and communicates with the computer through USB as a human interface device (HID). Each Device Port has four output pins capable of pulse-width modulation (PWM), two input pins connecting to the Teensy's on-board analogue-to-digital converter (ADC), and two lines for digital serial communication over Inter-Integrated Circuit bus (I2C). It is designed to provide a convenient and fast interface to commonly used analogue actuators and sensors, and a digital bus for added flexibility. The on-board SPI and UART port are reserved for future expansion.
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.68 \textwidth]{"fig/interactive control system/Control_Module"}
 	\caption[Block diagram of the Control Module]{A Control Module consists of a Teensy 3, 6 Device Ports, a SPI port, and a UART port. Each Device port has 8 wires and they carry the signals that are commonly used in our system.}

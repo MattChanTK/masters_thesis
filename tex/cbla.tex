@@ -1,8 +1,12 @@
 \chapter[Curiosity-Based Learning Algorithm]
 {Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been published at IROS 2015 \cite{Chan2015} }} 
 \label{chap:cbla}
- 
-In this chapter, our approach for adapting and generalizing the IAC algorithm for implementation on a distributed kinetic sculpture is presented. This includes introducing additional parameters, modifications to action selection approaches, and the integration of multiple independent learning agents in a distributed network. 
+
+In a nut shell, the Curiosity-Based Learning Algorithm (CBLA) functions by exploiting the system's inherent curiosity to learn about itself, much like an infant might learn by exercising groups of muscles and observing the response. In its simplest form, the algorithm chooses an action from its action repertoire to perform, and measures the response. At the same time, it generates a prediction of what it thinks should happen. If the prediction matches the measured response, it has learnt that part of its sensorimotor space and that space becomes less interesting for future actions. If the prediction fails to match the measured response, it remains curious about that part of its ``self'', as it obviously still has more to learn. It will create a new prediction and try again. This learning architecture allows the system to learn both about itself, and also about interactions with occupants, whose movements and actions create new and ``surprising'' responses, activating the system's curiosity.
+
+In other word, CBLA is a type of reinforcement learning algorithm with the reduction of prediction error as the reward. During the learning process, it will explore regions of the state space that are neither too predictable nor too random; it focuses on areas that have the highest potential for new knowledge. To structure the learning process and identify interesting regions of the state-space, the CBLA automatically segments the state-space into regions; an expert in each region makes predictions about the effects of an action and adjusts its prediction model based on the actual resultant state. The value of each expert is determined by its record of error reduction. This value will then determine the execution likelihood of the action associated with this expert.
+
+In this chapter, our approach for adapting and generalizing the IAC algorithm \cite{Oudeyer2007} for implementation of the CBLA on a distributed kinetic sculpture is presented. This includes introducing additional parameters, modifications to action selection approaches, and the integration of multiple independent learning agents in a distributed network. 
 
 
 \section{CBLA Engine}
@@ -11,7 +15,7 @@ Oudeyer \cite{Oudeyer2005} observed during the IAC experiments that the resultin
 
 We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning architecture on the distributed architectural system described in Chapter \ref{chap:ctrl_system}. A distributed approach is necessary since the sculptures often contain hundreds of sensors and actuators distributed over an area the size of a large room. Each system node runs its own instantiation of the algorithm, called the CBLA Engine. A CBLA Engine is a thread that is iteratively executing the steps of the learning algorithm. It comprises a Node, an Action Selector, and an Expert, as illustrated in \Cref{fig:Block Diagram CBLA}.
 
-\begin{figure}[htb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram CBLA"}
 	\caption[Block diagram of the Curiosity Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M'(t)$s given $S(t)$. (2) Then, the Expert provides the action values $q$ associated with each possible $M'(t)$ to the Action Selector. (3) The Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the action value $q$ associated with the sensorimotor context $SM(t)$. }
@@ -19,7 +23,6 @@ We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning archit
 \end{figure}
 
 
-\FloatBarrier
 \subsection{Node}
 A node represents a subset of the sculptural system. Each node is specified by a set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It sets the actuator outputs and sample the relevant sensory inputs.  The type and number of sensory inputs and actions are configurable; specific configurations used in our experiments will be described in more detail in \Cref{chap:validations}.
 
@@ -51,7 +54,7 @@ An Expert consists of a prediction model, a set of exemplars, a Knowledge Gain A
 
 An expert represents a region in the sensorimotor space defined by its exemplars. Each prediction is generated by the expert in the region with the most similar sensorimotor context. \Cref{fig:Block Diagram Expert} shows the internal mechanism of an Expert.
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram Expert"}
 	\caption[Block diagram of the Expert]{(1) The prediction model of the Expert first makes a prediction of the resultant sensor input $S'(t+1)$ based on the current sensorimotor context, $SM(t)$. (2) This prediction and the actual sensor input $S(t+1)$ are then fed into the KGA. $S(t+1)$ is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with $SM(t)$ in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.}
@@ -69,14 +72,13 @@ In all the experiments presented in this thesis, linear least squares regression
 
 The KGA calculates the reward given the predicted and actual sensory inputs. It is implemented the way as in \cite{Oudeyer2007}. \Cref{fig:Block Diagram KGA} illustrates the internal workings of the KGA. The metaM in this case simply returns the average error over a window of $\tau$ time steps, $<e(t+1)-\tau>$. The reward is calculated by subtracting the current mean error, $<e(t+1)>$. This reward is then used by the action selector for computing the action values. 
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram KGA"}
 	\caption[Block diagram of the Knowledge Gain Assessor]{$S(t+1)$ and $S'(t+1)$ are the actual and predicted sensor input variables. (1) The KGA computes the error by taking their root-mean-square error difference. (2) After that, it computes the mean error over a window of previously calculated errors. Note that the mean error is only calculated based on errors associated with this particular region. (3) The metaM predicts the error by taking the mean error over time. (4) Finally, the KGA outputs the Reward by taking the difference between the actual mean error and predicted mean error. }
 	\label{fig:Block Diagram KGA}
 \end{figure}
 
-\FloatBarrier
 \subsubsection{Region Splitter}
 
 The system initially has only one region. All new exemplars are added to the same region. As more exemplars are added to memory, once split criteria 1 and 2 are met, a region will split into two parts.
@@ -98,18 +100,19 @@ If the split criteria are met, the Region Splitter finds a cut value and a cut d
 
 After the best cut value and cut dimension are identified, the exemplars of the parent region are split between the two regions based on the cut dimensions and values. The high-level mechanism of the region splitting process is illustrated in \Cref{fig:Block Diagram RegionSplitter}.
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram RegionSplitter"}
 	\caption[Block diagram of the Region Splitter]{When the function “split()” is called, it first checks if the split criteria are met by calling ``is\_splitting()''. If the split criteria are met, it forwards the exemplars to the Region Splitter. The Region Splitter then splits the exemplars into two and assigns them to the Left and Right Expert. Other properties such as the previous errors and rewards are passed on as well. }
 	\label{fig:Block Diagram RegionSplitter}
 \end{figure}
 
+\FloatBarrier
 \subsection{Pseudocode of CBLA}
 	
 The overall process is described in the pseudocode for the CBLA and is shown as Algorithm~\ref{alg:pseudocode-cbla}.
 
-\begin{algorithm}[!htbp]
+\begin{algorithm}[!htb]
 	\caption{Pseudocode for the CBLA} 
 	\label{alg:pseudocode-cbla}
 	\begin{algorithmic} [1]
