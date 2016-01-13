@@ -1,0 +1,138 @@
+
+\section{SMA Controller Node}\label{Append:SMA Controller}
+Development of this model starts with the intuition that the temperature of the wire increases when the rate of heating is greater than the rate of cooling. The rate of heating is related to the voltage across the wire. On the other hand, the rate of cooling is related to the temperature of the wire since it is mainly driven by the wire's own natural convection. 
+
+We first calculate the heat transfer rate as a result of current passing through the SMA wire. According to Joule's Law \cite{JoulesLaw},
+\begin{equation}
+q_1 = i^2 \cdot r
+\end{equation}
+where $q_1$ is heat transfer rate in Watts; $i$ is the current in Amperes; $r$ is the resistance of the wire in Ohms.
+
+According to Ohm's Law, 
+\begin{equation}\label{eqn:ohm's law}
+i = \frac{v}{r}
+\end{equation}
+where $i$ is the current; $v$ is the voltage in Volts; and $r$ is the resistance.
+
+Substituting \eqref{eqn:ohm's law} into \eqref{eqn:heating-rate-i}, we get
+
+\begin{equation}\label{eqn:heating-rate-v}
+q_1 = \frac{v^2}{r}
+\end{equation}
+
+In our case, although $r$ is not actually a constant since the resistance of the SMA wire decreases as it shortens~\cite{FlexinolTechSpecs}, the effect is sufficiently small that it can be treated as a constant. Therefore, we get,
+
+\begin{equation}\label{eqn:heating-rate-i}
+q_1 = k_{heating} \cdot v^2
+\end{equation}
+where $q_1$ is the heat transfer rate in Watts.
+
+Since our control signal, $x$, is proportional to the voltage, it can simply be absorbed into the $k_{heating}$ constant as 
+
+\begin{equation}\label{eqn:heating-rate-x}
+q_1 = k_{heating} \cdot x^2
+\end{equation}
+
+Then, we calculate the heat loss rate due to natural convection of the SMA wire. According to Newton's Law of Cooling~\cite{Burmeister1993}, 
+
+\begin{equation}\label{eqn:cooling-newton-law}
+q_2 = h_c \cdot A \cdot dT
+\end{equation}
+where $q_2$ is the heat transfer rate in Watts; $h_c$ is the convective heat transfer coefficient; A is the area of the heat transfer surface in $m^2$; and $dT$ is the temperature difference between the air and the surface in Kelvin.
+
+If we approximate $h_c$, $A$, and the air temperature $T_{air}$ as constants, we get
+\begin{subequations}\label{eqn:cooling-newton-law-simple}
+	\begin{flalign}
+	q_2 &= k_{cooling} \cdot (T - T_{air}) \\
+	&= k_{cooling} \cdot T - k_{cooling} \cdot T_{air} \\
+	&= k_{cooling} \cdot T + k_{air}\label{eqn:cooling-newton-law-simple-end}
+	\end{flalign}
+\end{subequations}
+where $q_2$ is the heat transfer rate in Watts; $k_{cooling}$ and $k_{air}$ are constants; and $T$ is the temperature of the SMA wire in Kelvin.
+
+Combining \eqref{eqn:heating-rate-x} and \eqref{eqn:cooling-newton-law-simple-end}, we get the total heat transfer rate as 
+\begin{subequations}
+	\begin{flalign}
+	q &= q_1 - q_2 \\
+	&= k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}\label{eqn:total_heat}
+	\end{flalign}
+\end{subequations}
+
+We can then calculate the kinetic energy generated during time interval $\Delta t$ by multiplying \eqref{eqn:total_heat} by $\Delta t$.
+\begin{equation}
+KE =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T + k_{air}) \cdot \Delta t \label{eqn:total_KE}
+\end{equation}
+
+Since temperature is directly proportional to kinetic energy, the proportionality constant can be absorbed into $k_{heating}$, $k_{cooling}$, and $ k_{air}$ as well. 
+\begin{equation}
+\Delta T =  (k_{heating} \cdot x^2 - k_{cooling} \cdot T  + k_{air}) \cdot \Delta t\label{eqn:delta_T}
+\end{equation}
+
+At each time step, $\Delta t$, the temperature is incremented by $\Delta T$.  
+\begin{subequations}
+	\begin{flalign}
+	T_{t+1} &=  T_{t} + \Delta T \\
+	&=  T_{t} + k_{heating} \cdot x^2 - k_{cooling} \cdot T_{t}  + k_{air}\label{eqn:sma-controller-model}
+	\end{flalign}
+\end{subequations}
+
+In this formulation, the actual unit of the temperature is not important. Instead, we define 0 as the temperature when the SMA wire is the longest and 1 when the SMA wire is the shortest. The steady-state temperature of the SMA wire should be 0 when the input, $x$, is 0. If we substitute 0 into $T_{t+1}$, $T_{t}$, and $x$ into \eqref{eqn:sma-controller-model}, we get $k_{air} = 0$. 
+
+\begin{equation}\label{eqn:sma-controller-model-1}
+T_{t+1} =  T_{t} + k_{heating} \cdot x^2 - k_{cooling} \cdot T_{t}
+\end{equation}
+
+From the SMA wire's technical specifications\cite{FlexinolTechSpecs}, we identify the maximum current at which the SMA wire can operate continuously without heat damage. Using that value, we determine the maximum continuous output level, $x_c$. This means that when the desired temperature, $T$, is equal to 1, at steady-state, $x$ should be at $x_c$. This means, 
+\begin{subequations}
+	\begin{flalign}
+	0 &= k_{heating} \cdot x_c^2 - k_{cooling} \\
+	k_{cooling} &=  k_{heating} \cdot x_c^2\label{eqn:k_cooling}
+	\end{flalign}
+\end{subequations}
+
+The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. In fact, we can set $k_{heating}$ to 1 arbitrarily to simplify \eqref{eqn:sma-controller-model-1} further. At the end, we get
+\begin{equation}\label{eqn:sma-controller-model-2}
+T_{t+1} =  T_{t} + x^2 -  x_c^2 \cdot T_{t}
+\end{equation}
+as the temperature model for the SMA Controller Node.
+
+We then apply and tune a PI controller on this temperature model to track a desired temperature as shown in \Cref{fig:SMA Controller}. A Node can specify a desired temperature, $T_{desired}$, between 0 and 1 and the SMA Controller tracks this temperature within its internal temperature model. The control signal generated by this PI Controller is applied to the actual SMA wire in parallel. 
+
+\begin{figure} [htb]
+	\centering
+	\includegraphics[width=1.0\textwidth]{"fig/validations/SMA Controller"}
+	\caption[Block diagram of the SMA Controller]{Block diagram of the SMA Controller. }
+	\label{fig:SMA Controller}
+\end{figure}
+
+
+\section{LED Driver Node}\label{Append:LED Driver}
+
+The LED Driver changes its output gradually to produce dimming effects. However, the relationship between brightness level of a typical LED and the input voltage is non-linear \cite{CreeSpecs}. At low voltage levels, the brightness increases rapidly as input voltage increases. At higher voltage levels, a larger increase in voltage is needed to increase the brightness at the same rate. In order for the change in brightness to appear more linear, \eqref{eqn:led-driver discrete update} is used to update the output level of an LED. 
+ 
+ At every time step, 
+ \begin{equation}\label{eqn:led-driver discrete update}
+ x_{t+1} =
+ \begin{cases}
+ 0.00001 & \text{if } x_{t} == 0 \text{ and }  x_{desired} > 0 \\
+ x_{t} + k \cdot x_{t}, & \text{if } x_{t} < x_{desired} \\
+ x_{t} - k \cdot x_{t}, & \text{if } x_{t} > x_{desired} \\
+ x_{t}, & \text{otherwise}
+ \end{cases} 
+ \end{equation}
+ where $x_{t+1}$ is the output level in the next time step $t+1$; $x_t$ is the current output level at time $t$; $x_{desired}$ is the desired output level; and $k$ is a constant that determines rate of change in brightness. $x_{desired}$ must be between 0 and 1. 
+ 
+ Formulating second and third cases of \eqref{eqn:led-driver discrete update} as a first-order ODE shows that is an exponential function. 
+ 
+ \begin{equation}\label{eqn:led-driver ODE}
+ \frac{dx(t)}{dt} \pm k \cdot x(t)  = 0
+ \end{equation}
+ 
+ Solving \eqref{eqn:led-driver ODE}, we get 
+ \begin{equation}\label{eqn:led-driver ODE_solved}
+ x(t) = x(0) \cdot e^k \cdot e^{\mp k \cdot t}
+ \end{equation}
+ where $x(0)$ is the initial output level when the desired output level is changed.
+ 
+This LED Driver enables the output level of the LED to increase at a faster rate in the higher brightness region. 
+

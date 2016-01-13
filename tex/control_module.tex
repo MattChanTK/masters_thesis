@@ -1,0 +1,12 @@
+
+
+At the heart of a Control Module, shown in \Cref{fig:Control_Module}, there is a Teensy 3 USB-based development board. It controls each device through the Device Port and communicates with the computer through USB as a human interface device (HID). Each Device Port has four output pins capable of pulse-width modulation (PWM), two input pins connecting to the Teensy's on-board analogue-to-digital converter (ADC), and two lines for digital serial communication over Inter-Integrated Circuit bus (I2C). It is designed to provide a convenient and fast interface to commonly used analogue actuators and sensors, and a digital bus for added flexibility. The on-board SPI and UART port are reserved for future expansion.
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.68 \textwidth]{"fig/interactive control system/Control_Module"}
+	\caption[Block diagram of the Control Module]{A Control Module consists of a Teensy 3, 6 Device Ports, a SPI port, and a UART port. Each Device port has 8 wires and they carry the signals that are commonly used in our system.}
+	\label{fig:Control_Module}
+\end{figure}
+
+In order to increase the number of PWM pins beyond what is provided natively on the Teensy, an I2C bus controlled PWM controller\footnote{PCA9685 16-channel, 12-bit PWM Fm$+$ I$^2$C-bus LED controller: \url{www.nxp.com/documents/data_sheet/PCA9685.pdf}} was used. This does not affect the I2C buses on the Device Ports since it is using the other one of Teensy's two I2C buses. The I2C bus for the Device Ports is further multiplexed into six. This makes each Device Port more independent, and devices may have the same addresses as long as they are on different Device Ports. By having virtually six independent I2C buses, it simplifies the configuration of the Device Modules as they can all be configured the same way.

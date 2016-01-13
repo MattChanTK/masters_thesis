@@ -2,11 +2,7 @@
 {Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been published at IROS 2015 \cite{Chan2015} }} 
 \label{chap:cbla}
 
-In a nut shell, the Curiosity-Based Learning Algorithm (CBLA) functions by exploiting the system's inherent curiosity to learn about itself, much like an infant might learn by exercising groups of muscles and observing the response. In its simplest form, the algorithm chooses an action from its action repertoire to perform, and measures the response. At the same time, it generates a prediction of what it thinks should happen. If the prediction matches the measured response, it has learnt that part of its sensorimotor space and that space becomes less interesting for future actions. If the prediction fails to match the measured response, it remains curious about that part of its ``self'', as it obviously still has more to learn. It will create a new prediction and try again. This learning architecture allows the system to learn both about itself, and also about interactions with occupants, whose movements and actions create new and ``surprising'' responses, activating the system's curiosity.
-
-In other word, CBLA is a type of reinforcement learning algorithm with the reduction of prediction error as the reward. During the learning process, it will explore regions of the state space that are neither too predictable nor too random; it focuses on areas that have the highest potential for new knowledge. To structure the learning process and identify interesting regions of the state-space, the CBLA automatically segments the state-space into regions; an expert in each region makes predictions about the effects of an action and adjusts its prediction model based on the actual resultant state. The value of each expert is determined by its record of error reduction. This value will then determine the execution likelihood of the action associated with this expert.
-
-In this chapter, our approach for adapting and generalizing the IAC algorithm \cite{Oudeyer2007} for implementation of the CBLA on a distributed kinetic sculpture is presented. This includes introducing additional parameters, modifications to action selection approaches, and the integration of multiple independent learning agents in a distributed network. 
+In this chapter, our approach for adapting and generalizing the IAC algorithm \cite{Oudeyer2007} for implementation of the Curiosity-Based Learning Algorithm (CBLA) on a distributed kinetic sculpture is presented. This includes introducing additional parameters, modifications to action selection approaches, and the integration of multiple independent learning agents in a distributed network. 
 
 
 \section{CBLA Engine}
@@ -57,10 +53,10 @@ An expert represents a region in the sensorimotor space defined by its exemplars
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram Expert"}
-	\caption[Block diagram of the Expert]{(1) The prediction model of the Expert first makes a prediction of the resultant sensor input $S'(t+1)$ based on the current sensorimotor context, $SM(t)$. (2) This prediction and the actual sensor input $S(t+1)$ are then fed into the KGA. $S(t+1)$ is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and updates the Action Value associated with $SM(t)$ in the Expert memory. These Action Values are recalled to evaluate a possible action in the next time step the Expert is active.}
+	\caption[Block diagram of the Expert]{(1) The prediction model of the Expert first makes a prediction of the resultant sensor input $S'(t+1)$ based on the current sensorimotor context, $SM(t)$. (2) This prediction and the actual sensor input $S(t+1)$ are then fed into the KGA. $S(t+1)$ is also added to the collection of exemplars, which the prediction model is trained on at every time step. (3) After that, the KGA computes the reward and store in the Expert memory. A number of the most recent rewards are then recalled to evaluate a possible action given in the next time step that the Expert is active.}
 	\label{fig:Block Diagram Expert}
 \end{figure}
-%TODO change diagram; add action selector and notations
+
 
 \subsubsection{Prediction Model}
 
@@ -79,6 +75,7 @@ The KGA calculates the reward given the predicted and actual sensory inputs. It 
 	\label{fig:Block Diagram KGA}
 \end{figure}
 
+\FloatBarrier
 \subsubsection{Region Splitter}
 
 The system initially has only one region. All new exemplars are added to the same region. As more exemplars are added to memory, once split criteria 1 and 2 are met, a region will split into two parts.
@@ -176,7 +173,7 @@ This entire process is repeated for each dimension and the cut dimension and cut
 
 
 %TODO possibly add legend
-%TODO change to black and white
+
 \begin{figure}[!htbp]
 	\centering
 	\begin{subfigure}[t]{0.45\textwidth}
@@ -279,9 +276,9 @@ Another method is to treat output signal from a node as input to other nodes. We
 	\label{fig:Indirect input diagram}
 \end{figure}
 
-\subsection{Summary of CBLA}
+\subsection{Summary}
 
-This chapter details the implementation of the CBLA Engine, which is an reinforcement learning algorithm that selects actions that lead to the maximum potential knowledge gain. Each Engine represents a subset of the system and constructs a model that predicts the consequences of its actions given its current states. A system is then formed by connecting a network of CBLA Engines through shared sensors and virtual inputs. The distributed approach enables the system to respond to the occupants and adapt to localized changes in the surroundings quickly. Building on this CBLA system, a sculptural system that generates its own life-like, interactive behaviours may emerge.
+In this chapter, the implementation of the CBLA Engine, which is an reinforcement learning algorithm that selects actions that lead to the maximum potential knowledge gain is detailed. Each Engine represents a subset of the system and constructs a model that predicts the consequences of its actions given its current states. A system is then formed by connecting a network of CBLA Engines through shared sensors and virtual inputs. The distributed approach enables the system to respond to the occupants and adapt to localized changes in the surroundings quickly. Building on this CBLA system, a sculptural system that generates its own life-like, interactive behaviours may emerge.
 
 \FloatBarrier  
 
