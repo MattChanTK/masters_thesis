@@ -133,12 +133,12 @@ The CBLA system contains a large number of asynchronous threads that run at thei
 
 \section{Multi-Cluster Test Bed}\label{sec:multi-cluster-test-bed}
 
-An experimental test bed was built to investigate how users interact with the CBLA system. This is a small scale four-cluster test bed that resembles a typical interactive sculpture produced by Philip Beesley Architect Inc. (PBAI) and it was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}. A photograph of the complete test bed is shown in \Cref{fig:cbla-test-bed photo 2}
+An experimental test bed was built to investigate how users interact with the CBLA system. The four-cluster test bed resembles a typical interactive sculpture produced by Philip Beesley Architect Inc. (PBAI) and was used in the experiments described in \Cref{sec:multi-cluster-experiment,sec:user-study}. A photograph of the complete test bed is shown in \Cref{fig:cbla-test-bed photo 2}.
 
 \begin{figure} [!htb]
 	\centering
 	\includegraphics[width=1.0\textwidth]{"fig/validations/cbla-test-bed photo 2"}
-	\caption[Photograph of the multi-cluster test bed]{Photograph of the multi-cluster test bed when actuated. The names of the Clusters from left to right are: Cluster 1 ($C1$), Cluster 2 ($C2$), Cluster 3 ($C3$), and Cluster 4 ($C4$).}
+	\caption[Photograph of the multi-cluster test bed]{Photograph of the multi-cluster test bed with the LEDs actuated. The names of the Clusters from left to right are: Cluster 1 ($C1$), Cluster 2 ($C2$), Cluster 3 ($C3$), and Cluster 4 ($C4$).}
 	\label{fig:cbla-test-bed photo 2}
 \end{figure}
 
@@ -191,21 +191,21 @@ Device Nodes further abstract the Output and Input Nodes to enable higher level 
 
 In the experiment described in \Cref{sec:multi-node}, the SMA wires were only operated in fully-off or fully-on mode. This means that a Fin with two SMA wires can only have four possible states. In addition, each actuation must be a cycle since the SMA wires cannot be fully actuated at 5V for more than 2 seconds. Empirically, we determined that the cooling period takes around 10 seconds. This means that the loop period for a CBLA Node cannot be lower than 12 seconds since it does not have the freedom to actuate the SMA wires again during the cooling period, in order to protect the wire. These restrictions are problematic during interaction with the users since the learning period and response latency would likely take longer than what a typical visitor would spend in front of a section of a sculpture. In addition, only a very coarse model can be made with only four possible actions that the Fin can choose from. This means that the Fin Node would likely be very unresponsive since the variance in resultant state for each kind of action is likely to be very high.
 
-Thus, for this experiment, a position controller Node is needed to enable the SMA wire to hold its contraction while keeping the SMA wire at a safe temperature. Since the length of an SMA wire is related to the temperature, and current is passed through the SMA wire to generate heat, to maintain a position, the controller needs to adjust the output voltage to a level that can maintain the desired temperature. This can reduce the loop period as the SMA wires no longer need to cool down after actuating. In addition, the number of actions is no longer limited to four as the Node can select any value between fully-off and fully-on. However, it is difficult to attach a temperature sensor on the SMA wire. Thus, instead of using a feedback controller, only an open-loop controller with a model that estimates the temperature of an SMA wire is used.
+To improve the action resolution of the Fin subsystem, a position controller Node is needed to enable the SMA wire to hold its contraction while keeping the SMA wire at a safe temperature. Since the length of an SMA wire is related to the temperature, and current is passed through the SMA wire to generate heat, to maintain a position, the controller needs to adjust the output voltage to a level that can maintain the desired temperature. This can reduce the loop period as the SMA wires no longer need to cool down after actuating. In addition, the number of actions is no longer limited to four as the Node can select any value between fully-off and fully-on. However, it is difficult to attach a temperature sensor to the SMA wire. Thus, instead of using a feedback controller, only an open-loop controller with a model that estimates the temperature of an SMA wire is used.
 
 This controller essentially produces a control signal that allows the SMA wire to quickly reach its desired temperature by setting the output voltage very high. It then gradually lowers the voltage as the SMA wire reaches its desired position according to an internal model. The implementation of this SMA Controller Node can be found in \Cref{Append:SMA Controller}. Due to the lack of feedback control and the simplifications and approximations made when developing the model, this controller is unlikely to be accurate. However, the main purpose of this SMA Controller is to enable the CBLA Node to hold the Fin at a particular position. As a result, this allows the CBLA Engine to run at a higher rate and expands the number of possible actions. 
 
 
 \subsubsection{LED Driver Node}
 
-If a CBLA Node controls an LED directly, any change in brightness would be set instantly. As a result, the LED may appear to be flicking or flashing erratically to the viewers as it rapidly jumps between different brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the LED gradually was developed. It allows a Node to set a particular target brightness level and the LED driver would increment or decrement the brightness of the LED linearly by adjusting the output PWM voltage until it reaches the target. Its design details can be found in \Cref{Append:LED Driver}
+If a CBLA Node controls an LED directly, any change in brightness would be set instantly. As a result, the LED may appear to be flicking or flashing erratically to the viewers as it rapidly jumps between different brightness levels. To improve the aesthetic, an LED Driver that brightens and dims the LED gradually was developed. It allows a Node to set a particular target brightness level and the LED driver would increment or decrement the brightness of the LED linearly by adjusting the output PWM voltage until it reaches the target. Its design details can be found in \Cref{Append:LED Driver}.
 
   
 \subsection{Isolated CBLA Nodes}\label{sec:isolated-cbla-node}
 
 Each Isolated CBLA Node is associated with one actuator. A CBLA system, as discussed in \Cref{sec:cbla-system}, is constructed by linking these Isolated CBLA Nodes through virtual inputs. The prediction models are fitted using Lasso \cite{Tibshirani1996}. In this test bed, three main types of Isolated CBLA Node exist: Half-Fin Node, Light Node, and Reflex Node.
 
-\Cref{fig:Isolated CBLA Nodes} presents the make-up of the different Isolated CBLA Nodes in a cluster. Two Half-Fin Nodes control the bending of a Fin through their respective SMA Controller Nodes (Fx.SMA-L and Fx.SMA-R). The pair of Half-Fin Nodes share a Fin-mounted IR proximity sensor (Fx.IR-F), and the 3 axes of the accelerometer (Fx.ACC). A Light Node controls the brightness of a high-power LED through an LED driver Node (Lx.LED) and its sensory space consists of an ambient light sensor (Lx.ALS). There are two types of Reflex Nodes, one is associated with a pair of LEDs (Fx.RFX-L), and one is associated with a vibration motor (Fx.RFX-M). They are both controlled through LED Driver Nodes. In their sensory space, they share one bottom-mounted IR proximity sensor (Fx.IR-S). 
+\Cref{fig:Isolated CBLA Nodes} presents the make-up of the different Isolated CBLA Nodes in a cluster. Two Half-Fin Nodes control the bending of a Fin through their respective SMA Controller Nodes (Fx.SMA-L and Fx.SMA-R). The pair of Half-Fin Nodes share a Fin-mounted IR proximity sensor (Fx.IR-F), and the 3 axes of the accelerometer (Fx.ACC). A Light Node controls the brightness of a high-power LED through an LED driver Node (Lx.LED) and its sensory space consists of an ambient light sensor (Lx.ALS). There are two types of Reflex Nodes, one associated with a pair of LEDs (Fx.RFX-L), and one associated with a vibration motor (Fx.RFX-M). They are both controlled through LED Driver Nodes. In their sensory space, they share one bottom-mounted IR proximity sensor (Fx.IR-S). 
 
 \begin{figure} [!htbp]
 	\centering
@@ -214,12 +214,31 @@ Each Isolated CBLA Node is associated with one actuator. A CBLA system, as discu
 	\label{fig:Isolated CBLA Nodes}
 \end{figure}
 
+The loop periods of the CBLA Engine for the three types of CBLA Nodes are shown in \Cref{table:cbla-loop-perids}. They were set to give their associated actuators sufficient time to reach the given target output values. 
+
+\begin{table}[!htb]
+	\caption[Loop periods of CBLA Nodes]{Loop periods of the three types of CBLA Nodes}
+	\begin{center}
+		\begin{tabular}{ | c | c |} 
+			\hline
+			\textbf{CBLA Node Type} & \textbf{Loop Period} \\ 
+			\hline\hline
+			Half-Fin & 5.0s \\ 
+			\hline
+			Light & 1.0s \\
+			\hline
+			Reflex & 0.5s \\ 
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{table:cbla-loop-perids}
+\end{table}
 
 \subsection{Network Configurations}
 
 The Isolated CBLA Nodes described in \Cref{sec:isolated-cbla-node} are connected to each other via virtual inputs. In essence, the output of a CBLA Node is treated as an input variable to other Nodes, much like input variables associated with their own sensors. This creates a interconnected network of CBLA Nodes that spans across the entire sculptural system. This allows information regarding the external environment to travel through the sculpture. 
 
-Different network configurations produce different system behaviours. Here we investigate two types of network configurations which are called Spatial Mode and Random Mode. For fair comparisons, the two configurations have exactly the same number of links. In the experiment, the number of links was arbitrarily chosen to be 111 so that there are sufficient links to cover the entire system. In addition, each Node is linked to at least one other Node via virtual input. 
+Different network configurations produce different system behaviours. Here we investigate two types of network configurations which are called Spatial Mode and Random Mode. For fair comparisons, the two configurations have exactly the same number of links. In the experiment, the number of links was arbitrarily chosen to be 111 so that there are sufficient links to cover the entire system. In addition, each Node is linked to at least one other Node via a virtual input. 
 
 \subsubsection{Spatial Mode}
 
@@ -251,7 +270,7 @@ The specific random configuration is generated at run-time and is different ever
 
 For the purpose of comparing between CBLA and prescripted behaviours, each CBLA Node has a Prescripted Engine in addition to the CBLA Engine. This allows us to quickly switch between the two kinds of behaviours during the user study described in \Cref{sec:user-study}. Although the two engines are both associated with the same actuators, they may have different sensors in their sensory space. 
 
-The prescripted behaviours are implemented based on a specification by a human designer, and are similar to previous behaviours of the Hylozoic series\cite{Gorbet2015}. For the Fin mechanism, when its Fin-mounted IR proximity sensor detects an object, it bends down toward the direction of a neighbouring bottom-mounted IR proximity sensor that has also detected an object. If both or neither of the IR proximity sensors have detected an object, it simply bends straight down. It returns to an upright rest position when its Fin-mounted IR proximity sensor no longer detects an object in its proximity.
+The prescripted behaviours are implemented based on a specification by a human designer, and are similar to previous behaviours of the Hylozoic series \cite{Gorbet2015}. For the Fin mechanism, when its Fin-mounted IR proximity sensor detects an object, it bends down toward the direction of a neighbouring bottom-mounted IR proximity sensor that has also detected an object. If both or neither of the IR proximity sensors have detected an object, it simply bends straight down. It returns to an upright rest position when its Fin-mounted IR proximity sensor no longer detects an object in its proximity.
 
 For the high-power LEDs, its output ramps up and down continuously when its corresponding Fin-mounted IR proximity sensor has detected an object. It then dims gradually when the object is removed.
 
@@ -261,4 +280,4 @@ An additional virtual node is added to provide cluster-level group behaviours. T
 
 The prescripted behaviours described above were designed to be highly responsive, along with elements of group behaviours and random actuations. These kinds of behaviours are more similar to the types of behaviours of a typical interactive sculpture produced by LASG and PBAI than the CBLA-based behaviours introduced in this thesis. Its main purpose was to serve as a reference point when the visitors' responses to the CBLA system are studied in the user study described in \ref{sec:user-study}.
 
-%TODO probably should add a summary
+%TODO add a summary
