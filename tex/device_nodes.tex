@@ -90,9 +90,9 @@ From the SMA wire's technical specifications\cite{FlexinolTechSpecs}, we identif
 	\end{flalign}
 \end{subequations}
 
-The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. In fact, we can set $k_{heating}$ to 1 arbitrarily to simplify \eqref{eqn:sma-controller-model-1} further. At the end, we get
+The SMA wires would not be damaged due to over-heating as long as the relationship in \eqref{eqn:k_cooling} holds. At the end, we get
 \begin{equation}\label{eqn:sma-controller-model-2}
-T_{t+1} =  T_{t} + x^2 -  x_c^2 \cdot T_{t}
+T_{t+1} =  T_{t} + k_{heating}(x^2 -  x_c^2 \cdot T_{t})
 \end{equation}
 as the temperature model for the SMA Controller Node.
 
@@ -101,7 +101,7 @@ We then apply and tune a PI controller on this temperature model to track a desi
 \begin{figure} [htb]
 	\centering
 	\includegraphics[width=1.0\textwidth]{"fig/validations/SMA Controller"}
-	\caption[Block diagram of the SMA Controller]{Block diagram of the SMA Controller. }
+	\caption[Block diagram of the SMA Controller]{Block diagram of the SMA Controller. $k_h$ is equivalent to $k_{heating}$.}
 	\label{fig:SMA Controller}
 \end{figure}
 
@@ -122,7 +122,7 @@ The LED Driver changes its output gradually to produce dimming effects. However,
  \end{equation}
  where $x_{t+1}$ is the output level in the next time step $t+1$; $x_t$ is the current output level at time $t$; $x_{desired}$ is the desired output level; and $k$ is a constant that determines rate of change in brightness. $x_{desired}$ must be between 0 and 1. 
  
- Formulating second and third cases of \eqref{eqn:led-driver discrete update} as a first-order ODE shows that is an exponential function. 
+ Formulating second and third cases of \eqref{eqn:led-driver discrete update} as a first-order ODE shows that it is an exponential function. 
  
  \begin{equation}\label{eqn:led-driver ODE}
  \frac{dx(t)}{dt} \pm k \cdot x(t)  = 0
