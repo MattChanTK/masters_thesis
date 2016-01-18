@@ -69,7 +69,6 @@ In this Section, we describe a demonstration of an integrated system consisting 
 \subsection{Set-up}
 The Light node was the same as in \Cref{sec:single-node}, with the addition of the shared IR proximity sensor. For the Fin node, the input variables are the average accelerometer readings of the three axes, and the shared IR proximity sensor reading over the 12.5s loop period; the output variable is the action of the Fin. There are four discrete actions: rest (0), lower to the right (1), lower to the left (2), and lower to the centre (3). Note that in this set up, the two types of nodes run with different loop periods, but coupling between them is accomplished through the shared IR sensor, which measures proximity as a 12-bit value. Least-square method was used to fit its prediction models. Note that in this experiment all four nodes share one single IR sensor. The set-up of the experiment is shown in \Cref{fig:Single_Cluster Set-up}.
 
-%TODO add a map for this simpler system
 \begin{figure} [!htbp]
 	\centering
 	\includegraphics[height=0.8\textheight]{"fig/validations/Single_Cluster Set-up"}
@@ -103,9 +102,12 @@ The system's intrinsic curiosity drives itself to perform actions and elicit res
 
 \section{Multi-Cluster Experiment}\label{sec:multi-cluster-experiment}
 
-This experiment investigates the behaviours of the CBLA system on the four-cluster test bed described in \Cref{sec:multi-cluster-test-bed}. The test bed has two different network configurations: Spatial Mode, and Random Mode. Under different network configurations, the CBLA system is expected to behave differently. We hypothesize that users would find activations closer to them more relevant, and hence more interesting. Therefore, a metric to quantify this proximal activation is devised. The configuration with higher proximal activation is then used for the subsequent user study described in \Cref{sec:user-study}.
+This experiment investigates the behaviours of the CBLA system on the four-cluster test bed described in \Cref{sec:multi-cluster-test-bed}. The test bed has two different network configurations: Spatial Mode and Random Mode. Under different network configurations, the CBLA system is expected to behave differently. We hypothesize that users would find activations closer to them more relevant, and hence more interesting. Therefore, a metric to quantify this proximal activation is devised. The configuration with higher proximal activation is then used for the subsequent user study described in \Cref{sec:user-study}.
 
 In addition, the effects of sensitivity constant $\nu$ in the idling function as described in \Cref{eqn:map_sigmoid} was also examined. We expected that, with higher $\nu$ value, the system would be less responsive to ambient noise as well as to users' interaction. This would result in a lower overall level of activation.  
+
+Furthermore, the response time of a CBLA system was examined and compared against the system running prescripted behaviours.
+
 
 \subsection{Set-up}\label{sec:multi-cluster-setup}
 
@@ -158,6 +160,8 @@ In this experiment, we set $T_{readj}$ to 480s. This means that we are looking a
 
 Furthermore, we also expected to see some spontaneous activations for both kinds of network configurations. They are caused by the way in which the relative action value, $\widehat{q^2_z}$, is calculated, as mentioned in \Cref{sec:action_selection}. Recalling 
 \Cref{eqn:relative_action_val}, \[\widehat{q^2_z} = \frac{q_t^2}{max(\overline{q^2_z}, \nu)}\] we can see that when the average squared action value, $\overline{q^2_z}$, hovers close to 0 for a long time, the relative action value, $\widehat{q^2_z}$, would become very large. Fundamentally, this pattern is caused by the system's sensitivity to ambient sensor noise and can be adjusted by changing the sensitivity constant, $\nu$. In this experiment, $\nu$ values of $0.00015$ and $0.00025$ were tested. With the larger $\nu$, the sensitivity of the system is lower, and therefore, fewer Nodes in the neighbouring clusters would activate since a higher action value is required to reach the same relative action value after a prolonged period of low activations.  We refer to the lower $\nu$ value as ``high sensitivity setting'' and the higher $\nu$ value as ``low sensitivity setting''. In this experiment, we expected to see the magnitude of activations of the trials using the low sensitivity setting to be more dampened compared with the ones using the high sensitivity setting.
+
+Lastly, we expected the response time of a CBLA system to be longer than that of a system in Prescripted Mode. When a trigger is applied on a CBLA system, it first explores the sensory context associated with the trigger by performing near-idling actions, and accumulates prediction errors. It then activates when it has some success in improving its prediction models. In our implementation, the fastest type of CBLA Node, which is the Reflex Node, runs at a loop period of 0.5s. This means that since each exploration and learning cycle requires time, it will take longer for it to activate in respond to a trigger, in comparison to Prescripted Mode, which simply reacts to the trigger instantly.
 
 
 \subsection{Results}
@@ -213,17 +217,15 @@ In each of the four cases, the total activation values for Random Mode are highe
 % Compare cluster activations
 On the other hand, with the Single Trigger procedure, cluster activation values for both Spatial Mode and Random Mode tend to be higher in Cluster 3 than in other clusters. This is expected since some Nodes within a cluster are also linked through shared inputs. However, the Cluster 3's activation values for Spatial Mode are 2.58 times (low sensitivity setting) and 1.91 times (high sensitivity setting) larger than their respective total activation values. For Random Mode, the Cluster 3's activation values are only 1.17 times (high sensitivity) and 1.40 times (low sensitivity) higher than their respective total activation values. The differences in cluster activations at Cluster 3 are much larger for Spatial Mode than for Random Mode. This shows that activations do tend to concentrate more around the origin of the trigger in Spatial Mode in comparison to Random Mode as we expected. 
 
-% compare low sensitivity with high sensitivity
-In addition, as expected, with the low sensitivity setting, the activation levels tend to be lower than with the high sensitivity setting. Nevertheless, both settings detected the trigger as the activation values of Single Trigger trials were always larger than their No Trigger counterparts.
-
-%TODO Thoughts/discussion about why high sensitivity seems to make a much more significant difference in Random mode than in Spatial mode?
+% compare single trigger to no trigger
+In addition, as expected, with the low sensitivity setting, the activation levels tend to be lower than with the high sensitivity setting. It is interesting to note that the sensitivity setting seems to make a much more significant difference in Random Mode than in Spatial Mode. It may again be attributed to the larger number of unidirectional links which seems to allow the activations to spread quicker and further. With the high sensitivity setting, the Random Mode CBLA system may simply be triggered by ambient noise, which causes the chain reactions of activations, much more frequently.
+Nevertheless, both settings detected the trigger as the activation values of Single Trigger trials were always larger than their No Trigger counterparts.
 
 % comparing low sensitivity and high sensitivity
 The total activation and the cluster activations over time for Trial 1 and 2, which were in Spatial Mode under the Single Trigger procedure, are shown in \Cref{fig:multicluster 1-2}. 
 The initial high levels of activation were due to the initial model learning. 
-At $t$ = 450s, when the object was presented in front of a sensor in Cluster~3, the activation level at the cluster (red) shot up for both cases. However, for the low sensitivity case (\Cref{fig:multicluster trial 1}), the trigger didn't manage to trigger the neighbouring Nodes. On the other hand, for the high sensitivity case (\Cref{fig:multicluster trial 2}), activations in other clusters trail soon after. It is also interesting to point out that the magnitudes of activations for the other clusters were actually similar or even higher than Cluster 3. In our formulation, the maximum output level is mapped to the relative action value and virtual inputs are treated just like any other inputs. This means that Nodes that were not directly detecting the event could still register high knowledge gain potential. This means that CBLA Nodes in a cluster were indeed responding to and learning about an event happening in a neighbouring cluster.
+Near $t$ = 450s, when the object was presented in front of a sensor in Cluster~3, the activation level at the cluster (red) shot up for both cases. However, for the low sensitivity case (\Cref{fig:multicluster trial 1}), the trigger didn't manage to trigger the neighbouring Nodes. On the other hand, for the high sensitivity case (\Cref{fig:multicluster trial 2}), activations in other clusters trail soon after. It is also interesting to point out that the magnitudes of activations for the other clusters were actually similar or even higher than Cluster 3. In our formulation, the maximum output level is mapped to the relative action value and virtual inputs are treated just like any other inputs. This means that Nodes that were not directly detecting the event could still register high knowledge gain potential. This means that CBLA Nodes in a cluster were indeed responding to and learning about an event happening in a neighbouring cluster.
 
-%TODO Provide tick at 450s points and overlay the trigger point
 \begin{figure}[!htbp]
 	\centering
 	\begin{subfigure}[t]{0.8\textwidth}
@@ -239,7 +241,7 @@ At $t$ = 450s, when the object was presented in front of a sensor in Cluster~3, 
 		\caption{Trial 2 - Single Trigger for Spatial Mode with high sensitivity setting}
 		\label{fig:multicluster trial 2}
 	\end{subfigure}
-	\caption[Average total activation and average cluster activations plots for Trials 1 and 2 of the multi-cluster experiment]{Average total activation and average cluster activations over time plots for Trials 1 and 2 of the multi-cluster experiment. In the Cluster Activation plot (bottom), the blue line represents Cluster 1; the green line represents Cluster 2; the red line represents Cluster 3; and the cyan line represents Cluster 4.}
+	\caption[Average total activation and average cluster activations plots for Trials 1 and 2 of the multi-cluster experiment]{Average total activation and average cluster activations over time plots for Trials 1 and 2 of the multi-cluster experiment. The magenta triangle indicates the trigger point. In the Cluster Activation plot (bottom), the blue line represents Cluster 1; the green line represents Cluster 2; the red line represents Cluster 3; and the cyan line represents Cluster 4.}
 	\label{fig:multicluster 1-2}
 \end{figure}
 
@@ -247,7 +249,6 @@ At $t$ = 450s, when the object was presented in front of a sensor in Cluster~3, 
 % compare with no trigger
 Meanwhile, high sensitivity settings led to spontaneous activations occurring much more frequently. This is expected as systems with high sensitivity setting would respond to ambient noise and external events much more readily than ones with low sensitivity setting. \Cref{fig:multicluster 4-8} compares the spontaneous activation patterns of Spatial Mode and Random Mode with high sensitivity setting when there was no trigger during the entire trial. For Random Mode (\Cref{fig:multicluster trial 8}), the spontaneous activation pattern was much more uniform than the one for Spatial Mode (\Cref{fig:multicluster trial 4}). All clusters activated at around the same time with similar level of intensity. On the other hand, for Spatial Mode, there were disparate periods of activations when only one cluster activated or dominated. The irregularities in spontaneous activations were likely caused by the more localized nature of the links in Spatial Mode. Disturbances introduced by ambient noise were less likely to spread to other Nodes. In addition, spontaneous activations emerge in a Node after a prolonged period of low action values which causes the relative activation value to rise. The more localized activations in Spatial Mode may have disrupted the periodicity of spontaneous activations seen in Random Mode. As a result, the pattern of spontaneous activations of a Spatial Mode system was more irregular and non-uniform compared with those of a Random Mode system.
 
-%TODO Provide tick at 450s points and overlay the trigger point
 \begin{figure}[!htbp]
 	\centering
 	\begin{subfigure}[t]{0.8\textwidth}
@@ -267,22 +268,23 @@ Meanwhile, high sensitivity settings led to spontaneous activations occurring mu
 	\label{fig:multicluster 4-8}
 \end{figure}
 
-%TODO include the comparison of response time between prescripted and CBLA Modes
+\FloatBarrier
 
-To illustrate the response time of the system to the trigger, we compared the result that we obtained in Trial 1 with the result from an identical experiment on a system running the Prescripted Engine. \Cref{fig:Response_to_trigger_plot} shows the Total Activations for both CBLA Mode and Prescripted Mode in the time interval close to the time of trigger. The magenta line on each graph indicates the time period when an object is placed in front of the sensor. 
+%include the comparison of response time between prescripted and CBLA Modes
+To illustrate the response time of the system to the trigger, we compared the result that we obtained in Trial 1 with the result from an identical experiment on a system running the Prescripted Engine. \Cref{fig:Response_to_trigger_plot} shows the Total Activations for both CBLA Mode and Prescripted Mode in the time interval close to the time of trigger. The magenta line on each graph indicates the time period when an object is placed in front of the sensor. Note that Total Activation values are calculated in time intervals of 1s. This means that, for instance, activations between 450s and 451s would be included in the activations at 450s. 
 
 \begin{figure}[!htbp]
 	\centering
 	\begin{subfigure}[t]{0.8\textwidth}
 		\centering
-		\includegraphics[width=1.0 \textwidth]{"fig/validations/CBLA_responsiveness"}
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/CBLA_responsiveness_c"}
 		\caption{CBLA Mode (Trial 1)}
-		\label{figresponse_plot_cbla}
+		\label{fig:response_plot_cbla}
 	\end{subfigure}
 	
 	\begin{subfigure}[t]{0.8\textwidth}
 		\centering
-		\includegraphics[width=1.0 \textwidth]{"fig/validations/Prescripted_responsiveness"}
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/Prescripted_responsiveness_c"}
 		\caption{Prescripted Mode}
 		\label{fig:response_plot_prescripted}
 	\end{subfigure}
@@ -290,7 +292,7 @@ To illustrate the response time of the system to the trigger, we compared the re
 	\label{fig:Response_to_trigger_plot}
 \end{figure}
 
-In Prescripted Mode, the system activated immediately after the trigger. On the other hand, for CBLA Mode, there was an approximately 3 seconds lag before the system responded to the trigger. This shows that while a CBLA system does respond to external interference, there is a noticeable delay in comparison to one in Prescripted Mode. 
+In Prescripted Mode, the system activated immediately after the trigger. This is shown as the small increase in Total Activation at the 450s point, which included the trigger point. On the other hand, for CBLA Mode, there was an approximately 1 seconds lag before the system responded to the trigger. This shows that while a CBLA system does respond to external interference, there is a noticeable delay in comparison to one in Prescripted Mode. 
 
 
 \subsection{Conclusions}
@@ -299,7 +301,9 @@ In this experiment, we showed that the activations in response to a triggering e
 
 In addition, spontaneous activations were observed in the experiment. Fundamentally, this pattern is caused by the system's sensitivity to ambient sensor noise and can be adjusted by changing the sensitivity constant, $\nu$. Trials with low sensitivity setting were shown to have lower total activations. Although a lower sensitivity setting can indeed eliminate this spontaneous activations pattern as shown in \Cref{fig:multicluster trial 1}, it would also make the sculpture to appear less responsive to users and to the external environment due to the dampened level of activation. We believe that a higher activation levels would be preferable for an interactive art sculpture, as it may better engage the visitors' attention. Therefore, in the user study described in \Cref{sec:user-study}, the high sensitivity setting was used.
 
-Although the spontaneous activations may overlap with user-induced activations, nevertheless, the sculptural system was shown to be responsive as it always activated in response to the users' interaction if it was not already activated. However, when compared to Prescripted Mode, there is noticeable delays in response time. This may affect the perceived responsiveness in the users' perspectives.
+Although the spontaneous activations may overlap with user-induced activations, nevertheless, the sculptural system was shown to be responsive as it always activated in response to the users' interaction if it was not already activated.
+
+When compared with Prescripted Mode, there is a short but noticeable delays in response time. This may have an effect on the users' perceived responsiveness.
 
 \FloatBarrier
 \section{User Study}\label{sec:user-study}
@@ -335,7 +339,7 @@ Prior to the user study, a hypothesis was made for each of the research question
 
 The multi-cluster test bed described in \Cref{sec:multi-cluster-test-bed} was used in this user study as the interactive art sculpture that the participants interact with. In addition, the floor was lined with a grid numbered from 1 to 12 as shown in \Cref{fig:cbla-test-bed gird photo}. This grid allowed the participants to specify their locations within the sculpture during the experience sampling procedure.  
 
-\begin{figure} [!htbp]
+\begin{figure} [!htb]
 	\centering
 	\includegraphics[width=0.8\textwidth]{"fig/validations/cbla-test-bed gird photo"}
 	\caption[Photograph of the floor grid underneath the multi-cluster test bed]{Photograph of the floor grid underneath the multi-cluster test bed.}
@@ -726,6 +730,8 @@ Therefore, the delays in response time, which is inherent to this implementation
 Finally, are certain behaviours more interesting than others? In the analysis done in \Cref{sec:user-study-analysis-activations}, we found that there was a weak positive correlation between the overall activation levels and the user's interest level. In other words, the participants found that more actuation is more interesting than less actuation. On the other hand, we did not find that any specific device had a significantly stronger positive correlation. However, we found that activations of the Reflex Node, which actuates either a pair of LEDs or a vibration motor, showed no correlation with the user's interest level. Similarly, we did not find that proximity of the actuations influenced the user's level of interest much either. This may be because the size of the sculpture was relatively small and the participants could easily see, hear, and walk to anywhere in the space relatively quickly, in comparison to the time required to fill out the questionnaire cards. In sum, we show that activations do tend to increase user's level of interest but, contrary to our hypothesis, we could not find any particular categories of behaviours that were more interesting than the others. 
 
 
+
+
 \section{Discussion}
 
 This project is motivated by the desire to generate life-like behaviours automatically. However, we in fact don't know if being life-like is interesting to all people. Indeed, research has shown that people find events that are new and comprehensible interesting \cite{Silvia2008}. Novelty and complexity alone are not enough to make the behaviours interesting. The user may also need to understand it. A participant that was in a trial with CBLA Mode presented first described the behaviours of the system as follows: 
@@ -749,4 +755,7 @@ Moreover, we hypothesize that, over a long period of time, prescripted behaviour
 Our observations of the variety of user behaviours and responses suggest that the data could be further categorized based on the type of user. Different people expected different things out of this experience, and analyzing the different groups separately may reveal more useful information about user response to the different types of behaviours. In addition, the user study should be done in a more realistic setting over a longer period of time to reveal whether CBLA can indeed be more interesting in the long run.
 
 
-%TODO Discuss sensitivity of the time interval value of 30s as relevant to the trigger.
+%TODO Discuss other parameter.
+Nevertheless, these results may be sensitive to the parameters used in the experiment. For instance, when calculating the activation values in \Cref{sec:user-study-analysis-activations}, we considered the activations in the 30s time interval prior to a sample point to be relevant to the response of the user at that sample. Further experiments should be conducted to examine how recent the activations have to be to affect the user's response.
+
+
