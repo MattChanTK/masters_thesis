@@ -28,8 +28,6 @@ The Data Logger is a special kind of abstract component that periodically sample
 
 The hardware was custom designed in collaboration with Mohammadreza Memarian. The goal was to develop a system that is modular, flexible, and expandable. Analogue sensors and actuators that were traditionally used in previous Hylozoic Series as well as off-the-shelf sensors that interface via I2C, SPI, or UART are supported. Most importantly, the design enables high-speed two-way communication with a computer over USB. Sensor readings and control signals can be delivered to and from a computer at around 100Hz. This capability allows us to run algorithms that are more computationally intensive; simplify the implementation of multi-threaded and multi-process software; and collect and display a large amount of data at runtime on a standard computer. 
 
-\subsection{Actuators and Sensors}
-
 The sensors and actuators used in the experiments described in \Cref{chap:validations} and their interface types are tabulated in \Cref{table:sensors-list} and \Cref{table:actuators-list} respectively.
 
 \begin{table}[!htb]
@@ -280,4 +278,8 @@ An additional virtual node is added to provide cluster-level group behaviours. T
 
 The prescripted behaviours described above were designed to be highly responsive, along with elements of group behaviours and random actuations. These kinds of behaviours are more similar to the types of behaviours of a typical interactive sculpture produced by LASG and PBAI than the CBLA-based behaviours introduced in this thesis. Its main purpose was to serve as a reference point when the visitors' responses to the CBLA system are studied in the user study described in \ref{sec:user-study}.
 
-%TODO add a summary
+\subsection{Summary}
+
+In this chapter, we presented the design of the electronic hardware and control software of the Hylozoic Series 3 interactive control system, which supports the large number of sensors and actuators required by the CBLA. This new system architecture also enables the creation of abstract components and simplifies the implementation of a multi-threaded CBLA system.
+Different sensors and actuators were put together to form the functional units that make up the interactive art sculpture. Moreover, the control software enables high speed communication between the distributed embedded microcontrollers and a standard computer. This allows the CBLA to run remotely on a more powerful computer and enables the creation of system-wide abstract components. In addition, a custom data logging module was created to store the large amount of data generated for secondary analysis. A multi-cluster test bed was built to investigate the behaviours of the CBLA system and the users' perception of its behaviours.
+
