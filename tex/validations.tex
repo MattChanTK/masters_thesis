@@ -10,7 +10,6 @@ Although the CBLA was designed for a distributed system with multiple nodes, it 
 \subsection{Set-up}
 The system in this experiment consists of a Light node, which is a single-input, single-output system. For the single-input system, $S$ is a scalar value that represents the measurement from an ambient light sensor. It was recorded directly as a 12-bit value. $M$ corresponds to the voltage duty cycle supplied to the LED, ranging from 0 to 100, with 0 being completely off (0V) and 100 being the maximum allowable voltage (4.7V). The loop period is the time between each actuation and was set to 0.05s. Least-square method was used to fit its prediction models.
 
-%TODO perhaps add a map for this simpler system
 
 \subsection{Procedures and Expected Results}
 In this experiment, the system ran for 2500 time steps without any external interference. 
@@ -110,7 +109,8 @@ In addition, the effects of sensitivity constant $\nu$ in the idling function as
 
 \subsection{Set-up}\label{sec:multi-cluster-setup}
 
-The multi-cluster test bed described in \Cref{sec:multi-cluster-test-bed} was used for this experiment. Since the goal of this experiment is to examine the behaviours of the CBLA system, the Prescripted Engine was not used in this experiment. In addition, within the CBLA Engine, a sigmoid function based idling function as described in \Cref{eqn:map_sigmoid} was used.
+The multi-cluster test bed described in \Cref{sec:multi-cluster-test-bed} was used for this experiment. In addition, within the CBLA Engine, a sigmoid function based idling function as described in \Cref{eqn:map_sigmoid} was used.
+
 
 \subsection{Procedures}
 
@@ -118,7 +118,9 @@ Two types of procedures were conducted in this experiment.
 The first type is the ``Single Trigger'' procedure. In this procedure, the CBLA system first starts from a blank state without any preexisting exemplars or prediction models. It operates without any external interference for 450 seconds. At 450s, the ``trigger'' is applied by placing an object in front of the IR proximity sensor C3.F2.IR-S (referring to \Cref{fig:Spatial Global Mode}) for approximately 30 seconds. Then, the object is removed and the experiment continues on for another 450s seconds before the program is terminated. 
 The second type is the ``No Trigger'' procedure. In this procedure, the CBLA system simply runs for 900s without any external interference. The results from the ``No Trigger'' procedure serve as a reference comparison for the Single Trigger procedure.
 
-Both procedures were repeated on combinations of Spatial Mode/Random Mode and low sensitivity/high sensitivity settings. This allows us to examine the effects of the two factors on activation levels due to the trigger.
+Both procedures were repeated on combinations of Spatial Mode/Random Mode and low sensitivity/high sensitivity settings on the CBLA Engine. This allows us to examine the effects of the two factors on activation levels due to the trigger. 
+
+In addition, the ``Single Trigger'' procedure was applied on Prescripted Mode which runs the Prescripted Engine as described in \Cref{sec:prescripted-behaviours}. This allows us to compare the response time of the CBLA system against the a system that is running prescripted behaviours.
 
 \subsection{Expected Results}
 
@@ -267,13 +269,37 @@ Meanwhile, high sensitivity settings led to spontaneous activations occurring mu
 
 %TODO include the comparison of response time between prescripted and CBLA Modes
 
+To illustrate the response time of the system to the trigger, we compared the result that we obtained in Trial 1 with the result from an identical experiment on a system running the Prescripted Engine. \Cref{fig:Response_to_trigger_plot} shows the Total Activations for both CBLA Mode and Prescripted Mode in the time interval close to the time of trigger. The magenta line on each graph indicates the time period when an object is placed in front of the sensor. 
+
+\begin{figure}[!htbp]
+	\centering
+	\begin{subfigure}[t]{0.8\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/CBLA_responsiveness"}
+		\caption{CBLA Mode (Trial 1)}
+		\label{figresponse_plot_cbla}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{0.8\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/Prescripted_responsiveness"}
+		\caption{Prescripted Mode}
+		\label{fig:response_plot_prescripted}
+	\end{subfigure}
+	\caption[Total Activation in response to trigger plots]{Total Activation in response to trigger. The blue line represents the Total Activation value over time. The magenta line indicates the period when an object was placed in front of the sensor}
+	\label{fig:Response_to_trigger_plot}
+\end{figure}
+
+In Prescripted Mode, the system activated immediately after the trigger. On the other hand, for CBLA Mode, there was an approximately 3 seconds lag before the system responded to the trigger. This shows that while a CBLA system does respond to external interference, there is a noticeable delay in comparison to one in Prescripted Mode. 
+
+
 \subsection{Conclusions}
 
 In this experiment, we showed that the activations in response to a triggering event were more likely to begin and concentrate near the source of the trigger when the network is configured in Spatial Mode. Since we hypothesized that the users would find activations in close proximity to be more relevant and interesting, Spatial Mode seems to be a more promising network configuration. Therefore, in the user study described in \Cref{sec:user-study}, the CBLA system was configured in Spatial Mode. 
 
 In addition, spontaneous activations were observed in the experiment. Fundamentally, this pattern is caused by the system's sensitivity to ambient sensor noise and can be adjusted by changing the sensitivity constant, $\nu$. Trials with low sensitivity setting were shown to have lower total activations. Although a lower sensitivity setting can indeed eliminate this spontaneous activations pattern as shown in \Cref{fig:multicluster trial 1}, it would also make the sculpture to appear less responsive to users and to the external environment due to the dampened level of activation. We believe that a higher activation levels would be preferable for an interactive art sculpture, as it may better engage the visitors' attention. Therefore, in the user study described in \Cref{sec:user-study}, the high sensitivity setting was used.
 
-Although the spontaneous activations may overlap with user-induced activations, nevertheless, the sculptural system was shown to be responsive as it always activated in response to the users' interaction if it was not already activated. 
+Although the spontaneous activations may overlap with user-induced activations, nevertheless, the sculptural system was shown to be responsive as it always activated in response to the users' interaction if it was not already activated. However, when compared to Prescripted Mode, there is noticeable delays in response time. This may affect the perceived responsiveness in the users' perspectives.
 
 \FloatBarrier
 \section{User Study}\label{sec:user-study}
@@ -351,7 +377,9 @@ Right before the start of the trial, the researcher ran through the study proced
 
 The test participant was free to roam around the space and interact with the art sculpture. A distinct long tone went off periodically at a 2.5 minute interval. Each time the tone went off, the participant would take out an empty questionnaire card, and answer the questions on the card. The trial would go on for 20 minutes which was equivalent to 8 cards.
 
-There were two versions of interactive behaviours: Prescripted Mode and CBLA Mode. The Prescripted Mode was powered by the Prescripted Engine and is described in \Cref{sec:prescripted-behaviours}. The CBLA Mode was powered by the CBLA Engine and is described in detail in \Cref{chap:cbla}. Its network configuration was set to Spatial Mode with high sensitivity. The participants were not informed about the versions of the behaviours that they were interacting with nor the fact that there were two different versions of interactive behaviours. Both versions of the behaviours were run for approximately the same amount of time. After the fourth tone (which was half-way through the trial), the researcher would switch to the other version manually after the participant had finished filling in the questionnaire card and resumed interacting with the sculpture. 
+There were two versions of interactive behaviours: Prescripted Mode and CBLA Mode. The Prescripted Mode was powered by the Prescripted Engine and is described in \Cref{sec:prescripted-behaviours}. The CBLA Mode was powered by the CBLA Engine and is described in detail in \Cref{chap:cbla}. Its network configuration was set to Spatial Mode with high sensitivity. Moreover, the CBLA Mode for each trial began at a previously saved state in which the CBLA system had run uninterrupted for approximately 575s. 
+
+The participants were not informed about the versions of the behaviours that they were interacting with nor the fact that there were two different versions of interactive behaviours. Both versions of the behaviours were run for approximately the same amount of time. After the fourth tone (which was half-way through the trial), the researcher would switch to the other version manually after the participant had finished filling in the questionnaire card and resumed interacting with the sculpture. 
 
 Since the experience of interacting with the sculpture was new to the test subjects, the order that the two types of behaviours was presented can make a big difference. The subjects may simply find the novelty of interacting with the sculpture interesting irrespective of the type of behaviour. In addition, since the exit questionnaires were given after the trials, the behaviours that the subjects experienced near the end of the trials may have more profound effects than the ones that they experienced earlier in the trials. Therefore, half of the participants were exposed to Prescripted Mode first and the other half were exposed to CBLA Mode first.
 
