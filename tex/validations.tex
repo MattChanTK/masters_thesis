@@ -224,9 +224,8 @@ Nevertheless, both settings detected the trigger as the activation values of Sin
 % comparing low sensitivity and high sensitivity
 The total activation and the cluster activations over time for Trial 1 and 2, which were in Spatial Mode under the Single Trigger procedure, are shown in \Cref{fig:multicluster 1-2}. 
 The initial high levels of activation were due to the initial model learning. 
-Near $t$ = 450s, when the object was presented in front of a sensor in Cluster~3, the activation level at the cluster (red) shot up for both cases. However, for the low sensitivity case (\Cref{fig:multicluster trial 1}), the trigger didn't manage to trigger the neighbouring Nodes. On the other hand, for the high sensitivity case (\Cref{fig:multicluster trial 2}), activations in other clusters trail soon after. It is also interesting to point out that the magnitudes of activations for the other clusters were actually similar or even higher than Cluster 3. In our formulation, the maximum output level is mapped to the relative action value and virtual inputs are treated just like any other inputs. This means that Nodes that were not directly detecting the event could still register high knowledge gain potential. This means that CBLA Nodes in a cluster were indeed responding to and learning about an event happening in a neighbouring cluster.
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\begin{subfigure}[t]{0.8\textwidth}
 		\centering
@@ -245,11 +244,13 @@ Near $t$ = 450s, when the object was presented in front of a sensor in Cluster~3
 	\label{fig:multicluster 1-2}
 \end{figure}
 
+Near $t$ = 450s, when the object was presented in front of a sensor in Cluster~3, the activation level at the cluster (red) shot up for both cases. However, for the low sensitivity case (\Cref{fig:multicluster trial 1}), the trigger didn't manage to trigger the neighbouring Nodes. On the other hand, for the high sensitivity case (\Cref{fig:multicluster trial 2}), activations in other clusters trail soon after. It is also interesting to point out that the magnitudes of activations for the other clusters were actually similar or even higher than Cluster 3. In our formulation, the maximum output level is mapped to the relative action value and virtual inputs are treated just like any other inputs. This means that Nodes that were not directly detecting the event could still register high knowledge gain potential. This means that CBLA Nodes in a cluster were indeed responding to and learning about an event happening in a neighbouring cluster.
+
 
 % compare with no trigger
-Meanwhile, high sensitivity settings led to spontaneous activations occurring much more frequently. This is expected as systems with high sensitivity setting would respond to ambient noise and external events much more readily than ones with low sensitivity setting. \Cref{fig:multicluster 4-8} compares the spontaneous activation patterns of Spatial Mode and Random Mode with high sensitivity setting when there was no trigger during the entire trial. For Random Mode (\Cref{fig:multicluster trial 8}), the spontaneous activation pattern was much more uniform than the one for Spatial Mode (\Cref{fig:multicluster trial 4}). All clusters activated at around the same time with similar level of intensity. On the other hand, for Spatial Mode, there were disparate periods of activations when only one cluster activated or dominated. The irregularities in spontaneous activations were likely caused by the more localized nature of the links in Spatial Mode. Disturbances introduced by ambient noise were less likely to spread to other Nodes. In addition, spontaneous activations emerge in a Node after a prolonged period of low action values which causes the relative activation value to rise. The more localized activations in Spatial Mode may have disrupted the periodicity of spontaneous activations seen in Random Mode. As a result, the pattern of spontaneous activations of a Spatial Mode system was more irregular and non-uniform compared with those of a Random Mode system.
+Meanwhile, high sensitivity settings led to spontaneous activations occurring much more frequently. This is expected as systems with high sensitivity setting would respond to ambient noise and external events much more readily than ones with low sensitivity setting. \Cref{fig:multicluster 4-8} compares the spontaneous activation patterns of Spatial Mode and Random Mode with high sensitivity setting when there was no trigger during the entire trial. 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\begin{subfigure}[t]{0.8\textwidth}
 		\centering
@@ -269,20 +270,21 @@ Meanwhile, high sensitivity settings led to spontaneous activations occurring mu
 \end{figure}
 
 \FloatBarrier
+For Random Mode (\Cref{fig:multicluster trial 8}), the spontaneous activation pattern was much more uniform than the one for Spatial Mode (\Cref{fig:multicluster trial 4}). All clusters activated at around the same time with similar level of intensity. On the other hand, for Spatial Mode, there were disparate periods of activations when only one cluster activated or dominated. The irregularities in spontaneous activations were likely caused by the more localized nature of the links in Spatial Mode. Disturbances introduced by ambient noise were less likely to spread to other Nodes. In addition, spontaneous activations emerge in a Node after a prolonged period of low action values which causes the relative activation value to rise. The more localized activations in Spatial Mode may have disrupted the periodicity of spontaneous activations seen in Random Mode. As a result, the pattern of spontaneous activations of a Spatial Mode system was more irregular and non-uniform compared with those of a Random Mode system.
 
 %include the comparison of response time between prescripted and CBLA Modes
 To illustrate the response time of the system to the trigger, we compared the result that we obtained in Trial 1 with the result from an identical experiment on a system running the Prescripted Engine. \Cref{fig:Response_to_trigger_plot} shows the Total Activations for both CBLA Mode and Prescripted Mode in the time interval close to the time of trigger. The magenta line on each graph indicates the time period when an object is placed in front of the sensor. Note that Total Activation values are calculated in time intervals of 1s. This means that, for instance, activations between 450s and 451s would be included in the activations at 450s. 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
-	\begin{subfigure}[t]{0.8\textwidth}
+	\begin{subfigure}[t]{0.9\textwidth}
 		\centering
 		\includegraphics[width=1.0 \textwidth]{"fig/validations/CBLA_responsiveness_c"}
 		\caption{CBLA Mode (Trial 1)}
 		\label{fig:response_plot_cbla}
 	\end{subfigure}
 	
-	\begin{subfigure}[t]{0.8\textwidth}
+	\begin{subfigure}[t]{0.9\textwidth}
 		\centering
 		\includegraphics[width=1.0 \textwidth]{"fig/validations/Prescripted_responsiveness_c"}
 		\caption{Prescripted Mode}
@@ -293,7 +295,6 @@ To illustrate the response time of the system to the trigger, we compared the re
 \end{figure}
 
 In Prescripted Mode, the system activated immediately after the trigger. This is shown as the small increase in Total Activation at the 450s point, which included the trigger point. On the other hand, for CBLA Mode, there was an approximately 1 seconds lag before the system responded to the trigger. This shows that while a CBLA system does respond to external interference, there is a noticeable delay in comparison to one in Prescripted Mode. 
-
 
 \subsection{Conclusions}
 
@@ -678,7 +679,7 @@ This shows that different people responded and interacted very differently to th
 
 
 \FloatBarrier
-\subsection{Analysis~\Roman{analysis-id} -- Responsiveness}\label{sec:user-study-analysis-responsiveness}
+\subsection{Analysis~\Roman{analysis-id} -- Perceived Responsiveness}\label{sec:user-study-analysis-responsiveness}
 \stepcounter{analysis-id}
 
 In the exit questionnaire, we asked the participants to rate their overall interest level and how responsive they thought the behaviour was. In \Cref{table:user-study-responsive-data}, responses for the two questions and the average interest level reported on the questionnaire cards were tabulated. All three ratings were reported on a scale of 0 to 9. 
@@ -722,18 +723,16 @@ In this user study, we attempted to answer the three research questions raised i
 
 First,  does the use of the CBLA increase user's interest level over prescripted behaviours?  In the analyses done in \Cref{sec:user-study-analysis-interest}, we showed that CBLA Mode was in fact less interesting than Prescripted Mode by 25\%. This effect was even more pronounced when the trial started with CBLA Mode first and switched to Prescripted Mode halfway. Prescripted Mode was on average 33\% more interesting that CBLA Mode. This is contrary to our hypothesis as we did not find any significant evidence that the use of CBLA increased the users' interest levels.
 
-Second, do people perceive CBLA as non-random? It is more difficult to answer this question since we did not ask the participants to rate the sculpture's responsiveness for each type of behaviour. In fact, based on question~\ref{itm:survey-q4} of the exit questionnaire in \Cref{Append:User Study Written Responses}, most participants did not realize that there were two distinct sets of behaviours that were switched over midway. This wasn't asked since we couldn't reveal the type of behaviours that they should expect during the trials. However, we did find a positive correlation between interest level and responsiveness rating. Since CBLA Mode was considered less interesting when we tried to answer research question~\ref{itm:research-q1},  this might indicate that CBLA Mode was considered less responsive. In addition, we speculate that test subjects would emphasize the later half of the trials when answering the exit questionnaires. On that front, we also found that the responsiveness ratings were lower when CBLA Mode was on in the second half. In addition, in question~\ref{itm:survey-q4}, when the participants were asked to described the behaviours of the sculpture, they often described the CBLA portion using words like ``random'', ``totally random'', ``somewhat random'', or ``unresponsive''. This shows that many participants did think that CBLA Mode was indeed random. This is also contrary to our hypothesis that the participants will perceive the learning behaviours as non-random. This might explain why the participants did not find the CBLA Mode behaviours more interesting. 
-
-For a CBLA Node to activate, its CBLA Engine has to first accumulate prediction errors, which then provide it the opportunities to improve its prediction models. This process requires the CBLA Node to perform some actions and acquire feedbacks from the environments. Since each action takes time to perform, it would inevitably require longer time to response in comparison to a system that only reacts to its sensory inputs.
-Therefore, the delays in response time, which is inherent to this implementation of the CBLA system, reduce the sculpture's perceived responsiveness. Participants might have walked away before the sculpture was able to respond. Since responsiveness has a positive correlation with the level of interest, this factor alone might have contribute to the low rating from the participants.
+Second, do people perceive CBLA as non-random? It is more difficult to answer this question since we did not ask the participants to rate the sculpture's responsiveness for each type of behaviour. In fact, based on question~\ref{itm:survey-q4} of the exit questionnaire in \Cref{Append:User Study Written Responses}, most participants did not realize that there were two distinct sets of behaviours that were switched over midway. This wasn't asked since we couldn't reveal the type of behaviours that they should expect during the trials. However, we did find a positive correlation between interest level and responsiveness rating. Since CBLA Mode was considered less interesting when we tried to answer research question~\ref{itm:research-q1},  this might indicate that CBLA Mode was considered less responsive. In addition, we speculate that test subjects would emphasize the later half of the trials when answering the exit questionnaires. On that front, we also found that the responsiveness ratings were lower when CBLA Mode was on in the second half. In addition, in question~\ref{itm:survey-q4}, when the participants were asked to described the behaviours of the sculpture, they often described the CBLA portion using words like ``random'', ``totally random'', ``somewhat random'', or ``unresponsive''. This shows that many participants did think that CBLA Mode was indeed random and perceived to be unresponsive. This is also contrary to our hypothesis that the participants will perceive the learning behaviours as non-random. This might explain why the participants did not find the CBLA Mode behaviours more interesting. 
 
 Finally, are certain behaviours more interesting than others? In the analysis done in \Cref{sec:user-study-analysis-activations}, we found that there was a weak positive correlation between the overall activation levels and the user's interest level. In other words, the participants found that more actuation is more interesting than less actuation. On the other hand, we did not find that any specific device had a significantly stronger positive correlation. However, we found that activations of the Reflex Node, which actuates either a pair of LEDs or a vibration motor, showed no correlation with the user's interest level. Similarly, we did not find that proximity of the actuations influenced the user's level of interest much either. This may be because the size of the sculpture was relatively small and the participants could easily see, hear, and walk to anywhere in the space relatively quickly, in comparison to the time required to fill out the questionnaire cards. In sum, we show that activations do tend to increase user's level of interest but, contrary to our hypothesis, we could not find any particular categories of behaviours that were more interesting than the others. 
 
 
-
-
 \section{Discussion}
 
+% === why is it not interesting ===
+
+% what makes something interesting?
 This project is motivated by the desire to generate life-like behaviours automatically. However, we in fact don't know if being life-like is interesting to all people. Indeed, research has shown that people find events that are new and comprehensible interesting \cite{Silvia2008}. Novelty and complexity alone are not enough to make the behaviours interesting. The user may also need to understand it. A participant that was in a trial with CBLA Mode presented first described the behaviours of the system as follows: 
 \begin{blockquote}
 ``The sculpture changes lighting, creates sound, and moves to attract user. It responds to human presence, gestures, and hand claps. It seemed to generate random movements at the beginning, but a pattern was repeated as the experiment goes on.''
@@ -744,18 +743,27 @@ This quote shows that when the behaviours went from CBLA Mode to Prescripted Mod
 \end{blockquote}
 This quote shows that the participant went from understanding how the system works, to thinking that it was random. This effect might have contributed to the significant increase in level of interest when the behaviour was switched from CBLA Mode to Prescripted Mode, but not the other way around.
 
+% === why people think it is random ===
+% Reasons for low perceived responsiveness
+% slow response time
+For a CBLA Node to activate, its CBLA Engine has to first accumulate prediction errors, which then provide it the opportunities to improve its prediction models. This process requires the CBLA Node to perform some actions and acquire feedbacks from the environments. Since each action takes time to perform, it would inevitably require longer time to response in comparison to a system that only reacts to its sensory inputs.
+Therefore, the delays in response time may have played a role in reducing the sculpture's perceived responsiveness. Participants might have looked away or lost interest before the sculpture was able to respond. 
+% low predictibility or inconsistency
+On the other hand, though noticeable, the delays seem to be rather short, as shown in \Cref{fig:response_plot_cbla}. This factor alone might not be sufficient to explain the low responsiveness rating. Another probable factor is the predictability of the response. Unlike the Prescripted Mode, the responsive behaviours of the CBLA Mode is much less consistent. For instance, the type,  the intensity, and the timing of the actuations are often different when given the same kinds of trigger. In addition, there are far more spontaneous activations as well. The unpredictability of the response makes it difficult for the users to recognize the causal relationship between the response of the sculpture and their actions. Thus, this factor might have contributed to the lower responsiveness ratings. Likewise, this also lead to the lower level of interest as the users were having difficult understanding the behaviours. 
 
-%different people have different apptitiude for arts
+% different people have different apptitiude for arts
 In addition, the participants recruited may be very different from the typical visitors to art exhibitions, where the interactive art sculptures are typically displayed. People who frequent art exhibitions are probably interested in arts in the first place. Those visitors would also have the opportunity to read about the work prior to their interactions with the sculpture. Indeed, \cite{Silvia2005} showed that an abstract poem would appear more interesting when hints about its meaning were given. In this user study, the participants didn't necessarily have any interest in arts and were not given any information about the behaviours of the sculpture. \cite{Silvia2008} suggested that concepts that are confusing to novices can be interesting to experts. Knowledge in arts and the philosophy behind the Hylozoic Series sculptures might enable the users to appreciate the complex and subtle patterns of the CBLA system that aren't immediately obvious. Thus, the simplicity and comprehensibility of Prescripted behaviours might seem more interesting to a person who has not been exposed to this kind of interactive arts before. 
 
+% different people like different things
 In fact, from written responses on the exit questionnaires and the informal conversations after the studies, we realized that people had very different interests, and different expectations about the behaviours of the sculpture. Some expected much more coordinated, fast-pace movements, while some found the slow and organic-looking movements appealing. Some expected the sculpture to be very responsive, while some did not even know that there were sensors that could detect their presence at first. Some participants took figuring out the exact mechanism of the sculpture's behaviours as a challenge; some were enjoying it and some were frustrated by their inability to figure out the patterns. Moreover, there were also participants who enjoyed looking at the design of the sculpture and some were interested in the design of the circuit boards and actuators. They spent a great deal of time examining the details of the sculpture itself rather than interacting with the sculpture. Furthermore, the ways in which the participants interacted with the sculpture varied greatly. Some mainly stood back and observed, while some walked around the space rapidly and touched many parts of the sculpture at great frequency. In fact, one participant was taking apart the sculpture in order to better examine the parts and how those alterations change the activation patterns of the sculpture. Perhaps by informing the users about the behaviours of the sculpture, the users can understand its behaviours better and prevent the negative feeling of disappointment when what they expect is absent. 
 
+% it might be better as a seconday activitiy
 Moreover, we hypothesize that, over a long period of time, prescripted behaviour would become repetitive and less interesting. In this user study, the participants were only interacting with the prescripted behaviours for 10 minutes and perhaps that was insufficient for them to realize that it was repetitive and lose interest. In fact, one participant (quoted above) thought it was responsive to sound, and was making noise and still trying to figure out its non-existent response to sound until the end. Indeed, the set up of this interactive art sculpture was also very different from a typical set-up. Typically, this kind of sculpture is set up in a public space. Visitors are free to enter or leave the space as they like. In cases of a permanent installation, the sculpture forms the background for some other daily activity. This is very different from the one-on-one, timed interactions that we tested in this user study. In addition, typically, visitors would be accompanied by other people and the effect of multiple occupants in the same space was not covered. 
 
+% further categorization of differenty types of usesrs
 Our observations of the variety of user behaviours and responses suggest that the data could be further categorized based on the type of user. Different people expected different things out of this experience, and analyzing the different groups separately may reveal more useful information about user response to the different types of behaviours. In addition, the user study should be done in a more realistic setting over a longer period of time to reveal whether CBLA can indeed be more interesting in the long run.
 
 
-%TODO Discuss other parameter.
-Nevertheless, these results may be sensitive to the parameters used in the experiment. For instance, when calculating the activation values in \Cref{sec:user-study-analysis-activations}, we considered the activations in the 30s time interval prior to a sample point to be relevant to the response of the user at that sample. Further experiments should be conducted to examine how recent the activations have to be to affect the user's response.
-
-
+% === why is this user study not generalizable? ===
+% Changes in parameters might have an effect
+Nevertheless, these results may be sensitive to the parameters used in the experiment. For instance, when calculating the activation values in \Cref{sec:user-study-analysis-activations}, we considered the activations in the 30s time interval prior to a sample point to be relevant to the response of the user at that sample point. It is unclear whether this choice reflects the actual behaviour of a human user. Further experiments should be conducted to examine how recent the activations have to be to affect the user's response. Indeed, this system may also be sensitive to many of the internal parameters of the CBLA Nodes such as the sensitivity setting, loop period, the type of prediction model, the sizes of the averaging windows, and thresholds of the split criteria. This study simply offers a demonstration of how a CBLA system may behave. Future research should study the effects of the values of these parameters on the interactive behaviours of the sculpture. 
