@@ -43,7 +43,7 @@ Based on the reward structure, which favours learning first the most predictable
 \end{figure}
 
 
-In \Cref{fig:LED_ALS Action Value vs Time}, one can that see the action value of a region does not stay constant. This shows that as the prediction improves, the value of actions in that region decreases over time as the region becomes “learnt” and further learning potential decreases. 
+In \Cref{fig:LED_ALS Action Value vs Time}, one can that see the action value of a region does not stay constant. This shows that as the prediction improves, the value of actions in that region decreases over time as the region becomes ``learnt'' and further learning potential decreases. 
 
 \begin{figure} [!htb]
 	\centering
@@ -52,6 +52,7 @@ In \Cref{fig:LED_ALS Action Value vs Time}, one can that see the action value of
 	\label{fig:LED_ALS Action Value vs Time}
 \end{figure}
 
+After approximately 1750 time steps, the action value of Region 3 began to rise. This was because the prediction error of that region also began to fall as shown in \Cref{fig:LED_ALS Mean Error vs Time}. At that time, the system had just explored the higher brightness regions as shown in \Cref{fig:LED_ALS Model Evolution}. This shows that as the system covered its entire state-space and the action value of the more difficult-to-learn regions became lower, the system returned to the other regions to further improve their prediction models more frequently.
 
 \subsection{Conclusions}
 
@@ -735,7 +736,7 @@ Finally, are certain behaviours more interesting than others? In the analysis do
 % what makes something interesting?
 This project is motivated by the desire to generate life-like behaviours automatically. However, we in fact don't know if being life-like is interesting to all people. Indeed, research has shown that people find events that are new and comprehensible interesting \cite{Silvia2008}. Novelty and complexity alone are not enough to make the behaviours interesting. The user may also need to understand it. A participant that was in a trial with CBLA Mode presented first described the behaviours of the system as follows: 
 \begin{blockquote}
-``The sculpture changes lighting, creates sound, and moves to attract user. It responds to human presence, gestures, and hand claps. It seemed to generate random movements at the beginning, but a pattern was repeated as the experiment goes on.''
+	``The sculpture changes lighting, creates sound, and moves to attract user. It responds to human presence, gestures, and hand claps. It seemed to generate random movements at the beginning, but a pattern was repeated as the experiment goes on.''
 \end{blockquote}
 This quote shows that when the behaviours went from CBLA Mode to Prescripted Mode, without knowing that there were two distinct behaviours, the participants may have thought that they have began to understand the behaviour of the system. On the other hand, when switched from Prescripted Mode to CBLA Mode, the users' understanding of the behaviours decrease. A participant in a trial which Prescripted Mode was presented first described the behaviours as follow:
 \begin{blockquote}
@@ -748,9 +749,15 @@ This quote shows that the participant went from understanding how the system wor
 % slow response time
 For a CBLA Node to activate, its CBLA Engine has to first accumulate prediction errors, which then provide it the opportunities to improve its prediction models. This process requires the CBLA Node to perform some actions and acquire feedbacks from the environments. Since each action takes time to perform, it would inevitably require longer time to response in comparison to a system that only reacts to its sensory inputs.
 Therefore, the delays in response time may have played a role in reducing the sculpture's perceived responsiveness. Participants might have looked away or lost interest before the sculpture was able to respond. 
-% low predictibility or inconsistency
-On the other hand, though noticeable, the delays seem to be rather short, as shown in \Cref{fig:response_plot_cbla}. This factor alone might not be sufficient to explain the low responsiveness rating. Another probable factor is the predictability of the response. Unlike the Prescripted Mode, the responsive behaviours of the CBLA Mode is much less consistent. For instance, the type,  the intensity, and the timing of the actuations are often different when given the same kinds of trigger. In addition, there are far more spontaneous activations as well. The unpredictability of the response makes it difficult for the users to recognize the causal relationship between the response of the sculpture and their actions. Thus, this factor might have contributed to the lower responsiveness ratings. Likewise, this also lead to the lower level of interest as the users were having difficult understanding the behaviours. 
 
+% low predictibility or inconsistency
+On the other hand, though noticeable, the delays seem to be rather short, as shown in \Cref{fig:response_plot_cbla}. This factor alone might not be sufficient to explain the low responsiveness rating. Another probable factor is the predictability of the response. Unlike the Prescripted Mode, the responsive behaviours of the CBLA Mode is much less consistent. For instance, the type, the intensity, and the timing of the actuations are often different when given the same kinds of trigger. In addition, there are far more spontaneous activations as well. A participant commented on his or her experience as follow: 
+\begin{blockquote}
+	``...Sometimes the responses I got from the sculpture were not what I was hoping for. For example, when I held up my hand to the leaf, the leaf itself was not really moving towards me as much as the two other leaves that were a bit farther away....''
+\end{blockquote}
+Since what was described in the quote above is different from the prescripted behaviours, it is very likely that the quote describes the subject's experience during the CBLA Mode portion of the trial. This suggests that the CBLA system was responsive but in ways that were less predictable. 
+The unpredictability of the response makes it difficult for the users to recognize the causal relationship between the response of the sculpture and their actions. Thus, this factor might have contributed to the lower responsiveness ratings.
+	 
 % different people have different apptitiude for arts
 In addition, the participants recruited may be very different from the typical visitors to art exhibitions, where the interactive art sculptures are typically displayed. People who frequent art exhibitions are probably interested in arts in the first place. Those visitors would also have the opportunity to read about the work prior to their interactions with the sculpture. Indeed, \cite{Silvia2005} showed that an abstract poem would appear more interesting when hints about its meaning were given. In this user study, the participants didn't necessarily have any interest in arts and were not given any information about the behaviours of the sculpture. \cite{Silvia2008} suggested that concepts that are confusing to novices can be interesting to experts. Knowledge in arts and the philosophy behind the Hylozoic Series sculptures might enable the users to appreciate the complex and subtle patterns of the CBLA system that aren't immediately obvious. Thus, the simplicity and comprehensibility of Prescripted behaviours might seem more interesting to a person who has not been exposed to this kind of interactive arts before. 
 
