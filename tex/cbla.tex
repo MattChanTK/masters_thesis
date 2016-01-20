@@ -16,7 +16,7 @@ We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning archit
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram CBLA"}
-	\caption[Block diagram of the Curiosity Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M'(t)$s given $S(t)$. (2) Then, the Expert provides the action values $q$ associated with each possible $M'(t)$ to the Action Selector. (3) The Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the action value $q$ associated with the sensorimotor context $SM(t)$. }
+	\caption[Block diagram of the Curiosity-Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M'(t)$s given $S(t)$. (2) Then, the Expert provides the action values $q$ associated with each possible $M'(t)$ to the Action Selector. (3) The Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the action value $q$ associated with the sensorimotor context $SM(t)$. }
 	\label{fig:Block Diagram CBLA}
 \end{figure}
 
@@ -278,7 +278,7 @@ Another method is to treat output signal from a node as input to other nodes. We
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[height=0.20 \textheight]{"fig/cbla/Indirect input diagram"}
-	\caption[Illustration explaining how virtual inputs may be used to detect changes outside of a node's sensorimotor context]{An example of illustrating how Node 2 can indirectly detect the presence of a user through Node 1. The presence of the user may affect the output of Node 1. Since Node 2 takes the output of Node 1 as input, Node 2 would in effect respond to the presence of the user indirectly despite not having a sensor that can detect the user in its sensorimotor context.}
+	\caption[Illustration explaining how virtual inputs may be used to detect changes outside of a Node's sensorimotor context]{An example of illustrating how Node 2 can indirectly detect the presence of a user through Node 1. The presence of the user may affect the output of Node 1. Since Node 2 takes the output of Node 1 as input, Node 2 would in effect respond to the presence of the user indirectly despite not having a sensor that can detect the user in its sensorimotor context.}
 	\label{fig:Indirect input diagram}
 \end{figure}
 
