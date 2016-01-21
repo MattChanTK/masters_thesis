@@ -1,5 +1,5 @@
 \chapter[Curiosity-Based Learning Algorithm]
-{Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been published at IROS 2015 \cite{Chan2015} }} 
+{Curiosity-Based Learning Algorithm\footnote{An early version of this chapter has been published in IROS 2015 \cite{Chan2015} }} 
 \label{chap:cbla}
 
 In this chapter, our approach for adapting and generalizing the IAC algorithm \cite{Oudeyer2007} for implementation of the Curiosity-Based Learning Algorithm (CBLA) on a distributed kinetic sculpture is presented. This includes introducing additional parameters, modifications to action selection approaches, and the integration of multiple independent learning agents in a distributed network. 
@@ -7,7 +7,7 @@ In this chapter, our approach for adapting and generalizing the IAC algorithm \c
 
 \section{CBLA Engine}
 
-An interactive art sculpture that implements the IAC must first be able to sense the consequences of its actions, similar to the human capability for proprioception. These sensors allow the sculpture to both detect its own actions, and the actions of occupants on its embodiment. For example, an accelerometer that is mounted on a mechanism senses both when the mechanism is activated by its actuators, and also when it is touched by a person during interaction. The sculpture can only improve the estimate of its own dynamics through comparing the proprioceptive feedbacks with a feed-forward model. For a human being, this capability is implemented through a neural mechanism known as efferent copy \cite{Bridgeman2007}. For example, human eyes are constantly moving while a stable image is reconstructed using the efferent copy. However, the efferent copy can be deceiving when the external environment is disturbed and as a result, conflicts with the predicted model. For instance, a stationary image will appear to be moving when the eye is pressed \cite{Bridgeman2007}. However, if the disturbance is permanent, over time the efferent copy will be updated to reflect the new conditions, and an accurate model is once again available for prediction. Hence, not only is an accurate model of an agent's own dynamics difficult to obtain; such a model might change over the life of the installation due to wear and tear and interaction with its surrounding environments. Proprioceptors play an important role in giving the sculpture information about its own state to enable model learning and adaptation.
+An interactive art sculpture that implements the IAC must first be able to sense the consequences of its actions, similar to the human capability for proprioception. These sensors allow the sculpture to both detect its own actions, and the actions of occupants on its embodiment. For example, an accelerometer that is mounted on a mechanism senses both when the mechanism is activated by its actuators, and also when it is touched by a person during interaction. The sculpture can only improve the estimate of its own dynamics by comparing the proprioceptive feedback with a feed-forward model. For a human being, this capability is implemented through a neural mechanism known as an efferent copy \cite{Bridgeman2007}. For example, human eyes are constantly moving while a stable image is reconstructed using the efferent copy. However, the efferent copy can be deceiving when the external environment is disturbed and as a result, conflicts with the predicted model. For instance, a stationary image will appear to be moving when the eye is pressed \cite{Bridgeman2007}. However, if the disturbance is permanent, over time the efferent copy will be updated to reflect the new conditions, and an accurate model is once again available for prediction. Hence, not only is an accurate model of an agent's own dynamics difficult to obtain; such a model might change over the life of the installation due to wear and tear and interaction with its surrounding environments. Proprioceptors play an important role in giving the sculpture information about its own state to enable model learning and adaptation.
 
 Furthermore, Oudeyer \cite{Oudeyer2005} observed during the IAC experiments that the resulting robot behaviour had similarities to children's learning and playing behaviours. Their experiments showed that robot would focus on interacting with objects that have the next most complex responsive relationships to the its state and action. Since we expect human responses to be difficult to predict, after the robot has modelled its own mechanisms, the robot should then focus on generating behaviours that evoke reactions from the users. We hypothesize that this type of learning mechanism is well suited to interactive architecture systems, as the learning process itself will generate interesting behaviours and be an interesting feature of the installation to the visitors. 
 
@@ -16,17 +16,17 @@ We now adapt the IAC algorithm \cite{Oudeyer2007} to implement a learning archit
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0 \textwidth]{"fig/cbla/Block Diagram CBLA"}
-	\caption[Block diagram of the Curiosity-Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M'(t)$s given $S(t)$. (2) Then, the Expert provides the action values $q$ associated with each possible $M'(t)$ to the Action Selector. (3) The Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the action value $q$ associated with the sensorimotor context $SM(t)$. }
+	\caption[Block diagram of the Curiosity-Based Learning Algorithm]{(1) At the start of each time step, the Node outputs the current possible actions $M'(t)$s given $S(t)$. (2) Then, the Experts provide the action value $q$ associated with each possible $M'(t)$ to the Action Selector. (3) The Action Selector selects an action and actuates the Node. (4) After the Node has performed the action, it returns the actual resultant state $S(t+1)$ to the Expert. The Expert can then improve its internal prediction model and update the action value $q$ associated with the sensorimotor context $SM(t)$. }
 	\label{fig:Block Diagram CBLA}
 \end{figure}
 
 
 \subsection{Node}
-A node represents a subset of the sculptural system. Each node is specified by a set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It sets the actuator outputs and samples the relevant sensory inputs.  The type and number of sensory inputs and actions are configurable; specific configurations used in our experiments will be described in more detail in \Cref{chap:validations}.
+A node represents a subset of the sculptural system. Each node is specified by a set of sensor input and actuator output variables, and its own set of configuration parameters and functions, embodying the characteristics of the physical system that it represents. It sets the actuator outputs and samples the relevant sensory inputs. The type and number of sensory inputs and actions are configurable; specific configurations used in our experiments will be described in more detail in \Cref{chap:validations}.
 
 \subsection{Action Selector}
 
-The action selector selects an action based on a list of possible actions, $M'(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In our implementation, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $\epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $\epsilon$ changes linearly based on the magnitude of the action value, $q$, as shown in \eqref{eqn:exploring_rate}. 
+The action selector selects an action based on a list of possible actions, $M'(t)$, and their associated action values. It either selects an action that has the highest value (exploitation), or selects an action from the list at random (exploration). In our implementation, a version of the adaptive $\epsilon$-greedy \cite{Tokic2010} action selection method was used. $\epsilon$ specifies the probability that a random action is selected instead of the action with highest action value. The magnitude of $\epsilon$ changes linearly based on the magnitude of the highest action value, $\widehat{q}$,among all regions  as shown in \eqref{eqn:exploring_rate}. 
 
 \begin{subequations}\label{eqn:exploring_rate}
 	\begin{equation}
@@ -34,7 +34,7 @@ The action selector selects an action based on a list of possible actions, $M'(t
 		\begin{cases}
 			\epsilon_{max}  &\text{, if } q < q_{min} \\
 			\epsilon_{min}  &\text{, if } q > q_{max} \\
-			m \cdot q + b   &\text{, otherwise} 
+			m \cdot \widehat{q} + b   &\text{, otherwise} 
 		\end{cases}
 	\end{equation}
 	\begin{flalign}
@@ -42,9 +42,9 @@ The action selector selects an action based on a list of possible actions, $M'(t
 		b &= \epsilon_{max} - m \cdot q_{min} 
 	\end{flalign}
 \end{subequations}
-where $\epsilon$ is the exploration probability; $\epsilon_{max}$ and $\epsilon_{min}$ are constants representing the maximum and minimum exploration probability; $q$ is the action value; and $q_{min}$ and $q_{max}$ are constants representing the minimum and maximum action value thresholds.
+where $\epsilon$ is the exploration probability; $\epsilon_{max}$ and $\epsilon_{min}$ are constants representing the maximum and minimum exploration probability; $\widehat{q}$ is the highest action value among all regions; and $q_{min}$ and $q_{max}$ are constants representing the minimum and maximum action value thresholds.
 
-When the action value, $q$,  is low, the probability of selecting a random action, $\epsilon$, is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards. On the other hand, when $q$ is high, $\epsilon$ is low, since the current expected reward is high and it is worth spending time exploiting a high reward region. Limits on maximum and minimum $\epsilon$ are set to ensure that the exploration probability is kept within a range.
+When $\widehat{q}$  is low, the probability of selecting a random action, $\epsilon$, is high since the current expected reward is low and it is worth spending time exploring new regions that may lead to higher rewards. On the other hand, when $\widehat{q}$ is high, $\epsilon$ is low, since the current expected reward is high and it is worth spending time exploiting a high reward region. Limits on maximum and minimum $\epsilon$ are set to ensure that the exploration probability is kept within a range.
 
 \subsection{Expert}
 
@@ -64,7 +64,7 @@ An expert represents a region in the sensorimotor space defined by its exemplars
 
 The prediction model models the relationship between the node's input and output variables. At every time step, this model is used to make a prediction about the immediate future state based on the current state and the selected action. This prediction model is trained on the set of exemplars that were previously observed. These exemplars are represented as $[SM(t),S(t+1)]$ pairs. $SM(t)$ represents the sensorimotor context, i.e., the concatenation of the sensory state $S$ and the action $M$ taken at time $t$. $S(t+1)$ represents the observed sensory state at time $t+1$. 
 
-In all the experiments presented in this thesis, linear models \eqref{eqn:linear-model} were used as the prediction models.
+In all the experiments presented in this thesis, linear models \eqref{eqn:linear-model} were used as the prediction model.
 \begin{equation}\label{eqn:linear-model}
 	S(t+t) = W \cdot SM(t)
 \end{equation}
@@ -74,7 +74,7 @@ Linear least squares regression or Lasso (Least Absolute Shrinkage and Selection
 
 \subsubsection{Knowledge Gain Assessor}
 
-The KGA calculates the reward given the predicted and actual sensory inputs. It is implemented as described in \cite{Oudeyer2007}. \Cref{fig:Block Diagram KGA} illustrates the internal workings of the KGA. The metaM returns the predicted mean error, $<e(t+1-\tau)>$, which in this case is simply the average error over a window of previous errors with an offset, $\tau$. The reward is calculated by subtracting it by the actual mean error, $<e(t+1)>$. This reward is then used by the action selector to compute the action values. 
+The KGA calculates the reward given the predicted and actual sensory inputs. It is implemented as described in \cite{Oudeyer2007}. \Cref{fig:Block Diagram KGA} illustrates the internal workings of the KGA. The metaM returns the predicted mean error, $<e(t+1-\tau)>$, which in this case is simply the average error over a window of $\theta$ previous errors $\tau$ time step before. The reward is calculated by subtracting it by the actual mean error, $<e(t+1)>$. This reward is then used by the action selector to compute the action values. The window size, $\theta$, is a smoothing parameter that determines the KGA's sensitivity to spikes in prediction errors. 
 
 \begin{figure}[htb]
 	\centering
@@ -82,6 +82,7 @@ The KGA calculates the reward given the predicted and actual sensory inputs. It 
 	\caption[Block diagram of the Knowledge Gain Assessor]{$S(t+1)$ and $S'(t+1)$ are the actual and predicted sensor input variables. (1) The KGA computes the error by taking their root-mean-square error difference. (2) After that, it computes the mean error over a window of previously calculated errors. Note that the mean error is only calculated based on errors associated with this particular region. (3) The metaM predicts the error also by taking the mean error a window of previously calculated errors with an offset of $\tau$. (4) Finally, the KGA outputs the reward by taking the difference between the actual mean error and predicted mean error. }
 	\label{fig:Block Diagram KGA}
 \end{figure}
+
 
 \FloatBarrier
 \subsubsection{Region Splitter}
