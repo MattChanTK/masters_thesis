@@ -227,8 +227,8 @@ Alternatively, instead of having a hard threshold that moves the system from tot
 
 \begin{subequations}\label{eqn:map_sigmoid}
 	\begin{flalign} 
-		m_{max} &= \frac{1}{1+e^{-k+a}}; \quad k > 0 \\
-		a &= \log{(\frac{1}{b}-1)}; \quad 0 < b < 1
+		m_{max} &= \frac{1}{1+e^{-kx+a}}; \quad k > 0 \\
+		a &= \ln{(\frac{1}{b}-1)}; \quad 0 < b < 1
 	\end{flalign}
 \end{subequations}
 $m_{max}$ is the maximum output level which can be a number between 0 to 1; $x$ is the knowledge gain potential; $b$ determines the minimum output level when knowledge gain potential is 0; $k$ determines the steepness of the sigmoid function. 
@@ -246,7 +246,7 @@ $Q_z$ is the set of previous $W$ action values $q$ at time step $z$; $W$ is the 
 \end{equation}
 $\overline{q^2_z}$ is the average squared action value at time step $z$ over the window of width $W$.
 \begin{equation}\label{eqn:relative_action_val}
-	\widehat{q^2_z} = \frac{q_t^2}{max(\overline{q^2_z}, \nu)}
+	\widehat{q^2_z} = \frac{q_z^2}{max(\overline{q^2_z}, \nu)}
 \end{equation}
 $\widehat{q^2_z}$ is the relative action value; $q_z^2$ is the current action value; $\nu$ is the sensitivity constant.
 

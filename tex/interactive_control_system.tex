@@ -201,7 +201,7 @@ If a CBLA Node controls an LED directly, any change in brightness would be set i
   
 \subsection{Isolated CBLA Nodes}\label{sec:isolated-cbla-node}
 
-Each Isolated CBLA Node is associated with one actuator. A CBLA system, as discussed in \Cref{sec:cbla-system}, is constructed by linking these Isolated CBLA Nodes through virtual inputs. The prediction models are fitted using Lasso \cite{Tibshirani1996}. In this test bed, three main types of Isolated CBLA Node exist: Half-Fin Node, Light Node, and Reflex Node.
+Each Isolated CBLA Node is associated with one actuator. A CBLA system, as discussed in \Cref{sec:cbla-system}, is constructed by linking these Isolated CBLA Nodes through virtual inputs. The prediction models are fitted using LASSO \cite{Tibshirani1996}. In this test bed, three main types of Isolated CBLA Node exist: Half-Fin Node, Light Node, and Reflex Node.
 
 \Cref{fig:Isolated CBLA Nodes} presents the make-up of the different Isolated CBLA Nodes in a cluster. Two Half-Fin Nodes control the bending of a Fin through their respective SMA Controller Nodes (Fx.SMA-L and Fx.SMA-R). The pair of Half-Fin Nodes share a Fin-mounted IR proximity sensor (Fx.IR-F), and the 3 axes of the accelerometer (Fx.ACC). A Light Node controls the brightness of a high-power LED through an LED driver Node (Lx.LED) and its sensory space consists of an ambient light sensor (Lx.ALS). There are two types of Reflex Nodes, one associated with a pair of LEDs (Fx.RFX-L), and one associated with a vibration motor (Fx.RFX-M). They are both controlled through LED Driver Nodes. In their sensory space, they share one bottom-mounted IR proximity sensor (Fx.IR-S). 
 
