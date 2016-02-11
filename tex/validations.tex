@@ -216,7 +216,27 @@ The average total activation and average cluster activation values for the Spati
 In each of the four cases, the total activation values for Random Mode are higher than the ones for Spatial Mode. This shows that Random Mode network configuration tends to produce higher overall activations when compared to Spatial Mode. This may be attributed to the larger number of inter-cluster unidirectional links within a Random Mode CBLA system. In contrast, most of the links in a Spatial Mode CBLA system are bidirectional and intra-cluster. This means that information about the trigger is less likely to spread as far since some links loop back to their origins. In addition, for Random Mode, since there is a $\frac{7}{8}$ chance that a Node would be linked to a Node in another cluster, many more inter-cluster links would form in comparison to Spatial Mode which only has 15 inter-cluster links. Since some Nodes within a cluster are linked through shared inputs, information about the trigger would spread within a cluster quicker as well. 
 
 % Compare cluster activations
-On the other hand, with the Single Trigger procedure, cluster activation values for both Spatial Mode and Random Mode tend to be higher in Cluster 3 than in other clusters. This is expected since some Nodes within a cluster are also linked through shared inputs. However, the Cluster 3's activation values for Spatial Mode are 2.58 times (low sensitivity setting) and 1.91 times (high sensitivity setting) larger than their respective total activation values. For Random Mode, the Cluster 3's activation values are only 1.17 times (high sensitivity) and 1.40 times (low sensitivity) higher than their respective total activation values. The differences in cluster activations at Cluster 3 are much larger for Spatial Mode than for Random Mode. This shows that activations do tend to concentrate more around the origin of the trigger in Spatial Mode in comparison to Random Mode as we expected. 
+On the other hand, with the Single Trigger procedure, cluster activation values for both Spatial Mode and Random Mode tend to be higher in Cluster 3 than in other clusters. This is expected since some Nodes within a cluster are also linked through shared inputs. However, the Cluster 3's activation values for Spatial Mode are 2.58 times (low sensitivity setting) and 1.91 times (high sensitivity setting) larger than their respective total activation values. For Random Mode, the Cluster 3's activation values are only 1.17 times (high sensitivity) and 1.40 times (low sensitivity) higher than their respective total activation values. The differences in cluster activations at Cluster 3 are much larger for Spatial Mode than for Random Mode as illustrated in \Cref{fig:multi-cluster bar graph}. This shows that activations do tend to concentrate more around the origin of the trigger in Spatial Mode in comparison to Random Mode as we expected. 
+
+\begin{figure}[!htb]
+	\centering
+	\begin{subfigure}[t]{0.8\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/multi-cluster bar graph spatial"}
+		\caption{Spatial Mode}
+		\label{fig:multi-cluster bar graph spatial}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{0.8\textwidth}
+		\centering
+		\includegraphics[width=1.0 \textwidth]{"fig/validations/multi-cluster bar graph random"}
+		\caption{Random Mode}
+		\label{fig:multi-cluster bar graph random}
+	\end{subfigure}
+	\caption[Average total activation and average cluster activations bar graphs of the multi-cluster experiment.]{Average total activation (dark blue and dark red) and average cluster activations (blue and red) bar graphs for Spatial Mode and Random Mode of the multi-cluster experiment.}
+	\label{fig:multi-cluster bar graph}
+\end{figure}
+
 
 % compare single trigger to no trigger
 In addition, as expected, with the low sensitivity setting, the activation levels tend to be lower than with the high sensitivity setting. It is interesting to note that the sensitivity setting seems to make a much more significant difference in Random Mode than in Spatial Mode. It may again be attributed to the larger number of unidirectional links which seems to allow the activations to spread quicker and further. With the high sensitivity setting, the Random Mode CBLA system may simply be triggered by ambient noise, which causes the chain reactions of activations, much more frequently.
